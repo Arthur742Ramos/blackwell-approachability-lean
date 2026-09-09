@@ -1,0 +1,85 @@
+version: "v0.4"
+project:
+  name: "Blackwell approachability in Lean"
+  description: >-
+    A Mathlib-only formalization of the quantitative Euclidean Blackwell
+    approachability certificate. The development proves the B/sqrt(T) rate
+    from the supporting-half-space condition, constructs closest points for
+    nonempty closed convex targets in complete real inner-product spaces, and
+    verifies a running-average certificate.
+  authors: ["Arthur Freitas Ramos"]
+  responsible_maintainers: ["Arthur Freitas Ramos"]
+  license: "BSD-3-Clause"
+classification:
+  arxiv: ["cs.GT"]
+  msc2020: ["91A26", "46C05"]
+sources:
+  - title: "An analog of the minimax theorem for vector payoffs"
+    authors: ["David Blackwell"]
+    id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-6/issue-1/An-analog-of-the-minimax-theorem-for-vector-payoffs/pjm/1103044269.full"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Original vector-payoff approachability/minimax theorem motivating the
+      supporting-half-space condition and convex-target geometry.
+    author_endorsement: "not-contacted"
+  - title: "Blackwell approachability and no-regret learning are equivalent"
+    authors: ["Jacob Abernethy", "Peter Bartlett", "Elad Hazan", "Alexander Rakhlin"]
+    id: "https://proceedings.mlr.press/v19/abernethy11a.html"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Modern treatment of the approachability and online-learning connection;
+      this package formalizes the Euclidean certificate core, not the full
+      equivalence.
+    author_endorsement: "not-contacted"
+related_formalizations: []
+status:
+  scope: >-
+    Two selected statements cover the quantitative approachability bound and
+    closest-point/supporting-half-space existence. The implementation also
+    proves the running-average recurrence and a concrete real-line certificate.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+automation:
+  methods:
+    - method: "agent"
+      models: ["GPT-5 Codex"]
+      framework: "Lean 4 and Mathlib"
+      tool_setup: >-
+        Pinned Lake dependency; independent Mathlib-only Challenge; named
+        theorem axiom audit; exact Comparator and NanoDa replay; hosted
+        readiness workflow.
+      prompting_notes: "User requested a polished standalone formalization of Blackwell approachability."
+  notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
+fidelity:
+  divergences: >-
+    The selected theorem is a deterministic Euclidean certificate over a real
+    inner-product space. It does not formalize the full strategic-game
+    quantifier structure, a last-iterate guarantee, stochastic payoffs,
+    computational complexity, or a practical algorithm implementation.
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: >-
+    No independent human or Palomar editorial approval is claimed. The two
+    Challenge holes occur only in the independent statement surface and are
+    excluded from status.sorry_count; implementation and Solution contain no
+    proof placeholders. Hosted Comparator verification and Palomar editorial
+    review remain separate states.
+alignment:
+  namespace: "Blackwell.Palomar"
+  statements:
+    - source: "Quantitative Blackwell approachability bound"
+      lean: "Blackwell.Palomar.blackwell_approachability_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Closest-point and supporting-half-space witness"
+      lean: "Blackwell.Palomar.exists_projection"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+acknowledgements: >-
+  Lean and Mathlib contributors; David Blackwell; and Jacob Abernethy, Peter
+  Bartlett, Elad Hazan, and Alexander Rakhlin.
+

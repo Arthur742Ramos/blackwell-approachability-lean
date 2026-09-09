@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it."
+title: "Blackwell Approachability in Lean"
+type: software
+version: "0.1.0"
+date-released: "2026-09-09"
+authors:
+  - family-names: Ramos
+    given-names: Arthur Freitas
+repository-code: "https://github.com/Arthur742Ramos/blackwell-approachability-lean"
+license: BSD-3-Clause
+keywords:
+  - Lean
+  - Mathlib
+  - Blackwell approachability
+  - game theory
+

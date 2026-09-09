@@ -1,0 +1,15 @@
+{
+  "challenge_module": "BlackwellChallenge",
+  "solution_module": "BlackwellSolution",
+  "theorem_names": [
+    "Blackwell.Palomar.blackwell_approachability_bound",
+    "Blackwell.Palomar.exists_projection"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
+
