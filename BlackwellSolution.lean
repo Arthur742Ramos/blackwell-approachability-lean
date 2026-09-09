@@ -36,12 +36,21 @@ noncomputable def expectedPayoff {A B E : Type*} [Fintype A]
     (p : Mixed A) (g : A → B → E) (b : B) : E :=
   ∑ a, p.weight a • g a b
 
+/-- A closest point to `y` in a nonempty closed convex target, together with
+    the normal-cone inequality for every target point. -/
+theorem exists_projection {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [CompleteSpace E] {C : Set E}
+    (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)
+    (y : E) :
+    ∃ p ∈ C, ‖y - p‖ = Metric.infDist y C ∧
+      ∀ z ∈ C, inner ℝ (y - p) (z - p) ≤ 0 := by
+  exact Blackwell.Approachability.exists_projection hne hclosed
+    (by simpa [real_convex] using hconvex) y
+
 noncomputable def closestPoint {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [CompleteSpace E] {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C) : E → E :=
-  fun y => Classical.choose
-    (Blackwell.Approachability.exists_projection hne hclosed
-      (by simpa [real_convex] using hconvex) y)
+  fun y => Classical.choose (exists_projection hne hclosed hconvex y)
 
 lemma closestPoint_spec {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [CompleteSpace E] {C : Set E}
@@ -286,15 +295,6 @@ theorem dimension_factor_is_attained {A : Type*} [Fintype A] (rho : ℝ)
     l2Norm (fun _ : A => rho) = Real.sqrt (Fintype.card A) * rho := by
   simpa [l2Norm, Blackwell.Reduction.l2Norm] using
     (Blackwell.Reduction.dimension_factor_is_attained (A := A) rho hrho)
-
-theorem exists_projection {E : Type*} [NormedAddCommGroup E]
-    [InnerProductSpace ℝ E] [CompleteSpace E] {C : Set E}
-    (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)
-    (y : E) :
-    ∃ p ∈ C, ‖y - p‖ = Metric.infDist y C ∧
-      ∀ z ∈ C, inner ℝ (y - p) (z - p) ≤ 0 := by
-  exact Blackwell.Approachability.exists_projection hne hclosed
-    (by simpa [real_convex] using hconvex) y
 
 theorem exists_uniform_response_of_sion
     {E F : Type*} [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
