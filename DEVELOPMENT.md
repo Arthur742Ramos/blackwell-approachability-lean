@@ -25,3 +25,9 @@ payoff sequence satisfying the Blackwell response condition. The examples
 include a nonzero sequence that starts outside the singleton target and then
 cancels back to it. No custom axiom, unsafe declaration, or non-Mathlib
 dependency is used.
+
+The Palomar-facing Challenge and Solution surfaces name the real scalar action
+and the corresponding convexity predicate as `real_smul` and `real_convex`.
+These are definitionally the ordinary Mathlib operations supplied by the
+inner-product-space instance; the named wrappers keep the signatures stable
+when Palomar prints them in its isolated notation-audit environment.
