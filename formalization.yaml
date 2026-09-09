@@ -38,11 +38,13 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Two selected statements cover the conditional quantitative approachability
+    Three selected statements cover the conditional quantitative approachability
     bound and closest-point/normal-cone geometry. The implementation
     also proves the running-average recurrence and concrete real-line
-    certificates. The supporting-half-space premise remains an explicit input;
-    no game-strategy existence theorem is claimed.
+    certificates, plus an online response-oracle adapter that recursively
+    generates payoffs from an explicit response function. The
+    supporting-half-space premise remains an explicit input; no game-strategy
+    existence theorem is claimed.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -67,7 +69,7 @@ review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The two
+    No independent human or Palomar editorial approval is claimed. The three
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; implementation and Solution contain no
     proof placeholders. Hosted Comparator verification and Palomar editorial
@@ -77,6 +79,10 @@ alignment:
   statements:
     - source: "Quantitative Blackwell approachability bound"
       lean: "Blackwell.Palomar.blackwell_approachability_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Sequential response-oracle approachability bound"
+      lean: "Blackwell.Palomar.blackwell_response_bound"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Closest-point and supporting-half-space witness"

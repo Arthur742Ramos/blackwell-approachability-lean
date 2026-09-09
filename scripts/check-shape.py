@@ -22,12 +22,13 @@ if imports != expected_imports:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 2:
-    raise SystemExit(f"error: expected two Challenge holes, found {holes}")
+if holes != 3:
+    raise SystemExit(f"error: expected three Challenge holes, found {holes}")
 
 config = json.loads((root / "comparator.json").read_text(encoding="utf-8"))
 targets = [
     "Blackwell.Palomar.blackwell_approachability_bound",
+    "Blackwell.Palomar.blackwell_response_bound",
     "Blackwell.Palomar.exists_projection",
 ]
 expected = {
@@ -57,6 +58,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "two holes, two selected targets."
+    "three holes, three selected targets."
 )
-

@@ -29,6 +29,13 @@ in a complete real inner-product space. BlackwellExamples.lean contains
 checked concrete certificates over the real line, including a nonzero
 two-step cancellation sequence.
 
+The implementation also provides `responseAverage` and
+`blackwell_response_bound`. These define the average generated online by an
+explicit response function and recover the same rate when the response
+function satisfies the supporting-half-space and bounded-displacement
+conditions for every current average. The response condition remains an input;
+the package does not identify a game-theoretic action rule that guarantees it.
+
 ## Selected proof surface
 
 The independent Mathlib-only statement file is BlackwellChallenge.lean.
@@ -36,6 +43,7 @@ The checked adapters are in BlackwellSolution.lean. The selected declarations
 are:
 
 - Blackwell.Palomar.blackwell_approachability_bound
+- Blackwell.Palomar.blackwell_response_bound
 - Blackwell.Palomar.exists_projection
 
 The implementation theorem and supporting lemmas are in

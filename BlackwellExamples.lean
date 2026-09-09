@@ -27,6 +27,9 @@ private def cancellationSequence : ℕ → ℝ
 private def cancellationTarget : Set ℝ := {0}
 private def cancellationProjection : ℕ → ℝ := fun _ => 0
 
+private noncomputable def signResponse (y : ℝ) : ℝ := if 0 < y then -1 else 1
+private def signProjection (_y : ℝ) : ℝ := 0
+
 lemma zero_certificate :
     Metric.infDist (Blackwell.Approachability.runningAverage zeroSequence 8)
         zeroTarget ≤ 0 / Real.sqrt 8 := by
@@ -118,5 +121,38 @@ lemma cancellation_certificate :
     (Blackwell.Approachability.runningAverage cancellationSequence)
     cancellationProjection 1 hproj hmin havg hinner hbound (by norm_num)
     (by norm_num)
+
+lemma response_oracle_certificate :
+    Metric.infDist
+        (Blackwell.Approachability.responseAverage signResponse 2)
+        cancellationTarget ≤ (1 : ℝ) / Real.sqrt 2 := by
+  have hproj : ∀ y : ℝ, signProjection y ∈ cancellationTarget := by
+    intro y
+    simp [signProjection, cancellationTarget]
+  have hmin : ∀ y : ℝ, ∀ z ∈ cancellationTarget,
+      ‖y - signProjection y‖ ≤ ‖y - z‖ := by
+    intro y z hz
+    have hz0 : z = 0 := by simpa [cancellationTarget] using hz
+    subst z
+    simp [signProjection]
+  have hinner : ∀ y : ℝ,
+      inner ℝ (y - signProjection y)
+        (signResponse y - signProjection y) ≤ 0 := by
+    intro y
+    by_cases hy : 0 < y
+    · simp [signResponse, signProjection, hy]
+      linarith
+    · by_cases hy0 : y = 0
+      · subst y
+        simp [signResponse, signProjection]
+      · have hy' : y < 0 := lt_of_le_of_ne (le_of_not_gt hy) hy0
+        simp [signResponse, signProjection, hy]
+        linarith
+  have hbound : ∀ y : ℝ,
+      ‖signResponse y - signProjection y‖ ≤ (1 : ℝ) := by
+    intro y
+    by_cases hy : 0 < y <;> simp [signResponse, signProjection, hy]
+  exact Blackwell.Approachability.blackwell_response_bound signResponse
+    signProjection 1 hproj hmin hinner hbound (by norm_num) (by norm_num)
 
 end Blackwell.Examples

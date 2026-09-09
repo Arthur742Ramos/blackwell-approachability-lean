@@ -22,7 +22,9 @@ The proof is deliberately separated into three reusable pieces:
 * blackwell_approachability_bound telescopes the resulting squared-distance
   recurrence; and
 * exists_projection obtains the closest-point witness and its normal-cone
-  inequality for every nonempty closed convex target.
+  inequality for every nonempty closed convex target; and
+* blackwell_response_bound applies the certificate to an explicit online
+  response oracle.
 
 The target need not be a subspace, and the result does not assume a finite
 dimension. Completeness is used only for the projection-existence theorem.
@@ -171,6 +173,62 @@ theorem blackwell_approachability_bound {E : Type*} [NormedAddCommGroup E]
       Metric.infDist_le_dist_of_mem (hproj T)
     _ = err T := by simp [dist_eq_norm, err]
     _ ≤ B / Real.sqrt T := herr_le
+
+/- An online response oracle generates the running average recursively. This
+   packages the certificate theorem for an actual sequential payoff rule while
+   leaving the strategic response condition explicit. -/
+
+noncomputable def responseAverage {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (response : E → E) : ℕ → E
+  | 0 => 0
+  | t + 1 => ((t : ℝ) + 1)⁻¹ •
+      ((t : ℝ) • responseAverage response t +
+        response (responseAverage response t))
+
+lemma responseAverage_step {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (response : E → E) (t : ℕ) :
+    ((t : ℝ) + 1) • responseAverage response (t + 1) =
+      (t : ℝ) • responseAverage response t +
+        response (responseAverage response t) := by
+  rw [responseAverage]
+  rw [smul_smul]
+  field_simp
+  simp
+
+theorem blackwell_response_bound {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] {C : Set E} (response projection : E → E) (B : ℝ)
+    (hproj : ∀ y : E, projection y ∈ C)
+    (hmin : ∀ y : E, ∀ z ∈ C,
+      ‖y - projection y‖ ≤ ‖y - z‖)
+    (hinner : ∀ y : E,
+      inner ℝ (y - projection y) (response y - projection y) ≤ 0)
+    (hbound : ∀ y : E, ‖response y - projection y‖ ≤ B) (hB : 0 ≤ B) :
+    ∀ {T : ℕ}, 0 < T →
+      Metric.infDist (responseAverage response T) C ≤ B / Real.sqrt T := by
+  let avg : ℕ → E := responseAverage response
+  let x : ℕ → E := fun t => response (avg t)
+  let proj : ℕ → E := fun t => projection (avg t)
+  have havg : ∀ t : ℕ, ((t : ℝ) + 1) • avg (t + 1) =
+      (t : ℝ) • avg t + x t := by
+    intro t
+    exact responseAverage_step response t
+  have hproj' : ∀ t : ℕ, proj t ∈ C := by
+    intro t
+    exact hproj (avg t)
+  have hmin' : ∀ t : ℕ, ∀ z ∈ C,
+      ‖avg t - proj t‖ ≤ ‖avg t - z‖ := by
+    intro t z hz
+    exact hmin (avg t) z hz
+  have hinner' : ∀ t : ℕ,
+      inner ℝ (avg t - proj t) (x t - proj t) ≤ 0 := by
+    intro t
+    exact hinner (avg t)
+  have hbound' : ∀ t : ℕ, ‖x t - proj t‖ ≤ B := by
+    intro t
+    exact hbound (avg t)
+  intro T hT
+  simpa [avg] using (blackwell_approachability_bound x avg proj B hproj'
+    hmin' havg hinner' hbound' hB (T := T) hT)
 
 /-- A running average satisfies the affine recurrence used above. -/
 noncomputable def runningAverage {E : Type*} [AddCommGroup E] [Module ℝ E]
