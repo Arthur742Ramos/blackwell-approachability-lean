@@ -5,22 +5,24 @@ import Mathlib.Tactic
 set_option autoImplicit false
 
 /-
-# Blackwell approachability
+# Blackwell approachability certificate
 
-This file proves the quantitative Euclidean core of Blackwell's approachability
-argument. A witness proj t is supplied for each running average. It lies
-in the target, minimizes the distance to that average, and the next payoff
-lies in the corresponding Blackwell half-space. If the witness-relative
-payoff displacement is bounded by B, the distance of the Tth average to
-the target is at most B / sqrt T.
+This file proves the conditional quantitative Euclidean step in Blackwell's
+approachability argument. A witness proj t is supplied for each running
+average. It lies in the target, minimizes the distance to that average, and
+the next payoff lies in the corresponding Blackwell half-space. If the
+witness-relative payoff displacement is bounded by B, the distance of the Tth
+average to the target is at most B / sqrt T. The file does not construct the
+payoff sequence or prove the strategic-game response condition needed to
+establish those hypotheses.
 
 The proof is deliberately separated into three reusable pieces:
 
 * norm_affine_sq_le expands one Blackwell step in a real inner-product space;
 * blackwell_approachability_bound telescopes the resulting squared-distance
   recurrence; and
-* exists_projection obtains the required witness and half-space condition
-  for every nonempty closed convex target.
+* exists_projection obtains the closest-point witness and its normal-cone
+  inequality for every nonempty closed convex target.
 
 The target need not be a subspace, and the result does not assume a finite
 dimension. Completeness is used only for the projection-existence theorem.
@@ -193,7 +195,8 @@ lemma runningAverage_step {E : Type*} [AddCommGroup E] [Module ℝ E]
     field_simp [ht', show (t : ℝ) + 1 ≠ 0 by positivity]
     module
 
-/-- A closest point exists for every nonempty closed convex target. -/
+/-- A closest point and its normal-cone inequality exist for every nonempty
+    closed convex target. -/
 theorem exists_projection {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [CompleteSpace E] {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
@@ -215,4 +218,3 @@ theorem exists_projection {E : Type*} [NormedAddCommGroup E]
 
 end Approachability
 end Blackwell
-

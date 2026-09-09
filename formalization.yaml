@@ -2,11 +2,13 @@ version: "v0.4"
 project:
   name: "Blackwell approachability in Lean"
   description: >-
-    A Mathlib-only formalization of the quantitative Euclidean Blackwell
-    approachability certificate. The development proves the B/sqrt(T) rate
-    from the supporting-half-space condition, constructs closest points for
-    nonempty closed convex targets in complete real inner-product spaces, and
-    verifies a running-average certificate.
+    A Mathlib-only formalization of a quantitative Euclidean Blackwell
+    approachability certificate. Its main theorem proves the B/sqrt(T)
+    distance bound for any running-average sequence whose selected target
+    projections satisfy the Blackwell supporting-half-space condition. A
+    separate theorem proves closest-point existence for nonempty closed convex
+    targets in complete real inner-product spaces. The package does not
+    formalize the strategic-game quantifiers or construct a response strategy.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -23,22 +25,24 @@ sources:
       Original vector-payoff approachability/minimax theorem motivating the
       supporting-half-space condition and convex-target geometry.
     author_endorsement: "not-contacted"
-  - title: "Blackwell approachability and no-regret learning are equivalent"
-    authors: ["Jacob Abernethy", "Peter Bartlett", "Elad Hazan", "Alexander Rakhlin"]
-    id: "https://proceedings.mlr.press/v19/abernethy11a.html"
+  - title: "Blackwell Approachability and No-Regret Learning are Equivalent"
+    authors: ["Jacob Abernethy", "Peter L. Bartlett", "Elad Hazan"]
+    id: "https://proceedings.mlr.press/v19/abernethy11b.html"
     type: "paper"
     relationship: "formalizes"
     note: >-
       Modern treatment of the approachability and online-learning connection;
-      this package formalizes the Euclidean certificate core, not the full
-      equivalence.
+      this package formalizes a Euclidean certificate core, not the full
+      strategic-game theorem or the equivalence.
     author_endorsement: "not-contacted"
 related_formalizations: []
 status:
   scope: >-
-    Two selected statements cover the quantitative approachability bound and
-    closest-point/supporting-half-space existence. The implementation also
-    proves the running-average recurrence and a concrete real-line certificate.
+    Two selected statements cover the conditional quantitative approachability
+    bound and closest-point/normal-cone geometry. The implementation
+    also proves the running-average recurrence and concrete real-line
+    certificates. The supporting-half-space premise remains an explicit input;
+    no game-strategy existence theorem is claimed.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -80,6 +84,5 @@ alignment:
       module: "BlackwellSolution.lean"
       status: "proved"
 acknowledgements: >-
-  Lean and Mathlib contributors; David Blackwell; and Jacob Abernethy, Peter
-  Bartlett, Elad Hazan, and Alexander Rakhlin.
-
+  Lean and Mathlib contributors; David Blackwell; and Jacob Abernethy, Peter L.
+  Bartlett, and Elad Hazan.

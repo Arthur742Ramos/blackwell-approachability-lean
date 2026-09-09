@@ -1,25 +1,33 @@
 # Blackwell Approachability in Lean
 
-This repository formalizes the quantitative Euclidean core of Blackwell
-approachability in Lean 4.33.0 and Mathlib.
+This repository formalizes a quantitative Euclidean certificate used in
+Blackwell approachability in Lean 4.33.0 and Mathlib.
 
-The main theorem is the finite-time certificate
+The main theorem is the conditional finite-time certificate
 
   dist(avg T, C) <= B / sqrt(T)
 
-for every positive horizon T. The hypotheses expose the usual Blackwell
-geometry directly:
+for every positive horizon T. The theorem assumes the usual Blackwell
+supporting-half-space condition directly:
 
 - each proj t is a closest point of the closed convex target C to avg t;
 - the next payoff x t lies in the supporting half-space determined by
   avg t - proj t; and
 - the witness-relative displacement has norm at most B.
 
+This is the geometric convergence step of the argument. It does not state the
+full strategic-game quantifiers and does not construct a strategy that
+produces payoffs satisfying the half-space condition. A separate theorem
+proves the closest-point and normal-cone geometry for nonempty
+closed convex targets in complete real inner-product spaces; a game-specific
+formalization would still have to prove the required response condition.
+
 The development proves the one-step squared-distance recurrence, telescopes it
 by induction, supplies the affine recurrence for running averages, and proves
 existence of the required closest point for every nonempty closed convex target
-in a complete real inner-product space. BlackwellExamples.lean contains a
-checked concrete certificate over the real line.
+in a complete real inner-product space. BlackwellExamples.lean contains
+checked concrete certificates over the real line, including a nonzero
+two-step cancellation sequence.
 
 ## Selected proof surface
 
@@ -53,9 +61,9 @@ Landrun's kernel sandbox is Linux-only. Hosted verification uses real Landrun.
 This is a formalization of the standard Blackwell approachability argument,
 not a claim of priority for the mathematical theorem. The motivating sources
 are David Blackwell's vector-payoff minimax theorem and the approachability /
-no-regret equivalence developed by Abernethy, Bartlett, Hazan, and Rakhlin.
+no-regret equivalence developed by Abernethy, Bartlett, and Hazan.
 
 The formalization uses only Mathlib and does not import an external game-theory
-formalization. AI assistance was used for proof engineering. The final
-definitions, statements, and proofs are checked by Lean.
-
+formalization. It makes no claim of priority for the standard argument. AI
+assistance was used for proof engineering. The final definitions, statements,
+and proofs are checked by Lean.

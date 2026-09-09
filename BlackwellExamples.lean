@@ -19,6 +19,14 @@ private def zeroSequence : ℕ → ℝ := fun _ => 0
 private def zeroTarget : Set ℝ := {0}
 private def zeroProjection : ℕ → ℝ := fun _ => 0
 
+private def cancellationSequence : ℕ → ℝ
+  | 0 => 1
+  | 1 => -1
+  | _ => 0
+
+private def cancellationTarget : Set ℝ := {0}
+private def cancellationProjection : ℕ → ℝ := fun _ => 0
+
 lemma zero_certificate :
     Metric.infDist (Blackwell.Approachability.runningAverage zeroSequence 8)
         zeroTarget ≤ 0 / Real.sqrt 8 := by
@@ -53,5 +61,62 @@ lemma zero_certificate :
   exact blackwell_approachability_bound zeroSequence
     (Blackwell.Approachability.runningAverage zeroSequence) zeroProjection 0
     hproj hmin havg hinner hbound (by norm_num) (by norm_num)
+
+lemma cancellation_starts_outside_target :
+    Blackwell.Approachability.runningAverage cancellationSequence 1 = 1 ∧
+      (1 : ℝ) ∉ cancellationTarget := by
+  constructor
+  · norm_num [cancellationSequence, Blackwell.Approachability.runningAverage]
+  · simp [cancellationTarget]
+
+lemma cancellation_certificate :
+    Metric.infDist
+        (Blackwell.Approachability.runningAverage cancellationSequence 2)
+        cancellationTarget ≤ (1 : ℝ) / Real.sqrt 2 := by
+  have hbound : ∀ t : ℕ,
+      ‖cancellationSequence t - cancellationProjection t‖ ≤ (1 : ℝ) := by
+    intro t
+    cases t with
+    | zero => norm_num [cancellationSequence, cancellationProjection]
+    | succ t =>
+        cases t with
+        | zero => norm_num [cancellationSequence, cancellationProjection]
+        | succ t => simp [cancellationSequence, cancellationProjection]
+  have hproj : ∀ t : ℕ, cancellationProjection t ∈ cancellationTarget := by
+    intro t
+    simp [cancellationProjection, cancellationTarget]
+  have hmin : ∀ t : ℕ, ∀ z ∈ cancellationTarget,
+      ‖Blackwell.Approachability.runningAverage cancellationSequence t -
+          cancellationProjection t‖ ≤
+        ‖Blackwell.Approachability.runningAverage cancellationSequence t - z‖ := by
+    intro t z hz
+    have hz0 : z = 0 := by simpa [cancellationTarget] using hz
+    subst z
+    simp [cancellationProjection]
+  have havg : ∀ t : ℕ,
+      ((t : ℝ) + 1) •
+          Blackwell.Approachability.runningAverage cancellationSequence (t + 1) =
+        (t : ℝ) • Blackwell.Approachability.runningAverage cancellationSequence t +
+          cancellationSequence t := by
+    intro t
+    exact Blackwell.Approachability.runningAverage_step cancellationSequence t
+  have hinner : ∀ t : ℕ,
+      inner ℝ
+          (Blackwell.Approachability.runningAverage cancellationSequence t -
+            cancellationProjection t)
+          (cancellationSequence t - cancellationProjection t) ≤ 0 := by
+    intro t
+    cases t with
+    | zero => simp [cancellationSequence, cancellationProjection,
+        Blackwell.Approachability.runningAverage]
+    | succ t =>
+        cases t with
+        | zero => norm_num [cancellationSequence, cancellationProjection,
+            Blackwell.Approachability.runningAverage]
+        | succ t => simp [cancellationSequence, cancellationProjection]
+  exact blackwell_approachability_bound cancellationSequence
+    (Blackwell.Approachability.runningAverage cancellationSequence)
+    cancellationProjection 1 hproj hmin havg hinner hbound (by norm_num)
+    (by norm_num)
 
 end Blackwell.Examples
