@@ -3,12 +3,12 @@ project:
   name: "Blackwell approachability in Lean"
   description: >-
     A Mathlib-only formalization of a quantitative Euclidean Blackwell
-    approachability certificate. Its main theorem proves the B/sqrt(T)
-    distance bound for any running-average sequence whose selected target
-    projections satisfy the Blackwell supporting-half-space condition. A
-    separate theorem proves closest-point existence for nonempty closed convex
-    targets in complete real inner-product spaces. The package does not
-    formalize the strategic-game quantifiers or construct a response strategy.
+    approachability certificate and its finite-action strategic layer. It proves
+    the B/sqrt(T) bound, an additive-error extension, closest-point geometry,
+    explicit pure and mixed response strategies against every opponent
+    sequence, a general Sion minimax bridge, and the Euclidean
+    approachability-to-coordinate-regret reduction with its sharp finite-action
+    dimension factor.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -32,19 +32,42 @@ sources:
     relationship: "formalizes"
     note: >-
       Modern treatment of the approachability and online-learning connection;
-      this package formalizes a Euclidean certificate core, not the full
-      strategic-game theorem or the equivalence.
+      this package formalizes the deterministic Euclidean/game certificate
+      layer, not the full stochastic no-regret equivalence.
+    author_endorsement: "not-contacted"
+  - title: "Rate-Preserving Reductions for Blackwell Approachability"
+    authors: ["Christoph Dann", "Yishay Mansour", "Mehryar Mohri", "Jon Schneider", "Balasubramanian Sivan"]
+    id: "https://arxiv.org/abs/2406.07585"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Related reduction perspective motivating the explicit quantitative
+      approachability-to-regret conversion; this repository proves the finite
+      Euclidean norm conversion itself.
+    author_endorsement: "not-contacted"
+  - title: "On General Minimax Theorems"
+    authors: ["Maurice Sion"]
+    id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-8/issue-1/On-general-minimax-theorems/pjm/1103042507.full"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Source for the compact-convex minimax bridge used to turn pointwise
+      feasibility into a uniform response under explicit continuity and
+      quasiconvexity hypotheses.
     author_endorsement: "not-contacted"
 related_formalizations: []
 status:
   scope: >-
-    Three selected statements cover the conditional quantitative approachability
-    bound and closest-point/normal-cone geometry. The implementation
-    also proves the running-average recurrence and concrete real-line
-    certificates, plus an online response-oracle adapter that recursively
-    generates payoffs from an explicit response function. The
-    supporting-half-space premise remains an explicit input; no game-strategy
-    existence theorem is claimed.
+    Eleven selected statements cover closest-point/normal-cone geometry, the
+    exact and additive-error quantitative bounds, a general Sion minimax
+    bridge, explicit finite pure and mixed game strategy existence and
+    convergence against every opponent sequence, and the approachability to
+    regret-coordinate conversion. The response premise remains explicit: the
+    game theorems do not instantiate the full simplex-valued minimax hypotheses
+    for a particular payoff game, model sampled stochastic payoffs, or claim a
+    computational algorithm. The examples exercise nonzero cancellation, a
+    mixed finite game, a pure finite game, and the dimension-sensitive regret
+    conversion.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -61,15 +84,18 @@ automation:
   notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
 fidelity:
   divergences: >-
-    The selected theorem is a deterministic Euclidean certificate over a real
-    inner-product space. It does not formalize the full strategic-game
-    quantifier structure, a last-iterate guarantee, stochastic payoffs,
+    The geometric and game results are deterministic and use real inner-product
+    spaces. The finite-game theorems quantify over every pure opponent action
+    sequence and construct a Markov response, but retain the pointwise
+    supporting-half-space hypothesis as an input. The Sion result is a general
+    compact-convex bridge rather than a full finite-simplex instantiation. The
+    development does not formalize stochastic sampling, last-iterate rates,
     computational complexity, or a practical algorithm implementation.
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The three
+    No independent human or Palomar editorial approval is claimed. The eleven
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; implementation and Solution contain no
     proof placeholders. Hosted Comparator verification and Palomar editorial
@@ -77,18 +103,51 @@ review:
 alignment:
   namespace: "Blackwell.Palomar"
   statements:
-    - source: "Quantitative Blackwell approachability bound"
-      lean: "Blackwell.Palomar.blackwell_approachability_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Sequential response-oracle approachability bound"
-      lean: "Blackwell.Palomar.blackwell_response_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
     - source: "Closest-point and supporting-half-space witness"
       lean: "Blackwell.Palomar.exists_projection"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "Compact-convex Sion minimax response bridge"
+      lean: "Blackwell.Palomar.exists_uniform_response_of_sion"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Quantitative Blackwell approachability bound"
+      lean: "Blackwell.Palomar.blackwell_approachability_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Additive-error approachability bound"
+      lean: "Blackwell.Palomar.blackwell_approximate_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Pure pointwise response strategy selection"
+      lean: "Blackwell.Palomar.exists_pure_pointwise_strategy"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Pure finite-game approachability bound"
+      lean: "Blackwell.Palomar.pure_game_approachability_of_response"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Mixed finite-game approachability bound"
+      lean: "Blackwell.Palomar.mixed_game_approachability_of_response"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Mixed pointwise response strategy selection"
+      lean: "Blackwell.Palomar.exists_mixed_pointwise_strategy"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Euclidean regret coordinate bound"
+      lean: "Blackwell.Palomar.regret_coordinate_of_l2_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Coordinate-to-Euclidean regret bound"
+      lean: "Blackwell.Palomar.l2_bound_of_coordinate_bound"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Sharp finite-action dimension factor"
+      lean: "Blackwell.Palomar.dimension_factor_is_attained"
+      module: "BlackwellSolution.lean"
+      status: "proved"
 acknowledgements: >-
-  Lean and Mathlib contributors; David Blackwell; and Jacob Abernethy, Peter L.
-  Bartlett, and Elad Hazan.
+  Lean and Mathlib contributors; David Blackwell; Maurice Sion; Jacob
+  Abernethy, Peter L. Bartlett, and Elad Hazan; and the authors of the related
+  rate-preserving reductions literature.

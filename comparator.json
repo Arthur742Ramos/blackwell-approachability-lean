@@ -2,9 +2,17 @@
   "challenge_module": "BlackwellChallenge",
   "solution_module": "BlackwellSolution",
   "theorem_names": [
+    "Blackwell.Palomar.exists_projection",
+    "Blackwell.Palomar.exists_uniform_response_of_sion",
     "Blackwell.Palomar.blackwell_approachability_bound",
-    "Blackwell.Palomar.blackwell_response_bound",
-    "Blackwell.Palomar.exists_projection"
+    "Blackwell.Palomar.blackwell_approximate_bound",
+    "Blackwell.Palomar.exists_pure_pointwise_strategy",
+    "Blackwell.Palomar.pure_game_approachability_of_response",
+    "Blackwell.Palomar.mixed_game_approachability_of_response",
+    "Blackwell.Palomar.exists_mixed_pointwise_strategy",
+    "Blackwell.Palomar.regret_coordinate_of_l2_bound",
+    "Blackwell.Palomar.l2_bound_of_coordinate_bound",
+    "Blackwell.Palomar.dimension_factor_is_attained"
   ],
   "permitted_axioms": [
     "propext",

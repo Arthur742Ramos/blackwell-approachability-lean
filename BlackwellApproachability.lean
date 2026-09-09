@@ -57,6 +57,29 @@ lemma norm_affine_sq_le {E : Type*} [NormedAddCommGroup E]
     nlinarith [norm_nonneg b]
   nlinarith
 
+lemma norm_affine_sq_le_error {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (r : ℝ) (a b : E) (B epsilon : ℝ)
+    (hr : 0 ≤ r) (hr' : r ≤ 1) (hinner : inner ℝ a b ≤ epsilon)
+    (hb : ‖b‖ ≤ B) :
+    ‖r • a + (1 - r) • b‖ ^ 2 ≤
+      r ^ 2 * ‖a‖ ^ 2 + (1 - r) ^ 2 * B ^ 2 +
+        2 * r * (1 - r) * epsilon := by
+  rw [norm_add_sq_real, norm_smul, norm_smul, real_inner_smul_left,
+    real_inner_smul_right]
+  have h1 : 0 ≤ 1 - r := by linarith
+  have hrnorm : ‖r‖ = r := by
+    rw [Real.norm_eq_abs, abs_of_nonneg hr]
+  have h1norm : ‖1 - r‖ = 1 - r := by
+    rw [Real.norm_eq_abs, abs_of_nonneg h1]
+  rw [hrnorm, h1norm]
+  have hcross : 2 * (r * (1 - r) * inner ℝ a b) ≤
+      2 * (r * (1 - r) * epsilon) := by
+    have hmul : 0 ≤ r * (1 - r) := mul_nonneg hr h1
+    nlinarith
+  have hbnorm : ‖b‖ ^ 2 ≤ B ^ 2 := by
+    nlinarith [norm_nonneg b]
+  nlinarith
+
 lemma blackwell_step_sq {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] {C : Set E} (x avg proj : ℕ → E) (B : ℝ)
     (t : ℕ) (hproj : ∀ s : ℕ, proj s ∈ C)
@@ -108,6 +131,64 @@ lemma blackwell_step_sq {E : Type*} [NormedAddCommGroup E]
   have hsq' : ‖avg (t + 1) - proj (t + 1)‖ ^ 2 ≤
       r ^ 2 * ‖avg t - proj t‖ ^ 2 + (1 - r) ^ 2 * B ^ 2 :=
     hsqnext.trans hsq
+  rw [h1r] at hsq'
+  dsimp [r] at hsq'
+  have hmul := mul_le_mul_of_nonneg_left hsq' (sq_nonneg ((t : ℝ) + 1))
+  field_simp [ht1ne] at hmul
+  nlinarith
+
+lemma blackwell_step_sq_error {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] {C : Set E} (x avg proj : ℕ → E)
+    (B epsilon : ℝ) (t : ℕ) (hproj : ∀ s : ℕ, proj s ∈ C)
+    (hmin : ∀ s : ℕ, ∀ z ∈ C,
+      ‖avg s - proj s‖ ≤ ‖avg s - z‖)
+    (havg : ((t : ℝ) + 1) • avg (t + 1) =
+      (t : ℝ) • avg t + x t)
+    (hinner : inner ℝ (avg t - proj t) (x t - proj t) ≤ epsilon)
+    (hbound : ‖x t - proj t‖ ≤ B) :
+    ((t : ℝ) + 1) ^ 2 * ‖avg (t + 1) - proj (t + 1)‖ ^ 2 ≤
+      (t : ℝ) ^ 2 * ‖avg t - proj t‖ ^ 2 + B ^ 2 +
+        2 * (t : ℝ) * epsilon := by
+  have ht : 0 ≤ (t : ℝ) := by positivity
+  have ht1 : 0 < (t : ℝ) + 1 := by positivity
+  have ht1ne : (t : ℝ) + 1 ≠ 0 := ne_of_gt ht1
+  let r : ℝ := (t : ℝ) / ((t : ℝ) + 1)
+  have hr : 0 ≤ r := by
+    dsimp [r]
+    positivity
+  have hr' : r ≤ 1 := by
+    dsimp [r]
+    rw [div_le_iff₀ ht1]
+    linarith
+  have h1r : 1 - r = 1 / ((t : ℝ) + 1) := by
+    dsimp [r]
+    field_simp
+    ring
+  have hvec : avg (t + 1) - proj t =
+      r • (avg t - proj t) + (1 - r) • (x t - proj t) := by
+    rw [h1r]
+    dsimp [r]
+    apply (smul_right_injective E ht1ne)
+    change ((t : ℝ) + 1) • (avg (t + 1) - proj t) =
+      ((t : ℝ) + 1) • (((t : ℝ) / ((t : ℝ) + 1)) •
+        (avg t - proj t) + (1 / ((t : ℝ) + 1)) •
+        (x t - proj t))
+    rw [smul_sub, smul_add, smul_smul, smul_smul, havg]
+    field_simp
+    module
+  have hsq := norm_affine_sq_le_error r (avg t - proj t) (x t - proj t)
+    B epsilon hr hr' hinner hbound
+  rw [← hvec] at hsq
+  have hnext : ‖avg (t + 1) - proj (t + 1)‖ ≤
+      ‖avg (t + 1) - proj t‖ :=
+    hmin (t + 1) (proj t) (hproj t)
+  have hsqnext : ‖avg (t + 1) - proj (t + 1)‖ ^ 2 ≤
+      ‖avg (t + 1) - proj t‖ ^ 2 := by
+    nlinarith [norm_nonneg (avg (t + 1) - proj (t + 1)),
+      norm_nonneg (avg (t + 1) - proj t)]
+  have hsq' : ‖avg (t + 1) - proj (t + 1)‖ ^ 2 ≤
+      r ^ 2 * ‖avg t - proj t‖ ^ 2 + (1 - r) ^ 2 * B ^ 2 +
+        2 * r * (1 - r) * epsilon := hsqnext.trans hsq
   rw [h1r] at hsq'
   dsimp [r] at hsq'
   have hmul := mul_le_mul_of_nonneg_left hsq' (sq_nonneg ((t : ℝ) + 1))
@@ -174,6 +255,87 @@ theorem blackwell_approachability_bound {E : Type*} [NormedAddCommGroup E]
     _ = err T := by simp [dist_eq_norm, err]
     _ ≤ B / Real.sqrt T := herr_le
 
+/- The robust form of the certificate theorem.
+
+The half-space inequality may have a uniform additive error `epsilon`.  The
+result records the resulting non-vanishing error floor explicitly:
+
+  dist(avg T, C) ≤ sqrt (B² / T + epsilon).
+
+This is useful when the response is computed approximately or when a game
+oracle only enforces the supporting half-space up to numerical tolerance.
+-/
+theorem blackwell_approximate_bound {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] {C : Set E} (x avg proj : ℕ → E)
+    (B epsilon : ℝ) (hproj : ∀ t : ℕ, proj t ∈ C)
+    (hmin : ∀ t : ℕ, ∀ z ∈ C,
+      ‖avg t - proj t‖ ≤ ‖avg t - z‖)
+    (havg : ∀ t : ℕ, ((t : ℝ) + 1) • avg (t + 1) =
+      (t : ℝ) • avg t + x t)
+    (hinner : ∀ t : ℕ,
+      inner ℝ (avg t - proj t) (x t - proj t) ≤ epsilon)
+    (hbound : ∀ t : ℕ, ‖x t - proj t‖ ≤ B)
+    (hB : 0 ≤ B) (hepsilon : 0 ≤ epsilon) :
+    ∀ {T : ℕ}, 0 < T →
+      Metric.infDist (avg T) C ≤ Real.sqrt (B ^ 2 / T + epsilon) := by
+  intro T hT
+  let err : ℕ → ℝ := fun t => ‖avg t - proj t‖
+  have henergy : ∀ t : ℕ, (t : ℝ) ^ 2 * err t ^ 2 ≤
+      (t : ℝ) * B ^ 2 + epsilon * (t : ℝ) * ((t : ℝ) - 1) := by
+    intro t
+    induction t with
+    | zero => simp
+    | succ t ih =>
+        have hstep := blackwell_step_sq_error x avg proj B epsilon t hproj hmin
+          (havg t) (hinner t) (hbound t)
+        dsimp [err] at ih ⊢
+        simpa [Nat.cast_succ] using (show
+          ((t : ℝ) + 1) ^ 2 *
+              ‖avg (t + 1) - proj (t + 1)‖ ^ 2 ≤
+            ((t : ℝ) + 1) * B ^ 2 +
+              epsilon * ((t : ℝ) + 1) * ((t : ℝ) + 1 - 1) by
+          nlinarith [hstep, ih])
+  have hTreal : 0 < (T : ℝ) := by exact_mod_cast hT
+  have henergyT : (T : ℝ) ^ 2 * err T ^ 2 ≤
+      (T : ℝ) * B ^ 2 + epsilon * (T : ℝ) * ((T : ℝ) - 1) :=
+    henergy T
+  have hdivide : (T : ℝ) * err T ^ 2 ≤
+      B ^ 2 + epsilon * ((T : ℝ) - 1) := by
+    apply le_of_mul_le_mul_left _ hTreal
+    calc
+      (T : ℝ) * ((T : ℝ) * err T ^ 2) =
+          (T : ℝ) ^ 2 * err T ^ 2 := by ring
+      _ ≤ (T : ℝ) * B ^ 2 + epsilon * (T : ℝ) * ((T : ℝ) - 1) := henergyT
+      _ = (T : ℝ) * (B ^ 2 + epsilon * ((T : ℝ) - 1)) := by ring
+  have hdiv : err T ^ 2 ≤
+      B ^ 2 / (T : ℝ) + epsilon * (((T : ℝ) - 1) / (T : ℝ)) := by
+    have hrepr : B ^ 2 / (T : ℝ) +
+        epsilon * (((T : ℝ) - 1) / (T : ℝ)) =
+        (B ^ 2 + epsilon * ((T : ℝ) - 1)) / (T : ℝ) := by
+      field_simp
+    rw [hrepr]
+    exact (le_div_iff₀ hTreal).2 (by simpa [mul_comm] using hdivide)
+  have hratio : B ^ 2 / (T : ℝ) +
+      epsilon * (((T : ℝ) - 1) / (T : ℝ)) ≤ B ^ 2 / (T : ℝ) + epsilon := by
+    have hfrac : ((T : ℝ) - 1) / (T : ℝ) ≤ 1 := by
+      rw [div_le_iff₀ hTreal]
+      linarith
+    nlinarith
+  have herrsq : err T ^ 2 ≤ B ^ 2 / (T : ℝ) + epsilon := hdiv.trans hratio
+  have hq : 0 ≤ B ^ 2 / (T : ℝ) + epsilon := by positivity
+  have hsqrt : 0 ≤ Real.sqrt (B ^ 2 / (T : ℝ) + epsilon) := Real.sqrt_nonneg _
+  have herr : 0 ≤ err T := by
+    dsimp [err]
+    positivity
+  have herr_le : err T ≤ Real.sqrt (B ^ 2 / (T : ℝ) + epsilon) := by
+    have hsquare := Real.sq_sqrt hq
+    nlinarith
+  calc
+    Metric.infDist (avg T) C ≤ dist (avg T) (proj T) :=
+      Metric.infDist_le_dist_of_mem (hproj T)
+    _ = err T := by simp [dist_eq_norm, err]
+    _ ≤ Real.sqrt (B ^ 2 / T + epsilon) := herr_le
+
 /- An online response oracle generates the running average recursively. This
    packages the certificate theorem for an actual sequential payoff rule while
    leaving the strategic response condition explicit. -/
@@ -185,12 +347,31 @@ noncomputable def responseAverage {E : Type*} [AddCommGroup E] [Module ℝ E]
       ((t : ℝ) • responseAverage response t +
         response (responseAverage response t))
 
+/- An adaptive running average whose stage payoff may depend on time as well
+   as on the current average.  This is the form needed for a repeated game:
+   the opponent's action at time `t` is not known when earlier averages are
+   formed. -/
+noncomputable def adaptiveAverage {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (stage : ℕ → E → E) : ℕ → E
+  | 0 => 0
+  | t + 1 => ((t : ℝ) + 1)⁻¹ •
+      ((t : ℝ) • adaptiveAverage stage t + stage t (adaptiveAverage stage t))
+
 lemma responseAverage_step {E : Type*} [AddCommGroup E] [Module ℝ E]
     (response : E → E) (t : ℕ) :
     ((t : ℝ) + 1) • responseAverage response (t + 1) =
       (t : ℝ) • responseAverage response t +
         response (responseAverage response t) := by
   rw [responseAverage]
+  rw [smul_smul]
+  field_simp
+  simp
+
+lemma adaptiveAverage_step {E : Type*} [AddCommGroup E] [Module ℝ E]
+    (stage : ℕ → E → E) (t : ℕ) :
+    ((t : ℝ) + 1) • adaptiveAverage stage (t + 1) =
+      (t : ℝ) • adaptiveAverage stage t + stage t (adaptiveAverage stage t) := by
+  rw [adaptiveAverage]
   rw [smul_smul]
   field_simp
   simp

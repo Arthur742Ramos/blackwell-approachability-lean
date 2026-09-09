@@ -11,6 +11,10 @@ The theorem statements are motivated by:
 - J. Abernethy, P. L. Bartlett, and E. Hazan,
   "Blackwell Approachability and No-Regret Learning are Equivalent",
   Proceedings of Machine Learning Research 19 (2011), 27--46.
+- M. Sion, "On general minimax theorems", Pacific Journal of Mathematics 8
+  (1958), 171--176.
+- C. Dann, Y. Mansour, M. Mohri, J. Schneider, and B. Sivan,
+  "Rate-Preserving Reductions for Blackwell Approachability", arXiv:2406.07585.
 
 This project formalizes the standard argument and makes no claim of
 mathematical priority.

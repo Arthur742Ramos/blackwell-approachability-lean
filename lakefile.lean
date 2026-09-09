@@ -12,6 +12,15 @@ require mathlib from git
 lean_lib BlackwellApproachability
 
 @[default_target]
+lean_lib BlackwellGame
+
+@[default_target]
+lean_lib BlackwellReduction
+
+@[default_target]
+lean_lib BlackwellMinimax
+
+@[default_target]
 lean_lib BlackwellChallenge
 
 @[default_target]
@@ -20,3 +29,8 @@ lean_lib BlackwellSolution
 @[default_target]
 lean_lib BlackwellExamples
 
+@[default_target]
+lean_lib BlackwellGameExamples
+
+@[default_target]
+lean_lib BlackwellSubstantiveExamples

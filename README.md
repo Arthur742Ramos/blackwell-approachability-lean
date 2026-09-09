@@ -1,77 +1,87 @@
 # Blackwell Approachability in Lean
 
-This repository formalizes a quantitative Euclidean certificate used in
-Blackwell approachability in Lean 4.33.0 and Mathlib.
+This repository formalizes the deterministic Euclidean core of Blackwell
+approachability and connects it to finite repeated games and a quantitative
+regret reduction. It targets Lean 4.33.0 with a pinned Mathlib snapshot.
 
-The main theorem is the conditional finite-time certificate
+## Formalized results
 
-  dist(avg T, C) <= B / sqrt(T)
+For a nonempty closed convex target `C`, a running average `avg`, closest-point
+witnesses `proj`, and bounded witness-relative payoffs, the main certificate is
 
-for every positive horizon T. The theorem assumes the usual Blackwell
-supporting-half-space condition directly:
+```text
+dist (avg T) C <= B / sqrt T
+```
 
-- each proj t is a closest point of the closed convex target C to avg t;
-- the next payoff x t lies in the supporting half-space determined by
-  avg t - proj t; and
-- the witness-relative displacement has norm at most B.
+for every positive horizon `T`. The same recurrence is proved with a uniform
+supporting-half-space error, yielding
 
-This is the geometric convergence step of the argument. It does not state the
-full strategic-game quantifiers and does not construct a strategy that
-produces payoffs satisfying the half-space condition. A separate theorem
-proves the closest-point and normal-cone geometry for nonempty
-closed convex targets in complete real inner-product spaces; a game-specific
-formalization would still have to prove the required response condition.
+```text
+dist (avg T) C <= sqrt (B^2 / T + epsilon).
+```
 
-The development proves the one-step squared-distance recurrence, telescopes it
-by induction, supplies the affine recurrence for running averages, and proves
-existence of the required closest point for every nonempty closed convex target
-in a complete real inner-product space. BlackwellExamples.lean contains
-checked concrete certificates over the real line, including a nonzero
-two-step cancellation sequence.
+The strategic layer adds finite pure and mixed player actions, a pure opponent
+sequence, and a response depending on the current average. Under the explicit
+pointwise Blackwell response condition, it constructs a strategy and proves the
+bound against every opponent sequence. A separate Sion theorem proves the
+general compact-convex bridge from pointwise feasibility to one uniform
+response under stated continuity and quasiconvexity assumptions.
 
-The implementation also provides `responseAverage` and
-`blackwell_response_bound`. These define the average generated online by an
-explicit response function and recover the same rate when the response
-function satisfies the supporting-half-space and bounded-displacement
-conditions for every current average. The response condition remains an input;
-the package does not identify a game-theoretic action rule that guarantees it.
+The reduction layer represents finite-action average regrets as a Euclidean
+vector. An `l2` certificate implies every coordinate regret bound, while the
+reverse estimate costs `sqrt (card A)`; a constant vector proves that this
+factor is attained.
 
-## Selected proof surface
+## Proof architecture
 
-The independent Mathlib-only statement file is BlackwellChallenge.lean.
-The checked adapters are in BlackwellSolution.lean. The selected declarations
-are:
+- `BlackwellApproachability.lean` proves projection geometry, the exact and
+  additive-error recurrences, quantitative telescoping, and response-oracle
+  adapters.
+- `BlackwellGame.lean` defines finite mixed actions and proves pure/mixed
+  repeated-game strategy and convergence theorems.
+- `BlackwellMinimax.lean` proves the reusable Sion minimax response bridge.
+- `BlackwellReduction.lean` proves the approachability-to-regret norm
+  conversions.
+- `BlackwellChallenge.lean` is the independent Mathlib-only statement surface;
+  `BlackwellSolution.lean` supplies the checked proof adapters.
+- `BlackwellGameExamples.lean` and `BlackwellSubstantiveExamples.lean` are
+  executable checked examples of the game and regret layers. The earlier
+  `BlackwellExamples.lean` contains nonzero cancellation and response-oracle
+  certificates.
 
-- Blackwell.Palomar.blackwell_approachability_bound
-- Blackwell.Palomar.blackwell_response_bound
-- Blackwell.Palomar.exists_projection
+## Exact scope
 
-The implementation theorem and supporting lemmas are in
-BlackwellApproachability.lean.
+The finite-game theorems quantify over every pure opponent action sequence and
+construct a Markov response, but the pointwise supporting-half-space response
+condition is an explicit hypothesis. The Sion result is a general theorem; it
+does not instantiate every finite simplex or prove a game-specific minimax
+condition automatically. The development does not model stochastic sampling,
+last-iterate guarantees, computational complexity, or a practical algorithm.
+It makes no claim of mathematical priority for the standard Blackwell or
+approachability/no-regret arguments.
 
 ## Build and verification
 
-The pinned dependency graph is recorded in lake-manifest.json.
+The dependency graph is pinned in `lake-manifest.json`.
 
-    lake build
-    bash scripts/verify-palomar.sh
+```bash
+lake build
+bash scripts/verify-palomar.sh
+```
 
-The verification script checks the independent Challenge imports, exact
-Challenge/Solution theorem surface, absence of proof placeholders outside the
-Challenge, source dependency closure, the named-theorem axiom allowlist,
-metadata alignment, and whitespace cleanliness. The pinned Comparator/NanoDa
-replay is available through scripts/verify-comparator.sh; on macOS it
-requires the explicit PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1 fallback because
+The preparation gate checks the independent Challenge imports, the exact
+eleven-declaration Challenge/Solution surface, absence of implementation
+placeholders, source dependency closure, the named-theorem axiom allowlist,
+metadata alignment, and all checked examples. The pinned Comparator/NanoDa
+replay is available through `scripts/verify-comparator.sh`; on macOS it
+requires the explicit `PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because
 Landrun's kernel sandbox is Linux-only. Hosted verification uses real Landrun.
 
-## Scope and attribution
+## Attribution
 
-This is a formalization of the standard Blackwell approachability argument,
-not a claim of priority for the mathematical theorem. The motivating sources
-are David Blackwell's vector-payoff minimax theorem and the approachability /
-no-regret equivalence developed by Abernethy, Bartlett, and Hazan.
-
-The formalization uses only Mathlib and does not import an external game-theory
-formalization. It makes no claim of priority for the standard argument. AI
-assistance was used for proof engineering. The final definitions, statements,
-and proofs are checked by Lean.
+The motivating sources are David Blackwell's vector-payoff minimax theorem,
+Maurice Sion's minimax theorem, and the approachability/no-regret connection
+of Abernethy, Bartlett, and Hazan. The metadata and
+`THIRD_PARTY_NOTICES.md` contain the references. AI assistance was used for
+proof engineering. The final definitions, statements, and proofs are checked
+by Lean.

@@ -12,8 +12,12 @@ The implementation reuses the following stable Mathlib results:
 - Metric.infDist_eq_iInf and Metric.infDist_le_dist_of_mem for the
   metric conclusion;
 - finite-sum and scalar-algebra lemmas for the running-average recurrence.
+- Mathlib.Topology.Sion for the compact-convex uniform-response bridge.
+- finite sums, square-root inequalities, and cardinality casts for the
+  approachability-to-regret norm conversion.
 
 No external formalization is imported. The Challenge source is independently
 Mathlib-only, and the selected statements do not depend on local abbreviations
-or opaque game-theory definitions.
-
+or opaque game-theory definitions. The finite-game implementation layer is
+local by design: it provides the explicit mixed-action and repeated-game
+interfaces that the independent Challenge surface states directly.

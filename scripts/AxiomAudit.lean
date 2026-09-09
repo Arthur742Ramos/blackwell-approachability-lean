@@ -1,5 +1,13 @@
 import BlackwellSolution
 
-#print axioms Blackwell.Palomar.blackwell_approachability_bound
-#print axioms Blackwell.Palomar.blackwell_response_bound
 #print axioms Blackwell.Palomar.exists_projection
+#print axioms Blackwell.Palomar.exists_uniform_response_of_sion
+#print axioms Blackwell.Palomar.blackwell_approachability_bound
+#print axioms Blackwell.Palomar.blackwell_approximate_bound
+#print axioms Blackwell.Palomar.exists_pure_pointwise_strategy
+#print axioms Blackwell.Palomar.pure_game_approachability_of_response
+#print axioms Blackwell.Palomar.mixed_game_approachability_of_response
+#print axioms Blackwell.Palomar.exists_mixed_pointwise_strategy
+#print axioms Blackwell.Palomar.regret_coordinate_of_l2_bound
+#print axioms Blackwell.Palomar.l2_bound_of_coordinate_bound
+#print axioms Blackwell.Palomar.dimension_factor_is_attained

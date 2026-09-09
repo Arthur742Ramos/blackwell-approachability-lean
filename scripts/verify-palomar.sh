@@ -6,7 +6,9 @@ cd "$root"
 
 for file in lean-toolchain lakefile.lean lake-manifest.json \
   BlackwellChallenge.lean BlackwellSolution.lean BlackwellApproachability.lean \
-  BlackwellExamples.lean comparator.json formalization.yaml LICENSE; do
+  BlackwellGame.lean BlackwellReduction.lean BlackwellMinimax.lean \
+  BlackwellExamples.lean BlackwellGameExamples.lean \
+  BlackwellSubstantiveExamples.lean comparator.json formalization.yaml LICENSE; do
   test -f "$file" || {
     echo "error: missing $file" >&2
     exit 1
@@ -33,10 +35,11 @@ printf "%s\n" "$axioms" | python3 scripts/check-axiom-report.py comparator.json
 python3 scripts/check-metadata.py "$root"
 
 lake env lean BlackwellExamples.lean >/dev/null
+lake env lean BlackwellGameExamples.lean >/dev/null
+lake env lean BlackwellSubstantiveExamples.lean >/dev/null
 
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git diff --check
 fi
 
 echo "Standalone preparation checks passed."
-

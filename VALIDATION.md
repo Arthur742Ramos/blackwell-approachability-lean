@@ -6,12 +6,13 @@ It checks:
 
 - a complete Lean build;
 - exact Mathlib-only Challenge source dependencies;
-- exactly three Challenge proof holes and no implementation placeholders;
+- exactly eleven Challenge proof holes and no implementation placeholders;
 - exact selected theorem names and permitted axioms;
 - metadata and citation alignment;
 - the running-average regression certificate, a nonzero cancellation
-  certificate that starts outside its singleton target, and the response-oracle
-  certificate;
+  certificate that starts outside its singleton target, the response-oracle
+  certificate, a finite mixed-action game certificate, a pure-action game
+  certificate, and the approachability-to-regret examples;
 - clean source formatting.
 
 The separate Comparator replay is pinned in scripts/verify-comparator.sh.
