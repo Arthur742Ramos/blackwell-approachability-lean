@@ -3,4 +3,4 @@
 .DS_Store
 *.olean
 *.ilean
-
+__pycache__/
