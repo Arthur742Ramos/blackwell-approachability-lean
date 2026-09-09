@@ -6,7 +6,7 @@ project:
     approachability certificate and its finite-action strategic layer. It proves
     the B/sqrt(T) bound, an additive-error extension, closest-point geometry,
     explicit pure and mixed response strategies against every opponent
-    sequence, a general Sion minimax bridge, and the Euclidean
+    sequence, a Euclidean compact-convex Sion minimax bridge, and the Euclidean
     approachability-to-coordinate-regret reduction with its sharp finite-action
     dimension factor.
   authors: ["Arthur Freitas Ramos"]
@@ -59,7 +59,7 @@ related_formalizations: []
 status:
   scope: >-
     Eleven selected statements cover closest-point/normal-cone geometry, the
-    exact and additive-error quantitative bounds, a general Sion minimax
+    exact and additive-error quantitative bounds, a Euclidean Sion minimax
     bridge, explicit finite pure and mixed game strategy existence and
     convergence against every opponent sequence, and the approachability to
     regret-coordinate conversion. The response premise remains explicit: the
@@ -87,10 +87,12 @@ fidelity:
     The geometric and game results are deterministic and use real inner-product
     spaces. The finite-game theorems quantify over every pure opponent action
     sequence and construct a Markov response, but retain the pointwise
-    supporting-half-space hypothesis as an input. The Sion result is a general
-    compact-convex bridge rather than a full finite-simplex instantiation. The
-    development does not formalize stochastic sampling, last-iterate rates,
-    computational complexity, or a practical algorithm implementation.
+    supporting-half-space hypothesis as an input. The Palomar-facing Sion
+    statement is a Euclidean compact-convex bridge rather than a full
+    finite-simplex instantiation; its underlying implementation is more
+    general. The development does not formalize stochastic sampling,
+    last-iterate rates, computational complexity, or a practical algorithm
+    implementation.
 review:
   status: "self-assessed"
   reviewers: []

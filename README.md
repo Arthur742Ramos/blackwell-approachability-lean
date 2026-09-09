@@ -24,8 +24,9 @@ The strategic layer adds finite pure and mixed player actions, a pure opponent
 sequence, and a response depending on the current average. Under the explicit
 pointwise Blackwell response condition, it constructs a strategy and proves the
 bound against every opponent sequence. A separate Sion theorem proves the
-general compact-convex bridge from pointwise feasibility to one uniform
-response under stated continuity and quasiconvexity assumptions.
+Euclidean compact-convex bridge from pointwise feasibility to one uniform
+response under stated continuity and quasiconvexity assumptions. Its underlying
+implementation is reusable at the more general topological-vector-space level.
 
 The reduction layer represents finite-action average regrets as a Euclidean
 vector. An `l2` certificate implies every coordinate regret bound, while the
@@ -53,9 +54,10 @@ factor is attained.
 
 The finite-game theorems quantify over every pure opponent action sequence and
 construct a Markov response, but the pointwise supporting-half-space response
-condition is an explicit hypothesis. The Sion result is a general theorem; it
-does not instantiate every finite simplex or prove a game-specific minimax
-condition automatically. The development does not model stochastic sampling,
+condition is an explicit hypothesis. The selected Sion theorem has a Euclidean
+Palomar surface, while its underlying implementation is more general. It does
+not instantiate every finite simplex or prove a game-specific minimax condition
+automatically. The development does not model stochastic sampling,
 last-iterate guarantees, computational complexity, or a practical algorithm.
 It makes no claim of mathematical priority for the standard Blackwell or
 approachability/no-regret arguments.
@@ -72,10 +74,11 @@ bash scripts/verify-palomar.sh
 The preparation gate checks the independent Challenge imports, the exact
 eleven-declaration Challenge/Solution surface, absence of implementation
 placeholders, source dependency closure, the named-theorem axiom allowlist,
-metadata alignment, and all checked examples. The pinned Comparator/NanoDa
-replay is available through `scripts/verify-comparator.sh`; on macOS it
-requires the explicit `PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because
-Landrun's kernel sandbox is Linux-only. Hosted verification uses real Landrun.
+the official renderer's isolated core-notation audit, metadata alignment, and
+all checked examples. The pinned Comparator/NanoDa replay is available through
+`scripts/verify-comparator.sh`; on macOS it requires the explicit
+`PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because Landrun's kernel sandbox
+is Linux-only. Hosted verification uses real Landrun.
 
 ## Attribution
 

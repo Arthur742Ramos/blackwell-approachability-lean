@@ -32,9 +32,9 @@ structure Mixed (A : Type*) [Fintype A] where
   sum_weight : ∑ a, weight a = 1
 
 noncomputable def expectedPayoff {A B E : Type*} [Fintype A]
-    [AddCommMonoid E] [Module ℝ E]
+    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     (p : Mixed A) (g : A → B → E) (b : B) : E :=
-  ∑ a, p.weight a • g a b
+  ∑ a, real_smul (p.weight a) (g a b)
 
 /-- A closest point to `y` in a nonempty closed convex target, together with
     the normal-cone inequality for every target point. -/
@@ -218,7 +218,7 @@ theorem mixed_game_approachability_of_response
     obtain ⟨p, hp⟩ := hresponse y
     refine ⟨toGameMixed p, ?_⟩
     intro b
-    simpa [toGameMixed, expectedPayoff, Blackwell.Game.expectedPayoff,
+    simpa [toGameMixed, expectedPayoff, Blackwell.Game.expectedPayoff, real_smul,
       closestPoint, Blackwell.Game.closestPoint, hconvex, hconvex'] using hp b
   obtain ⟨gameStrategy, hstrategy⟩ :=
     Blackwell.Game.finite_game_approachability_of_response g hne hclosed hconvex'
@@ -296,21 +296,30 @@ theorem dimension_factor_is_attained {A : Type*} [Fintype A] (rho : ℝ)
   simpa [l2Norm, Blackwell.Reduction.l2Norm] using
     (Blackwell.Reduction.dimension_factor_is_attained (A := A) rho hrho)
 
+/-- The compact-convex and semicontinuity assumptions used by the Euclidean
+    Sion response bridge.  This mirrors the independent Challenge wrapper. -/
+def sion_response_hypotheses
+    {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+    {X : Set E} {Y : Set F} (f : E → F → ℝ) : Prop :=
+  X.Nonempty ∧ real_convex X ∧ IsCompact X ∧
+    (∀ y ∈ Y, LowerSemicontinuousOn (fun x => f x y) X) ∧
+    (∀ y ∈ Y, QuasiconvexOn ℝ X (fun x => f x y)) ∧
+    real_convex Y ∧ Y.Nonempty ∧ IsCompact Y ∧
+    (∀ x ∈ X, UpperSemicontinuousOn (fun y => f x y) Y) ∧
+    ∀ x ∈ X, QuasiconcaveOn ℝ Y (fun y => f x y)
+
 theorem exists_uniform_response_of_sion
-    {E F : Type*} [TopologicalSpace E] [AddCommGroup E] [Module ℝ E]
-    [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
+    {E F : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     {X : Set E} {Y : Set F} (f : E → F → ℝ)
-    (ne_X : X.Nonempty) (cX : Convex ℝ X) (kX : IsCompact X)
-    (hfy : ∀ y ∈ Y, LowerSemicontinuousOn (fun x => f x y) X)
-    (hfy' : ∀ y ∈ Y, QuasiconvexOn ℝ X (fun x => f x y))
-    [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
-    [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
-    (cY : Convex ℝ Y) (ne_Y : Y.Nonempty) (kY : IsCompact Y)
-    (hfx : ∀ x ∈ X, UpperSemicontinuousOn (fun y => f x y) Y)
-    (hfx' : ∀ x ∈ X, QuasiconcaveOn ℝ Y (fun y => f x y))
+    (hconditions : sion_response_hypotheses (X := X) (Y := Y) f)
     (hfeasible : ∀ y ∈ Y, ∃ x ∈ X, f x y ≤ 0) :
     ∃ x ∈ X, ∀ y ∈ Y, f x y ≤ 0 := by
-  exact Blackwell.Minimax.exists_uniform_response_of_sion f ne_X cX kX
-    hfy hfy' cY ne_Y kY hfx hfx' hfeasible
+  unfold sion_response_hypotheses at hconditions
+  rcases hconditions with ⟨ne_X, cX, kX, hfy, hfy', cY, ne_Y, kY, hfx, hfx'⟩
+  exact Blackwell.Minimax.exists_uniform_response_of_sion f ne_X
+    (by simpa [real_convex] using cX) kX hfy hfy'
+    (by simpa [real_convex] using cY) ne_Y kY hfx hfx' hfeasible
 
 end Blackwell.Palomar

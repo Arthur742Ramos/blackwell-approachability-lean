@@ -8,7 +8,10 @@ for file in lean-toolchain lakefile.lean lake-manifest.json \
   BlackwellChallenge.lean BlackwellSolution.lean BlackwellApproachability.lean \
   BlackwellGame.lean BlackwellReduction.lean BlackwellMinimax.lean \
   BlackwellExamples.lean BlackwellGameExamples.lean \
-  BlackwellSubstantiveExamples.lean comparator.json formalization.yaml LICENSE; do
+  BlackwellSubstantiveExamples.lean comparator.json formalization.yaml LICENSE \
+  scripts/verify-renderer-audit.sh \
+  scripts/palomar-core-notation-audit.lakefile.toml \
+  scripts/palomar-core-notation-audit.manifest.json; do
   test -f "$file" || {
     echo "error: missing $file" >&2
     exit 1
@@ -26,6 +29,7 @@ while IFS= read -r dependency; do
 done <<< "$challenge_dependencies"
 
 lake build
+bash scripts/verify-renderer-audit.sh
 lake env lean --src-deps BlackwellSolution.lean >/dev/null
 
 python3 scripts/test-axiom-report.py

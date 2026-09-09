@@ -8,6 +8,7 @@ It checks:
 - exact Mathlib-only Challenge source dependencies;
 - exactly eleven Challenge proof holes and no implementation placeholders;
 - exact selected theorem names and permitted axioms;
+- the official pinned Palomar renderer's isolated core-notation audit;
 - metadata and citation alignment;
 - the running-average regression certificate, a nonzero cancellation
   certificate that starts outside its singleton target, the response-oracle

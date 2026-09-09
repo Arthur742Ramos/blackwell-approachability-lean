@@ -32,7 +32,9 @@ pure and mixed response versions are included.
 `BlackwellMinimax.lean` isolates the compact-convex Sion argument. It is
 deliberately stated with its continuity, quasiconvexity, compactness, and
 feasibility hypotheses visible; it is not presented as an automatic proof of a
-particular game's response condition.
+particular game's response condition. The Palomar target packages those
+hypotheses into `sion_response_hypotheses` and specializes its public boundary
+to real inner-product spaces; the underlying implementation remains general.
 
 `BlackwellReduction.lean` isolates the finite-dimensional part of the
 approachability/no-regret connection. Coordinate control follows directly
@@ -46,6 +48,7 @@ sequence that starts outside a singleton target and then cancels back to it,
 a mixed finite game, a pure finite game, and regret-coordinate conversion. No
 custom axiom, unsafe declaration, or non-Mathlib dependency is used.
 
-The Palomar-facing scalar and convexity wrappers are definitionally ordinary
-Mathlib operations. They exist to keep the independent surface robust when a
-trusted notation audit prints declarations in isolation.
+The Palomar-facing scalar, convexity, expected-payoff, and Sion-hypothesis
+wrappers are definitionally ordinary Mathlib operations. They keep the
+independent surface robust when a trusted notation audit prints declarations in
+isolation, without weakening the proved Euclidean claims.
