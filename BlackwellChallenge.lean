@@ -110,7 +110,7 @@ theorem blackwell_approximate_bound {E : Type*} [NormedAddCommGroup E]
     (hinner : ∀ t : ℕ,
       inner ℝ (avg t - proj t) (x t - proj t) ≤ epsilon)
     (hbound : ∀ t : ℕ, ‖x t - proj t‖ ≤ B)
-    (hB : 0 ≤ B) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∀ {T : ℕ}, 0 < T →
       Metric.infDist (avg T) C ≤ Real.sqrt (B ^ 2 / T + epsilon) := by
   sorry
@@ -156,7 +156,7 @@ theorem pure_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (g a b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖g a b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (gameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -174,7 +174,7 @@ theorem mixed_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (expectedPayoff p g b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖expectedPayoff p g b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → Mixed A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (mixedGameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by

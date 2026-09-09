@@ -97,7 +97,7 @@ theorem finite_game_approachability_bound
           (expectedPayoff (strategy y) g b - closestPoint hne hclosed hconvex y) ≤ epsilon)
     (hbound : ∀ y : E, ∀ b : B,
       ‖expectedPayoff (strategy y) g b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) (opponent : ℕ → B) :
+    (hepsilon : 0 ≤ epsilon) (opponent : ℕ → B) :
     ∀ {T : ℕ}, 0 < T →
       Metric.infDist (gameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -132,7 +132,7 @@ theorem finite_game_approachability_bound
   intro T hT
   simpa [avg] using
     (Approachability.blackwell_approximate_bound x avg proj Bnd epsilon
-      hproj hmin havg hinner hbound' hB hepsilon (T := T) hT)
+      hproj hmin havg hinner hbound' hepsilon (T := T) hT)
 
 theorem finite_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
@@ -144,7 +144,7 @@ theorem finite_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (expectedPayoff p g b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖expectedPayoff p g b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → Mixed A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (gameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -153,7 +153,7 @@ theorem finite_game_approachability_of_response
   refine ⟨strategy, ?_⟩
   intro opponent T hT
   apply finite_game_approachability_bound g strategy hne hclosed hconvex
-    Bnd epsilon ?_ ?_ hB hepsilon opponent hT
+    Bnd epsilon ?_ ?_ hepsilon opponent hT
   · intro y b
     exact (hstrategy y b).1
   · intro y b
@@ -186,7 +186,7 @@ theorem pure_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (g a b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖g a b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (pureGameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -223,7 +223,7 @@ theorem pure_game_approachability_of_response
     simpa [x, proj] using (hstrategy (avg t) (opponent t)).2
   simpa [avg] using
     (Approachability.blackwell_approximate_bound x avg proj Bnd epsilon
-      hproj hmin havg hinner hbound hB hepsilon (T := T) hT)
+      hproj hmin havg hinner hbound hepsilon (T := T) hT)
 
 end Game
 end Blackwell

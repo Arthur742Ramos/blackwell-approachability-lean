@@ -18,7 +18,9 @@ where `e_t` is the distance from the running average to its closest target
 point. Induction gives `t^2 e_t^2 <= t B^2`; the nonnegative square-root
 comparison gives the `B / sqrt T` rate. The approximate theorem tracks the
 additional `2 * t * epsilon` cross term and records the non-vanishing error
-floor.
+floor. Unlike the exact form, its square-root bound depends on `B` only
+through `B^2`, so its public theorem and finite-game adapters do not require a
+redundant separate `B >= 0` premise.
 
 `BlackwellGame.lean` makes the sequential structure explicit. A finite mixed
 action is a nonnegative probability vector, the opponent supplies a pure

@@ -63,7 +63,7 @@ lemma pure_game_convergence :
     intro y
     exact interval_response_condition y
   simpa using (pure_game_approachability_of_response purePayoff hne hclosed
-    hconvex 1 0 hresponse (by norm_num) (by norm_num))
+    hconvex 1 0 hresponse (by norm_num))
 
 private def constantLoss (_t : ℕ) (_a : Bool) : ℝ := 1
 private def constantAction (_t : ℕ) : Bool := false

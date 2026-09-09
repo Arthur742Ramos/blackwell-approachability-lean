@@ -99,12 +99,12 @@ theorem blackwell_approximate_bound {E : Type*} [NormedAddCommGroup E]
     (hinner : ∀ t : ℕ,
       inner ℝ (avg t - proj t) (x t - proj t) ≤ epsilon)
     (hbound : ∀ t : ℕ, ‖x t - proj t‖ ≤ B)
-    (hB : 0 ≤ B) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∀ {T : ℕ}, 0 < T →
       Metric.infDist (avg T) C ≤ Real.sqrt (B ^ 2 / T + epsilon) := by
   intro T hT
   apply Blackwell.Approachability.blackwell_approximate_bound
-    x avg proj B epsilon hproj hmin ?_ hinner hbound hB hepsilon
+    x avg proj B epsilon hproj hmin ?_ hinner hbound hepsilon
     (T := T) hT
   intro t
   simpa [real_smul] using havg t
@@ -159,7 +159,7 @@ theorem pure_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (g a b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖g a b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (gameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -174,7 +174,7 @@ theorem pure_game_approachability_of_response
     simpa [closestPoint, Blackwell.Game.closestPoint, hconvex, hconvex'] using ha
   obtain ⟨strategy, hstrategy⟩ :=
     Blackwell.Game.pure_game_approachability_of_response g hne hclosed hconvex'
-      Bnd epsilon hresponse' hB hepsilon
+      Bnd epsilon hresponse' hepsilon
   refine ⟨strategy, ?_⟩
   intro opponent T hT
   have haverage : ∀ n : ℕ,
@@ -203,7 +203,7 @@ theorem mixed_game_approachability_of_response
       inner ℝ (y - closestPoint hne hclosed hconvex y)
           (expectedPayoff p g b - closestPoint hne hclosed hconvex y) ≤ epsilon ∧
       ‖expectedPayoff p g b - closestPoint hne hclosed hconvex y‖ ≤ Bnd)
-    (hB : 0 ≤ Bnd) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∃ strategy : E → Mixed A, ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       Metric.infDist (mixedGameAverage g strategy opponent T) C ≤
         Real.sqrt (Bnd ^ 2 / T + epsilon) := by
@@ -222,7 +222,7 @@ theorem mixed_game_approachability_of_response
       closestPoint, Blackwell.Game.closestPoint, hconvex, hconvex'] using hp b
   obtain ⟨gameStrategy, hstrategy⟩ :=
     Blackwell.Game.finite_game_approachability_of_response g hne hclosed hconvex'
-      Bnd epsilon hresponse' hB hepsilon
+      Bnd epsilon hresponse' hepsilon
   let strategy : E → Mixed A := fun y => fromGameMixed (gameStrategy y)
   refine ⟨strategy, ?_⟩
   intro opponent T hT

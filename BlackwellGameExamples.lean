@@ -75,6 +75,6 @@ lemma finite_game_converges :
     rw [fair_payoff, hp]
     simp
   simpa using (finite_game_approachability_of_response matchingPayoff hne hclosed hconvex
-    1 0 hresponse (by norm_num) (by norm_num))
+    1 0 hresponse (by norm_num))
 
 end Blackwell.GameExamples

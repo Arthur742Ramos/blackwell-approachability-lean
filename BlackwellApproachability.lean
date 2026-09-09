@@ -264,6 +264,8 @@ result records the resulting non-vanishing error floor explicitly:
 
 This is useful when the response is computed approximately or when a game
 oracle only enforces the supporting half-space up to numerical tolerance.
+Unlike the exact-rate form, this bound depends on `B` only through `B²`, so
+it needs no separate nonnegativity premise for `B`.
 -/
 theorem blackwell_approximate_bound {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] {C : Set E} (x avg proj : ℕ → E)
@@ -275,7 +277,7 @@ theorem blackwell_approximate_bound {E : Type*} [NormedAddCommGroup E]
     (hinner : ∀ t : ℕ,
       inner ℝ (avg t - proj t) (x t - proj t) ≤ epsilon)
     (hbound : ∀ t : ℕ, ‖x t - proj t‖ ≤ B)
-    (hB : 0 ≤ B) (hepsilon : 0 ≤ epsilon) :
+    (hepsilon : 0 ≤ epsilon) :
     ∀ {T : ℕ}, 0 < T →
       Metric.infDist (avg T) C ≤ Real.sqrt (B ^ 2 / T + epsilon) := by
   intro T hT
