@@ -60,6 +60,10 @@ for source_path in (challenge, solution):
     ):
         if required not in source:
             raise SystemExit(f"error: {source_path.name} is missing {required}")
+    if "FiniteTensorTightReduction u anchor" not in source:
+        raise SystemExit(f"error: {source_path.name} does not retain the supplied finite anchor")
+    if "AlgorithmicFiniteTensorTightReduction u anchor" not in source:
+        raise SystemExit(f"error: {source_path.name} does not retain the supplied algorithmic anchor")
 
 for path in (implementation, solution, root / "RateReductionExamples.lean"):
     source = path.read_text(encoding="utf-8")

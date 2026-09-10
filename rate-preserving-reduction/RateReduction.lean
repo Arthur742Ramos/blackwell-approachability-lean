@@ -240,20 +240,20 @@ theorem regret_to_approach_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype
     approachLoss u (decodeTrajectory x) l = regretLoss u x l :=
   (regretLoss_eq_approachLoss u x l).symm
 
-/-- The two explicit trajectory translations that witness tightness. -/
+/-- The two explicit trajectory translations that witness tightness for a
+supplied anchor. -/
 def FiniteTensorTightReduction {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) : Prop :=
-  ∃ anchor : Mixed m,
-    (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
-      regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
-    ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
-      approachLoss u (decodeTrajectory x) l = regretLoss u x l
+    (u : Payoff m n d) (anchor : Mixed m) : Prop :=
+  (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
+    regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
+  ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
+    approachLoss u (decodeTrajectory x) l = regretLoss u x l
 
 /-- The finite simplex construction is a tight reduction for each anchor. -/
 theorem finiteTensorTightReduction_of_anchor
     {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u := by
-  refine ⟨anchor, ?_, ?_⟩
+    (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u anchor := by
+  refine ⟨?_, ?_⟩
   · intro T p l
     exact approach_to_regret_exact u anchor p l
   · intro T x l
@@ -337,19 +337,19 @@ theorem online_regret_to_approach_exact {m n d : Type}
 /-- Algorithm-level tightness: both maps consume precisely the same prior-loss
 history and preserve every finite sequence's loss. -/
 def AlgorithmicFiniteTensorTightReduction {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d) : Prop :=
-  ∃ anchor : Mixed m,
-    (∀ alg losses,
-      onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
-    ∀ alg losses,
-      onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
+    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d)
+    (anchor : Mixed m) : Prop :=
+  (∀ alg losses,
+    onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
+  ∀ alg losses,
+    onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
 
 /-- The finite simplex construction is tight at the level of causal online
 strategies, not only preselected trajectories. -/
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u := by
-  refine ⟨anchor, ?_, ?_⟩
+    (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u anchor := by
+  refine ⟨?_, ?_⟩
   · intro alg losses
     exact online_approach_to_regret_exact u anchor alg losses
   · intro alg losses

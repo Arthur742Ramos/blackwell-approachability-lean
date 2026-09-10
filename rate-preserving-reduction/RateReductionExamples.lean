@@ -30,10 +30,10 @@ def uniformTwo : Mixed Two :=
 def toyPayoff : Payoff Two Two One :=
   fun i j _ => if i = j then 1 else -1
 
-example : FiniteTensorTightReduction toyPayoff :=
+example : FiniteTensorTightReduction toyPayoff uniformTwo :=
   finiteTensorTightReduction_of_anchor toyPayoff uniformTwo
 
-example : AlgorithmicFiniteTensorTightReduction toyPayoff :=
+example : AlgorithmicFiniteTensorTightReduction toyPayoff uniformTwo :=
   algorithmicFiniteTensorTightReduction_of_anchor toyPayoff uniformTwo
 
 example (w : Mixed Two) (x : JointMixed Two Two) :

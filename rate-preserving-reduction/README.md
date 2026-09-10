@@ -48,7 +48,9 @@ The formalization proves:
 
 The headline theorem is
 `Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor`.
-It gives both causal strategy maps for every chosen anchor in `Delta_m`.
+Its conclusion retains the supplied anchor, and gives both causal strategy maps
+for that exact chosen anchor in `Delta_m`. The finite-trajectory headline has
+the same anchor-preserving type.
 
 ## Why use the joint simplex?
 

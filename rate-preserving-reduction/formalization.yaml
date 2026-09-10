@@ -82,10 +82,11 @@ status:
     source pairing difference B(x,l)-B(shift(w,x),l) equals the original
     mixed constraint score. The equality is summed over arbitrary finite
     horizons, lifted to the supremum objectives, and transported through
-    explicit functions from loss histories to actions. Thus both causal
-    strategy translations preserve every finite loss sequence exactly. The
-    package does not prove arbitrary-convex-set, randomized, complexity, or
-    asymptotic rate claims.
+    explicit functions from loss histories to actions. Both headline
+    declarations preserve the supplied anchor in their conclusions, and both
+    causal strategy translations preserve every finite loss sequence exactly.
+    The package does not prove arbitrary-convex-set, randomized, complexity,
+    or asymptotic rate claims.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -155,11 +156,11 @@ alignment:
       lean: "Blackwell.RateReduction.Palomar.shift_is_improper"
       module: "RateReductionSolution.lean"
       status: "proved"
-    - source: "Explicit finite-trajectory tight reduction"
+    - source: "Explicit finite-trajectory tight reduction for each supplied anchor"
       lean: "Blackwell.RateReduction.Palomar.finiteTensorTightReduction_of_anchor"
       module: "RateReductionSolution.lean"
       status: "proved"
-    - source: "Explicit causal-strategy tight reduction"
+    - source: "Explicit causal-strategy tight reduction for each supplied anchor"
       lean: "Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor"
       module: "RateReductionSolution.lean"
       status: "proved"

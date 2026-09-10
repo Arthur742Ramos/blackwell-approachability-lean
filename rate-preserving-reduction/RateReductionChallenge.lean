@@ -163,12 +163,11 @@ theorem regret_to_approach_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype
   (regretLoss_eq_approachLoss u x l).symm
 
 def FiniteTensorTightReduction {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) : Prop :=
-  ∃ anchor : Mixed m,
-    (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
-      regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
-    ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
-      approachLoss u (decodeTrajectory x) l = regretLoss u x l
+    (u : Payoff m n d) (anchor : Mixed m) : Prop :=
+  (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
+    regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
+  ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
+    approachLoss u (decodeTrajectory x) l = regretLoss u x l
 
 /-- The comparator always escapes the joint-simplex action set. -/
 def shiftImproper {m n : Type} [Fintype m] [Fintype n] : Prop :=
@@ -178,10 +177,11 @@ theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n] :
     shiftImproper (m := m) (n := n) := by
   sorry
 
-/-- Both explicit translations preserve loss exactly at every finite horizon. -/
+/-- Both explicit translations preserve loss exactly at every finite horizon for
+the supplied anchor. -/
 theorem finiteTensorTightReduction_of_anchor
     {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u := by
+    (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u anchor := by
   sorry
 
 /-- A deterministic online strategy receives exactly its prior loss history. -/
@@ -214,18 +214,18 @@ def onlineRegretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     (losses : List (Dist d)) : ℝ :=
   regretLoss u (runTrajectory alg losses) (lossTrajectory losses)
 
-/-- Tightness at the level of causal online strategies. -/
+/-- Tightness at the level of causal online strategies for the supplied anchor. -/
 def AlgorithmicFiniteTensorTightReduction {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d) : Prop :=
-  ∃ anchor : Mixed m,
-    (∀ alg losses,
-      onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
-    ∀ alg losses,
-      onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
+    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d)
+    (anchor : Mixed m) : Prop :=
+  (∀ alg losses,
+    onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
+  ∀ alg losses,
+    onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
 
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d]
-    (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u := by
+    (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u anchor := by
   sorry
 
 end
