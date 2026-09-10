@@ -16,7 +16,11 @@ done
 
 mkdir -p "$cache_root"
 if [ ! -d "$renderer_dir/.git" ]; then
-  git clone --filter=blob:none --no-checkout "$renderer_repository" "$renderer_dir"
+  # The pinned audit revision is the current main tip when this script is
+  # updated.  A shallow initial clone avoids downloading the renderer's full
+  # history in fresh hosted runners; the exact fetch below remains the source
+  # of truth for the revision we execute.
+  git clone --depth 1 --filter=blob:none --no-checkout "$renderer_repository" "$renderer_dir"
 fi
 git -C "$renderer_dir" fetch --depth 1 origin "$renderer_commit"
 git -C "$renderer_dir" checkout --detach "$renderer_commit"
