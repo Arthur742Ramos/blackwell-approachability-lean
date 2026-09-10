@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «blackwell_approachability» where
-  version := v!"0.1.0"
+  version := v!"0.2.0"
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @
@@ -19,6 +19,12 @@ lean_lib BlackwellReduction
 
 @[default_target]
 lean_lib BlackwellMinimax
+
+@[default_target]
+lean_lib BlackwellIrreducibility
+
+@[default_target]
+lean_lib BlackwellIrreducibilityExamples
 
 @[default_target]
 lean_lib BlackwellChallenge

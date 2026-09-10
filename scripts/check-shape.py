@@ -5,40 +5,28 @@ from pathlib import Path
 
 root = Path(sys.argv[1])
 challenge = root / "BlackwellChallenge.lean"
+implementation = root / "BlackwellIrreducibility.lean"
 text = challenge.read_text(encoding="utf-8")
 
 if challenge.stat().st_size > 100 * 1024 or len(text.splitlines()) > 1000:
     raise SystemExit("error: BlackwellChallenge.lean exceeds the Palomar size cap")
+if not implementation.is_file():
+    raise SystemExit("error: missing irreducibility implementation module")
 
 imports = [
     line.split()[1] for line in text.splitlines() if line.startswith("import ")
 ]
-expected_imports = [
-    "Mathlib.Analysis.InnerProductSpace.Projection.Minimal",
-    "Mathlib.Topology.MetricSpace.HausdorffDistance",
-    "Mathlib.Topology.Sion",
-    "Mathlib.Tactic",
-]
-if imports != expected_imports:
+if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 11:
-    raise SystemExit(f"error: expected eleven Challenge holes, found {holes}")
+if holes != 3:
+    raise SystemExit(f"error: expected three Challenge holes, found {holes}")
 
-config = json.loads((root / "comparator.json").read_text(encoding="utf-8"))
 targets = [
-    "Blackwell.Palomar.exists_projection",
-    "Blackwell.Palomar.exists_uniform_response_of_sion",
-    "Blackwell.Palomar.blackwell_approachability_bound",
-    "Blackwell.Palomar.blackwell_approximate_bound",
-    "Blackwell.Palomar.exists_pure_pointwise_strategy",
-    "Blackwell.Palomar.pure_game_approachability_of_response",
-    "Blackwell.Palomar.mixed_game_approachability_of_response",
-    "Blackwell.Palomar.exists_mixed_pointwise_strategy",
-    "Blackwell.Palomar.regret_coordinate_of_l2_bound",
-    "Blackwell.Palomar.l2_bound_of_coordinate_bound",
-    "Blackwell.Palomar.dimension_factor_is_attained",
+    "Blackwell.Palomar.skewPhi_valid_improper_instance",
+    "Blackwell.Palomar.canonical_proper_matrices_are_singular",
+    "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
 ]
 expected = {
     "challenge_module": "BlackwellChallenge",
@@ -47,33 +35,24 @@ expected = {
     "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
     "enable_nanoda": True,
 }
+config = json.loads((root / "comparator.json").read_text(encoding="utf-8"))
 if config != expected:
     raise SystemExit("error: Comparator surface does not match the standalone theorem surface")
 
-
-def theorem_header(source: str, name: str) -> str:
-    match = re.search(
-        rf"theorem {re.escape(name)}\b(?P<header>.*?):= by",
-        source,
-        re.DOTALL,
-    )
-    if match is None:
-        raise SystemExit(f"error: missing theorem header for {name}")
-    return match.group("header")
-
-
 for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.lean"):
     source = source_path.read_text(encoding="utf-8")
-    for theorem_name in (
-        "pure_game_approachability_of_response",
-        "mixed_game_approachability_of_response",
+    for required in (
+        "def validImproperInstance",
+        "def canonicalProper",
+        "def canonicalProperReduction",
+        "theorem skewPhi_valid_improper_instance",
+        "theorem canonical_proper_matrices_are_singular",
+        "theorem skewPhi_not_canonically_proper_reducible",
     ):
-        if "[Nonempty B]" not in theorem_header(source, theorem_name):
-            raise SystemExit(
-                f"error: {source_path.name} {theorem_name} must require [Nonempty B]"
-            )
+        if required not in source:
+            raise SystemExit(f"error: {source_path.name} is missing {required}")
 
-scope_marker = "general coordinate-to-Euclidean norm inequality"
+scope_marker = "canonical normal form"
 for source_path in (
     root / "BlackwellChallenge.lean",
     root / "README.md",
@@ -83,11 +62,11 @@ for source_path in (
     source = source_path.read_text(encoding="utf-8")
     if scope_marker not in source:
         raise SystemExit(
-            f"error: {source_path.name} must qualify dimension-factor sharpness"
+            f"error: {source_path.name} must state the canonical-normal-form scope"
         )
-    if "constant regret vector" in source:
+    if "full bidirectional affine equivalence" in source:
         raise SystemExit(
-            f"error: {source_path.name} overstates constant-vector sharpness as regret"
+            f"error: {source_path.name} overstates the formalized reduction model"
         )
 
 implementation_sources = [
@@ -107,5 +86,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "eleven holes, eleven selected targets."
+    "three holes, three selected targets."
 )

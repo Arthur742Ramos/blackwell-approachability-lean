@@ -1,56 +1,46 @@
 # Development notes
 
-`BlackwellChallenge.lean` is intentionally independent from the implementation:
-it imports only Mathlib and carries exactly eleven proof placeholders, one for
-each selected declaration. `BlackwellSolution.lean` imports the checked
-implementation and contains no placeholders. The Challenge names
-`real_smul`, `real_convex`, the finite `Mixed` type, and the average/regret
-surfaces explicitly so its signatures remain stable under isolated theorem
-printing.
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly three proof
+placeholders, one for each selected source-backed theorem.
+`BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
+placeholders, and mirrors the public declarations definitionally. The Challenge
+uses its own local names so it remains independently renderable.
 
-The core certificate is organized around
+The formalized action set is
 
 ```text
-(t + 1)^2 e_(t+1)^2 <= t^2 e_t^2 + B^2,
+Δ₃ = { p : Fin 3 → ℝ | pᵢ ≥ 0 and Σᵢ pᵢ = 1 }.
 ```
 
-where `e_t` is the distance from the running average to its closest target
-point. Induction gives `t^2 e_t^2 <= t B^2`; the nonnegative square-root
-comparison gives the `B / sqrt T` rate. The approximate theorem tracks the
-additional `2 * t * epsilon` cross term and records the non-vanishing error
-floor. Unlike the exact form, its square-root bound depends on `B` only
-through `B^2`, so its public theorem and finite-game adapters do not require a
-redundant separate `B >= 0` premise.
+For `q=(a,b,c) ∈ Δ₃`, `skewPhi q` is the map `Id - Mq`, where `Mq` is the
+odd-dimensional skew-symmetric matrix from the cited construction. Its fixed
+point is `![c,b,a]`. The proof establishes this algebraically, then transfers
+simplex membership by permuting the coordinates of `q`.
 
-`BlackwellGame.lean` makes the sequential structure explicit. A finite mixed
-action is a nonnegative probability vector, the opponent supplies a pure
-action at each round from a nonempty finite action type, and the player's
-strategy is a function of the current average. Pointwise choice turns a
-response relation into a strategy, after which the geometric certificate is
-applied to every opponent sequence. Both pure and mixed response versions are
-included.
+The central determinant argument uses only three endpoint tests. If a candidate
+matrix `S` makes every corrected map
 
-`BlackwellMinimax.lean` isolates the compact-convex Sion argument. It is
-deliberately stated with its continuity, quasiconvexity, compactness, and
-feasibility hypotheses visible; it is not presented as an automatic proof of a
-particular game's response condition. The Palomar target packages those
-hypotheses into `sion_response_hypotheses` and specializes its public boundary
-to real inner-product spaces; the underlying implementation remains general.
+```text
+p ↦ p + S (skewPhi q p - p)
+```
 
-`BlackwellReduction.lean` isolates the finite-dimensional part of the
-approachability/no-regret connection. Coordinate control follows directly
-from `l2` control, while coordinatewise control implies an `l2` bound with a
-`sqrt (card A)` factor. The constant-vector theorem records sharpness of the
-general coordinate-to-Euclidean norm inequality; it deliberately does not
-claim that this constant vector is realized by `averageRegret`.
+simplex-preserving, testing `(q,p)` at `(e₀,e₁)`, `(e₀,e₀)`, and `(e₁,e₀)`
+forces the sums of columns `0`, `1`, and `2` of `S` to vanish. Rewriting the
+three-by-three determinant with the resulting third-row equations proves
+`det S = 0`.
 
-The projection theorem reuses Mathlib's Hilbert projection result and its
-inner-product characterization of minimizers. The examples include a nonzero
-sequence that starts outside a singleton target and then cancels back to it,
-a mixed finite game, a pure finite game, and regret-coordinate conversion. No
-custom axiom, unsafe declaration, or non-Mathlib dependency is used.
+This is the canonical normal form of the source’s reduction analysis. The
+implementation deliberately does not fold in the larger theory that derives
+that form from general affine reduction data, nor does it formalize learning
+rates. That avoids overstating a finite matrix obstruction as a proof of every
+broader reduction theorem in the paper.
 
-The Palomar-facing scalar, convexity, expected-payoff, and Sion-hypothesis
-wrappers are definitionally ordinary Mathlib operations. They keep the
-independent surface robust when a trusted notation audit prints declarations in
-isolation, without weakening the proved Euclidean claims.
+The older approachability, game, minimax, and norm-conversion files remain in
+the repository as independent supporting experiments. They are deliberately not
+selected by the current Challenge or Comparator surface.
+
+`BlackwellIrreducibilityExamples.lean` gives fast regression coverage for the
+negative-coordinate impropriety witness, an endpoint calculation, the valid
+improper-instance theorem, and the no-reduction corollary. The validation gate
+also builds every default library and runs the official renderer notation audit
+against exactly the three selected declarations.

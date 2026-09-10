@@ -1,70 +1,67 @@
-# Blackwell Approachability in Lean
+# Irreducible Improper φ-Regret in Lean
 
-This repository formalizes the deterministic Euclidean core of Blackwell
-approachability and connects it to finite repeated games and a quantitative
-regret reduction. It targets Lean 4.33.0 with a pinned Mathlib snapshot.
+This repository formalizes a concrete separation result from Dann, Mansour,
+Mohri, Schneider, and Sivan, “Rate-Preserving Reductions for Blackwell
+Approachability,” COLT 2025. It is a source-grounded formalization of a
+nontrivial finite-dimensional obstruction, not a claim of new mathematics.
 
-## Formalized results
+## Result
 
-For a nonempty closed convex target `C`, a running average `avg`, closest-point
-witnesses `proj`, and bounded witness-relative payoffs, the main certificate is
-
-```text
-dist (avg T) C <= B / sqrt T
-```
-
-for every positive horizon `T`. The same recurrence is proved with a uniform
-supporting-half-space error, yielding
+Let `Δ₃` be the three-action probability simplex. For a comparator coefficient
+vector `q = (a,b,c) ∈ Δ₃`, define
 
 ```text
-dist (avg T) C <= sqrt (B^2 / T + epsilon).
+φq(p₁,p₂,p₃) =
+  (p₁ - a p₂ + b p₃,
+   p₂ + a p₁ - c p₃,
+   p₃ - b p₁ + c p₂).
 ```
 
-The strategic layer adds finite pure and mixed player actions, a nonempty finite
-opponent action type, a pure opponent sequence, and a response depending on the
-current average. Under the explicit pointwise Blackwell response condition, it
-constructs a strategy and proves the bound against every opponent sequence. A
-separate Sion theorem proves the
-Euclidean compact-convex bridge from pointwise feasibility to one uniform
-response under stated continuity and quasiconvexity assumptions. Its underlying
-implementation is reusable at the more general topological-vector-space level.
+Equivalently, `φq = Id - Mq` for the skew-symmetric matrix
 
-The reduction layer represents finite-action average regrets as a Euclidean
-vector. An `l2` certificate implies every coordinate regret bound, while the
-general coordinate-to-Euclidean norm inequality in the reverse direction costs
-`sqrt (card A)`; a constant vector proves that this factor is attained. That
-sharpness statement concerns the general norm inequality, not realizability of
-the constant vector as `averageRegret`.
+```text
+        [ 0  a -b ]
+Mq =    [ -a 0  c ] .
+        [ b -c  0 ]
+```
 
-## Proof architecture
+The checked result establishes all of the following.
 
-- `BlackwellApproachability.lean` proves projection geometry, the exact and
-  additive-error recurrences, quantitative telescoping, and response-oracle
-  adapters.
-- `BlackwellGame.lean` defines finite mixed actions and proves pure/mixed
-  repeated-game strategy and convergence theorems.
-- `BlackwellMinimax.lean` proves the reusable Sion minimax response bridge.
-- `BlackwellReduction.lean` proves the approachability-to-regret norm
-  conversions.
-- `BlackwellChallenge.lean` is the independent Mathlib-only statement surface;
-  `BlackwellSolution.lean` supplies the checked proof adapters.
-- `BlackwellGameExamples.lean` and `BlackwellSubstantiveExamples.lean` are
-  executable checked examples of the game and regret layers. The earlier
-  `BlackwellExamples.lean` contains nonzero cancellation and response-oracle
-  certificates.
+- Every `φq` has the explicit fixed point `(c,b,a) ∈ Δ₃`.
+- The family is genuinely improper: `φ(1,0,0)(0,1,0) = (-1,1,0)`, which lies
+  outside `Δ₃`.
+- If a real `3 × 3` matrix `S` made every map
+  `p ↦ p + S (φq(p) - p)` simplex-preserving, then `det S = 0`.
+  Therefore no invertible `S` can produce a proper comparator family in this
+  canonical normal form.
+
+The last bullet is the key separation: the improper family cannot be made
+proper through the single-invertible-matrix canonical normal form used in the
+source’s linear-reduction analysis.
 
 ## Exact scope
 
-The finite-game theorems require a nonempty finite opponent action type,
-quantify over every pure opponent action sequence, and construct a Markov
-response, but the pointwise supporting-half-space response condition is an
-explicit hypothesis. The selected Sion theorem has a Euclidean
-Palomar surface, while its underlying implementation is more general. It does
-not instantiate every finite simplex or prove a game-specific minimax condition
-automatically. The development does not model stochastic sampling,
-last-iterate guarantees, computational complexity, or a practical algorithm.
-It makes no claim of mathematical priority for the standard Blackwell or
-approachability/no-regret arguments.
+The formalization targets the explicit construction in Section 4.4.1 of the
+source and its canonical normal form. It does not formalize the paper’s wider
+affine-reduction machinery, its minimality and rate-preservation arguments, or
+an online regret algorithm. That boundary is intentional: the three selected
+theorems are the concrete fixed-point, impropriety, and determinant-obstruction
+claims needed for this finite construction.
+
+The repository retains earlier Blackwell approachability, finite-game, minimax,
+and norm-conversion modules as supporting work, but they are not the Palomar
+selection.
+
+## Layout
+
+- `BlackwellIrreducibility.lean` contains the complete proof.
+- `BlackwellChallenge.lean` is the Mathlib-only three-theorem statement
+  surface.
+- `BlackwellSolution.lean` provides checked adapters to the implementation.
+- `BlackwellIrreducibilityExamples.lean` checks the explicit endpoint
+  calculations and the two headline predicates.
+- `formalization.yaml` records the source-to-statement relationship and the
+  exact scope.
 
 ## Build and verification
 
@@ -75,20 +72,24 @@ lake build
 bash scripts/verify-palomar.sh
 ```
 
-The preparation gate checks the independent Challenge imports, the exact
-eleven-declaration Challenge/Solution surface, absence of implementation
-placeholders, source dependency closure, the named-theorem axiom allowlist,
-the official renderer's isolated core-notation audit, metadata alignment, and
-all checked examples. The pinned Comparator/NanoDa replay is available through
-`scripts/verify-comparator.sh`; on macOS it requires the explicit
-`PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because Landrun's kernel sandbox
-is Linux-only. Hosted verification uses real Landrun.
+The preparation gate checks the independent Challenge import closure, the exact
+three-declaration Challenge/Solution surface, absence of implementation
+placeholders, source dependency closure, named-theorem axiom allowlist, the
+official renderer’s isolated notation audit, metadata alignment, and executable
+construction regressions. The pinned Comparator/NanoDa replay is available via
+`scripts/verify-comparator.sh`; macOS requires the explicit
+`PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because Landrun’s kernel sandbox is
+Linux-only. Hosted verification uses real Landrun.
 
 ## Attribution
 
-The motivating sources are David Blackwell's vector-payoff minimax theorem,
-Maurice Sion's minimax theorem, and the approachability/no-regret connection
-of Abernethy, Bartlett, and Hazan. The metadata and
-`THIRD_PARTY_NOTICES.md` contain the references. AI assistance was used for
-proof engineering. The final definitions, statements, and proofs are checked
-by Lean.
+The primary source is:
+
+> Christoph Dann, Yishay Mansour, Mehryar Mohri, Jon Schneider, and
+> Balasubramanian Sivan. “Rate-Preserving Reductions for Blackwell
+> Approachability.” *Proceedings of the Thirty Eighth Conference on Learning
+> Theory*, PMLR 291:1380–1414, 2025.
+
+The formalization follows the source’s explicit construction and credits it
+accordingly. AI assistance was used for proof engineering. The final
+definitions, statements, and proofs are checked by Lean.

@@ -1,25 +1,24 @@
 # Validation record
 
-The local validation gate is scripts/verify-palomar.sh.
+The local validation gate is `scripts/verify-palomar.sh`.
 
 It checks:
 
-- a complete Lean build;
-- exact Mathlib-only Challenge source dependencies;
-- exactly eleven Challenge proof holes and no implementation placeholders;
-- exact selected theorem names and permitted axioms;
-- the official pinned Palomar renderer's isolated core-notation audit;
-- metadata and citation alignment;
-- the nonvacuity contract requiring `[Nonempty B]` on both selected repeated-game
-  guarantees and the qualified scope of the dimension-factor sharpness claim;
-- the running-average regression certificate, a nonzero cancellation
-  certificate that starts outside its singleton target, the response-oracle
-  certificate, a finite mixed-action game certificate, a pure-action game
-  certificate, and the approachability-to-regret examples;
+- a complete Lean build, including the irreducibility module and its concrete
+  regression examples;
+- an exact Mathlib-only Challenge dependency closure;
+- exactly three Challenge proof holes and no implementation placeholders;
+- the exact three selected theorem names and permitted axiom allowlist;
+- that the Challenge/Solution each expose the valid-improper-instance,
+  canonical-proper, and no-reduction predicates and declarations;
+- that the documentation and metadata state the canonical normal form rather
+  than overclaiming a broader reduction theorem;
+- the official pinned Palomar renderer’s isolated core-notation audit;
+- metadata and citation alignment; and
 - clean source formatting.
 
-The separate Comparator replay is pinned in scripts/verify-comparator.sh.
-A hosted run is required before describing the package as Comparator-verified.
-Palomar intake, editorial review, registration, and public indexing are
-separate external states and are not inferred from a green local or hosted
-build.
+The separate Comparator replay is pinned in `scripts/verify-comparator.sh`.
+On macOS it requires `PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1`; a hosted Linux run is
+required before describing the artifact as Comparator-verified. Palomar intake,
+editorial review, registration, and public indexing are separate external
+states and are never inferred from a local build alone.

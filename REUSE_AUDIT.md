@@ -1,23 +1,30 @@
 # Reuse audit
 
-Audit date: 2026-09-09. Dependency snapshot: Mathlib revision
-db584cd6d46c92f209a44c0f1c829460d327499d.
+Audit date: 2026-09-10. Dependency snapshot: Mathlib revision
+`db584cd6d46c92f209a44c0f1c829460d327499d`.
 
-The implementation reuses the following stable Mathlib results:
+The selected development reuses stable Mathlib infrastructure for:
 
-- norm_add_sq_real for the one-step inner-product expansion;
-- exists_norm_eq_iInf_of_complete_convex for closest-point existence;
-- norm_eq_iInf_iff_real_inner_le_zero for the supporting half-space
-  characterization;
-- Metric.infDist_eq_iInf and Metric.infDist_le_dist_of_mem for the
-  metric conclusion;
-- finite-sum and scalar-algebra lemmas for the running-average recurrence.
-- Mathlib.Topology.Sion for the compact-convex uniform-response bridge.
-- finite sums, square-root inequalities, and cardinality casts for the
-  approachability-to-regret norm conversion.
+- finite coordinate sums (`Fin.sum_univ_succ`) and finite case analysis;
+- vector and matrix multiplication (`Matrix.mulVec`, `dotProduct`);
+- the explicit three-by-three determinant expansion
+  (`Matrix.det_fin_three`);
+- real arithmetic normalization (`ring`, `linarith`, `norm_num`).
+
+Searches over this pinned Mathlib checkout found linear-equivalence and matrix
+infrastructure but no existing formalization of phi-regret, improper
+phi-regret, the cited comparator family, or its reduction obstruction. The
+project therefore defines the small domain-specific predicates
+`validImproperInstance`, `canonicalProper`, and
+`canonicalProperReduction` locally, while reusing Mathlib’s general algebra.
+
+The construction follows Dann et al., Section 4.4.1. The fixed point and the
+three endpoint calculations were checked against the published formulas:
+for `q=(a,b,c)`, `M_q` is skew-symmetric and `(c,b,a)` is in its kernel. The
+canonical normal form is stated exactly as `p + S (phi(p) - p)`. The local
+scope intentionally stops before the source’s broader affine/rate/minimality
+theory, rather than rephrasing a narrower theorem as that broader result.
 
 No external formalization is imported. The Challenge source is independently
-Mathlib-only, and the selected statements do not depend on local abbreviations
-or opaque game-theory definitions. The finite-game implementation layer is
-local by design: it provides the explicit mixed-action and repeated-game
-interfaces that the independent Challenge surface states directly.
+Mathlib-only; the implementation exposes public helpers so the checked Solution
+has no private-name dependency across the comparison boundary.

@@ -1,77 +1,58 @@
-version: "v0.5"
+version: "v0.4"
 project:
-  name: "Blackwell approachability in Lean"
+  name: "Irreducible improper phi-regret in Lean"
   description: >-
-    A Mathlib-only formalization of a quantitative Euclidean Blackwell
-    approachability certificate and its finite-action strategic layer. It proves
-    the B/sqrt(T) bound, an additive-error extension, closest-point geometry,
-    explicit pure and mixed response strategies against every opponent
-    sequence for a nonempty finite opponent action type, a Euclidean
-    compact-convex Sion minimax bridge, and the Euclidean
-    approachability-to-coordinate-regret reduction with the sharp finite-action
-    factor for the general coordinate-to-Euclidean norm inequality.
+    A Mathlib-only formalization of the explicit three-action improper
+    phi-regret construction from Dann, Mansour, Mohri, Schneider, and Sivan
+    (COLT 2025). It proves that every convexly mixed comparator has a fixed
+    point in the action simplex, that the family is genuinely improper, and
+    that every matrix in the paper's canonical proper-reduction normal form is
+    singular. Consequently no invertible canonical reduction turns the family
+    into proper phi-regret.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
 classification:
-  arxiv: ["cs.GT"]
-  msc2020: ["91A26", "46C05"]
+  arxiv: ["cs.GT", "cs.LG"]
+  msc2020: ["91A26", "68T05"]
 sources:
+  - title: "Rate-Preserving Reductions for Blackwell Approachability"
+    authors:
+      ["Christoph Dann", "Yishay Mansour", "Mehryar Mohri", "Jon Schneider",
+       "Balasubramanian Sivan"]
+    id: "https://proceedings.mlr.press/v291/dann25a.html"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Formalizes the explicit skew-symmetric three-action construction of
+      Section 4.4.1 and its obstruction to the canonical single-invertible-
+      matrix proper-reduction normal form. The source develops a broader
+      reduction theory; this package records precisely the focused finite-
+      dimensional construction and determinant proof.
+    author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
     id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-6/issue-1/An-analog-of-the-minimax-theorem-for-vector-payoffs/pjm/1103044269.full"
     type: "paper"
-    relationship: "formalizes"
+    relationship: "builds-on"
     note: >-
-      Original vector-payoff approachability/minimax theorem motivating the
-      supporting-half-space condition and convex-target geometry.
-    author_endorsement: "not-contacted"
-  - title: "Blackwell Approachability and No-Regret Learning are Equivalent"
-    authors: ["Jacob Abernethy", "Peter L. Bartlett", "Elad Hazan"]
-    id: "https://proceedings.mlr.press/v19/abernethy11b.html"
-    type: "paper"
-    relationship: "formalizes"
-    note: >-
-      Modern treatment of the approachability and online-learning connection;
-      this package formalizes the deterministic Euclidean/game certificate
-      layer, not the full stochastic no-regret equivalence.
-    author_endorsement: "not-contacted"
-  - title: "Rate-Preserving Reductions for Blackwell Approachability"
-    authors: ["Christoph Dann", "Yishay Mansour", "Mehryar Mohri", "Jon Schneider", "Balasubramanian Sivan"]
-    id: "https://arxiv.org/abs/2406.07585"
-    type: "paper"
-    relationship: "formalizes"
-    note: >-
-      Related reduction perspective motivating the explicit quantitative
-      approachability-to-regret conversion; this repository proves the finite
-      Euclidean norm conversion itself.
-    author_endorsement: "not-contacted"
-  - title: "On General Minimax Theorems"
-    authors: ["Maurice Sion"]
-    id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-8/issue-1/On-general-minimax-theorems/pjm/1103042507.full"
-    type: "paper"
-    relationship: "formalizes"
-    note: >-
-      Source for the compact-convex minimax bridge used to turn pointwise
-      feasibility into a uniform response under explicit continuity and
-      quasiconvexity hypotheses.
+      Background for the approachability perspective retained in the supporting
+      library modules; it is not a selected theorem surface for this artifact.
     author_endorsement: "not-contacted"
 related_formalizations: []
 status:
   scope: >-
-    Eleven selected statements cover closest-point/normal-cone geometry, the
-    exact and additive-error quantitative bounds, a Euclidean Sion minimax
-    bridge, explicit finite pure and mixed game strategy existence and
-    convergence against every opponent sequence for a nonempty opponent action
-    type, and the approachability to regret-coordinate conversion. The response
-    premise remains explicit: the game theorems do not instantiate the full
-    simplex-valued minimax hypotheses
-    for a particular payoff game, model sampled stochastic payoffs, or claim a
-    computational algorithm. The sharpness theorem is only for the general
-    coordinate-to-Euclidean norm inequality; it does not assert that its
-    constant vector arises from `averageRegret`. The examples exercise nonzero
-    cancellation, a mixed finite game, a pure finite game, and the
-    dimension-sensitive regret conversion.
+    Three selected statements formalize a single source-backed result. The
+    action set is Delta_3 and the comparator family is the convex hull of the
+    three explicit maps in the cited construction. The first theorem proves
+    that every mixture has the concrete fixed point (c,b,a) and that a vertex
+    comparator exits Delta_3. The second proves that any correction matrix S
+    satisfying p + S(phi(p)-p) in Delta_3 for every comparator and action has
+    determinant zero. The third derives the absence of an invertible canonical
+    proper reduction. This is the canonical normal form from the source's
+    reduction analysis; it does not formalize its general affine reduction
+    framework, minimality/rate machinery, a regret algorithm, or a claim of
+    mathematical priority.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -84,77 +65,45 @@ automation:
         Pinned Lake dependency; independent Mathlib-only Challenge; named
         theorem axiom audit; exact Comparator and NanoDa replay; hosted
         readiness workflow.
-      prompting_notes: "User requested a polished standalone formalization of Blackwell approachability."
+      prompting_notes: >-
+        User requested a strong, source-grounded result after a review found
+        the earlier classical certificate layer insufficiently substantive.
   notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
 fidelity:
   divergences: >-
-    The geometric and game results are deterministic and use real inner-product
-    spaces. The finite-game theorems require a nonempty finite opponent action
-    type, quantify over every pure opponent action sequence, and construct a
-    Markov response, but retain the pointwise
-    supporting-half-space hypothesis as an input. The Palomar-facing Sion
-    statement is a Euclidean compact-convex bridge rather than a full
-    finite-simplex instantiation; its underlying implementation is more
-    general. The development does not formalize stochastic sampling,
-    last-iterate rates, computational complexity, or a practical algorithm
-    implementation.
+    The benchmark family and fixed-point formula follow the cited Section
+    4.4.1 construction exactly after identifying q=(a,b,c) in Delta_3 and
+    using phi_q=Id-M_q. The reduction predicate formalizes the paper's
+    canonical normal form phi'_q(p)=p+S(phi_q(p)-p), with invertibility over
+    real three-space represented by det(S) not equal to zero. The package does
+    not prove the source's separate derivation of this form from arbitrary
+    affine maps, nor its rate-preservation/minimal-instance theory. It makes
+    no novel-result claim and does not implement an online learner.
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The eleven
+    No independent human or Palomar editorial approval is claimed. The three
     Challenge holes occur only in the independent statement surface and are
-    excluded from status.sorry_count; implementation and Solution contain no
-    proof placeholders. Hosted Comparator verification and Palomar editorial
-    review remain separate states.
+    excluded from status.sorry_count; the implementation and Solution contain
+    no proof placeholders. Hosted Comparator verification and editorial review
+    remain separate states.
 alignment:
   namespace: "Blackwell.Palomar"
   statements:
-    - source: "Closest-point and supporting-half-space witness"
-      lean: "Blackwell.Palomar.exists_projection"
+    - source: "Valid improper phi-regret instance in Section 4.4.1"
+      lean: "Blackwell.Palomar.skewPhi_valid_improper_instance"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "Compact-convex Sion minimax response bridge"
-      lean: "Blackwell.Palomar.exists_uniform_response_of_sion"
+    - source: "Canonical properization obstruction for the skew family"
+      lean: "Blackwell.Palomar.canonical_proper_matrices_are_singular"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "Quantitative Blackwell approachability bound"
-      lean: "Blackwell.Palomar.blackwell_approachability_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Additive-error approachability bound"
-      lean: "Blackwell.Palomar.blackwell_approximate_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Pure pointwise response strategy selection"
-      lean: "Blackwell.Palomar.exists_pure_pointwise_strategy"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Pure finite-game approachability bound"
-      lean: "Blackwell.Palomar.pure_game_approachability_of_response"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Mixed finite-game approachability bound"
-      lean: "Blackwell.Palomar.mixed_game_approachability_of_response"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Mixed pointwise response strategy selection"
-      lean: "Blackwell.Palomar.exists_mixed_pointwise_strategy"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Euclidean regret coordinate bound"
-      lean: "Blackwell.Palomar.regret_coordinate_of_l2_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Coordinate-to-Euclidean regret bound"
-      lean: "Blackwell.Palomar.l2_bound_of_coordinate_bound"
-      module: "BlackwellSolution.lean"
-      status: "proved"
-    - source: "Sharp general coordinate-to-Euclidean dimension factor"
-      lean: "Blackwell.Palomar.dimension_factor_is_attained"
+    - source: "No invertible canonical reduction to proper phi-regret"
+      lean: "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
 acknowledgements: >-
-  Lean and Mathlib contributors; David Blackwell; Maurice Sion; Jacob
-  Abernethy, Peter L. Bartlett, and Elad Hazan; and the authors of the related
-  rate-preserving reductions literature.
+  Lean and Mathlib contributors; Christoph Dann, Yishay Mansour, Mehryar Mohri,
+  Jon Schneider, and Balasubramanian Sivan for the source construction; and
+  David Blackwell for the broader approachability context.

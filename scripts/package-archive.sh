@@ -4,7 +4,7 @@ set -euo pipefail
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$root"
 
-output=${1:-.cache/blackwell-approachability-lean-0.1.0.zip}
+output=${1:-.cache/blackwell-approachability-lean-0.2.0.zip}
 force=0
 if [ "${2:-}" = "--force" ]; then
   force=1
@@ -58,4 +58,3 @@ else
   digest=$(shasum -a 256 "$output" | cut -d" " -f1)
 fi
 printf "commit=%s\narchive=%s\nsha256=%s\n" "$commit" "$output" "$digest"
-

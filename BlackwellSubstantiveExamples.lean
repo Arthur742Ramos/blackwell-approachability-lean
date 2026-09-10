@@ -1,4 +1,4 @@
-import BlackwellSolution
+import BlackwellGame
 import BlackwellReduction
 
 set_option autoImplicit false
@@ -6,7 +6,7 @@ set_option autoImplicit false
 namespace Blackwell.SubstantiveExamples
 
 open scoped BigOperators RealInnerProductSpace
-open Blackwell.Palomar
+open Blackwell.Game
 
 private def intervalTarget : Set ℝ := Set.Icc (0 : ℝ) 1
 
@@ -51,7 +51,7 @@ lemma interval_response_condition :
 lemma pure_game_convergence :
     ∃ strategy : ℝ → Bool, ∀ opponent : ℕ → Bool, ∀ {T : ℕ}, 0 < T →
       Metric.infDist
-          (gameAverage purePayoff strategy opponent T) intervalTarget ≤
+          (pureGameAverage purePayoff strategy opponent T) intervalTarget ≤
         Real.sqrt (1 / T) := by
   let hne : intervalTarget.Nonempty := ⟨0, by simp [intervalTarget]⟩
   let hclosed : IsClosed intervalTarget := isClosed_Icc

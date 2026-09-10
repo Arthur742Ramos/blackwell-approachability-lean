@@ -1,4 +1,4 @@
-import BlackwellSolution
+import BlackwellApproachability
 
 set_option autoImplicit false
 
@@ -13,7 +13,6 @@ choice of strategy behind an unverified executable.
 
 namespace Blackwell.Examples
 
-open Blackwell.Palomar
 
 private def zeroSequence : ℕ → ℝ := fun _ => 0
 private def zeroTarget : Set ℝ := {0}
@@ -61,7 +60,7 @@ lemma zero_certificate :
           (zeroSequence t - zeroProjection t) ≤ 0 := by
     intro t
     simp [zeroSequence, zeroProjection]
-  exact blackwell_approachability_bound zeroSequence
+  exact Blackwell.Approachability.blackwell_approachability_bound zeroSequence
     (Blackwell.Approachability.runningAverage zeroSequence) zeroProjection 0
     hproj hmin havg hinner hbound (by norm_num) (by norm_num)
 
@@ -117,7 +116,7 @@ lemma cancellation_certificate :
         | zero => norm_num [cancellationSequence, cancellationProjection,
             Blackwell.Approachability.runningAverage]
         | succ t => simp [cancellationSequence, cancellationProjection]
-  exact blackwell_approachability_bound cancellationSequence
+  exact Blackwell.Approachability.blackwell_approachability_bound cancellationSequence
     (Blackwell.Approachability.runningAverage cancellationSequence)
     cancellationProjection 1 hproj hmin havg hinner hbound (by norm_num)
     (by norm_num)
