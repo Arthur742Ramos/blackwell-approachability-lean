@@ -4,16 +4,15 @@ project:
   description: >-
     A Mathlib-only formalization of two explicit three-action improper
     phi-regret families in Section 4.4.1 of Dann, Mansour, Mohri, Schneider,
-    and Sivan (COLT 2025). They are the paper's finite counterexample families
-    for its rate-preserving linear-reduction program. It proves
-    valid-improper-family certificates for both constructions, the
-    affine-hyperplane invariant-transport core of
-    Lemma 4, the extreme-point antipodal-displacement core of Lemma 5, and
-    finite-dimensional Equation-(15)-to-(16), Equation-(16)-to-(17), and
-    concrete Equation-(18) vertex/corner bridges. It then instantiates those
-    mechanisms to rule out invertible canonical, normalized,
-    finite-loss-basis, and finite-vertex/corner proper reductions for the
-    two cited finite-dimensional families.
+    and Sivan (COLT 2025). They are finite counterexample families for the
+    paper's rate-preserving linear-reduction program. It proves valid-improper
+    certificates, the affine-hyperplane invariant-transport core of Lemma 4,
+    the extreme-point antipodal-displacement core of Lemma 5, a direct finite
+    one-way action/loss-transfer-to-canonical bridge, finite-dimensional
+    Equation-(15)-to-(16) and Equation-(16)-to-(17) bridges, and concrete
+    Equation-(18) vertex/corner criteria. These mechanisms rule out the
+    selected canonical, normalized, finite-loss-basis, finite-transfer, and
+    finite-vertex/corner proper reductions for the two cited families.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -27,10 +26,11 @@ research_context:
     instance?
   selected_result: >-
     The two Section 4.4.1 counterexample families exhibit distinct obstructions
-    to that reduction program. The selected Lean surface verifies their
-    fixed-point/impropriety certificates, their canonical reduction
-    obstructions, the finite loss-pairing bridge, and the exact finite
-    vertex/corner criteria used to test canonical properness.
+    to the source reduction program. The selected Lean surface verifies their
+    fixed-point/impropriety certificates, the finite one-way action/loss
+    transfer implication to canonical properization, canonical and normalized
+    obstructions, the finite loss-pairing bridge, and exact finite
+    vertex/corner criteria for canonical properness.
   audience: >-
     Researchers in learning theory and game theory working on Blackwell
     approachability, regret transformations, and finite convex games; and
@@ -38,9 +38,8 @@ research_context:
     arguments with explicit matrix data.
   boundary: >-
     This is a mechanization of existing COLT 2025 results. It does not claim
-    independent mathematical novelty, the paper's complete affine-equivalence
-    or rate-preservation theory, or its general randomized reduction
-    algorithm.
+    independent mathematical novelty, the paper's complete affine-reduction or
+    rate-preservation theory, or its general randomized reduction algorithm.
 sources:
   - title: "Rate-Preserving Reductions for Blackwell Approachability"
     authors:
@@ -51,14 +50,13 @@ sources:
     relationship: "formalizes"
     note: >-
       Formalizes both explicit Section 4.4.1 three-action constructions and
-      the finite-dimensional canonical-correction arguments appearing in the
-      proofs of Lemmas 4 and 5. The source develops a broader reduction
-      theory; this package proves a finite full-rank-loss-basis form of the
-      source's Equation-(15)-to-(16) step, normalized Equation-(16)-to-(17)
-      implication, and concrete Equation-(18) vertex/corner criteria for its
-      two explicit families, but does not claim the source's preceding
-      general affine-equivalence derivation of the canonical normal form or
-      its general randomized algorithm.
+      finite-dimensional arguments from the proofs of Lemmas 4 and 5. The
+      package proves a direct one-way finite action/loss-transfer implication
+      to the canonical normal form, a full-rank-loss-basis form of the
+      source's Equation-(15)-to-(16) step, the Equation-(16)-to-(17)
+      implication, and concrete Equation-(18) vertex/corner criteria. It does
+      not claim the source's derivation from its complete affine-reduction
+      setup, its rate/minimality theory, or its general randomized algorithm.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
@@ -72,27 +70,28 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Twenty-one selected statements formalize two source-backed finite-dimensional
-    results. For the skew simplex family, every mixture has the fixed point
-    (c,b,a), an explicit comparator escapes Delta_3, the affine-hyperplane
-    transport lemma yields a nonzero common invariant from any invertible
-    canonical properizer, the family has no such invariant, and every
-    canonical properizer is singular. The source's Equation (15), at a
-    full-rank loss basis and simplex basis, is proved to imply
-    M_psi = S M_phi in Equation (16), which in turn implies the source's
-    canonical Equation (17); matrix properness on Delta_3 is also proved
-    equivalent to its three action-vertex tests, and the skew family is
-    reduced exactly to nine comparator/action vertex constraints. The
-    selected skew corollaries rule out every invertible normalized,
-    finite-loss-basis, and nine-vertex proper reduction. For the second matrix family
-    phi_(a,b)=Id+aA+bB on the coefficient square, the development gives a
-    deterministic normalized-kernel fixed-point certificate for every
-    parameter, witnesses impropriety at (1,0), proves that the all-ones
-    vector is a common invariant, and applies the generic extreme-point
-    antipodal theorem at a simplex vertex to rule out an invertible
-    canonical properizer and every invertible normalized or finite-loss-basis
-    proper reduction. Its explicit four-corner bilinear decomposition further
-    proves that canonical properness is equivalent to twelve corner/action
+    Twenty-four selected statements formalize source-backed finite-dimensional
+    results. Both cited families receive fixed-point/impropriety certificates.
+    A generic theorem proves that an exact one-way action/loss transfer with
+    invertible action and loss maps, properness on the transformed action image,
+    and equality on Delta_3 times the unit loss cube yields an invertible
+    canonical properizer; it does not assume Equation (16). For the skew
+    simplex family, affine-hyperplane transport yields a nonzero common
+    invariant from any canonical properizer, the family has no such invariant,
+    and every canonical properizer is singular. It follows that the family has
+    no invertible finite transfer of the stated form. The source's Equation
+    (15), at a full-rank loss basis and simplex basis, is proved to imply
+    M_psi = S M_phi in Equation (16), which implies the canonical Equation
+    (17). Matrix properness on Delta_3 is equivalent to three action-vertex
+    tests, and the skew family is exactly reduced to nine comparator/action
+    vertex constraints, with no invertible solution. For the second matrix
+    family phi_(a,b)=Id+aA+bB on the coefficient square, the development gives
+    a deterministic normalized-kernel fixed-point certificate, witnesses
+    impropriety at (1,0), proves an all-ones common invariant, and applies the
+    generic extreme-point antipodal theorem at a simplex vertex to rule out a
+    canonical properizer. The same direct finite-transfer implication rules
+    out transfer witnesses for this family; its four-corner bilinear
+    decomposition reduces canonical properness exactly to twelve corner/action
     constraints, which have no invertible solution. The package does not
     formalize the source's complete affine-reduction framework, a regret
     algorithm, rate preservation, minimality, the derivation of Equation (15)
@@ -121,27 +120,27 @@ fidelity:
     uses the published matrices A and B with coefficient square [-1,1]^2; its
     fixed point is proved from an explicit homogeneous kernel vector and
     square-completion positivity certificates, including the zero-parameter
-    case. The two generic selected lemmas formalize the canonical-correction
-    implications used in the source proofs: affine-normal transport
-    (Lemma 4) and the extreme-antipodal obstruction (Lemma 5). A third
-    selected lemma uses a full-rank target-loss basis and the simplex basis to
-    derive M_psi = S M_phi from the source's Equation (15); a fourth proves
-    Equation (16) implies p + S(phi(p)-p), and the concrete no-go results are
-    lifted to both finite normalized forms. A fifth and sixth layer prove the
+    case. The generic selected lemmas formalize affine-normal transport
+    (Lemma 4), the extreme-antipodal obstruction (Lemma 5), and a finite
+    one-way action/loss transfer with explicit inverse matrices. The transfer
+    theorem reconstructs the canonical correction from the cube basis losses,
+    rather than assuming Equation (16). A separate full-rank target-loss basis
+    lemma derives M_psi = S M_phi from the source's Equation (15), and another
+    derives Equation (17). The remaining selected layers prove the
     action-vertex half of Equation (18) and its exact nine-/twelve-constraint
     specialization for the two source families. This package intentionally
-    does not formalize the source's full affine-equivalence definition, the
+    does not formalize the source's complete affine-reduction definition, the
     general polytope/linear-program/randomized cone-span algorithm, or the
     rate/minimality and set-level span arguments that produce Equation (15).
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The twenty-one
-    Challenge holes occur only in the independent statement surface and are
-    excluded from status.sorry_count; the implementation and Solution contain
-    no proof placeholders. Hosted Comparator verification and editorial review
-    remain separate states.
+    No independent human or Palomar editorial approval is claimed. The
+    twenty-four Challenge holes occur only in the independent statement surface
+    and are excluded from status.sorry_count; the implementation and Solution
+    contain no proof placeholders. Hosted Comparator verification and editorial
+    review remain separate states.
 alignment:
   namespace: "Blackwell.Palomar"
   statements:
@@ -155,6 +154,10 @@ alignment:
       status: "proved"
     - source: "Normalized Equation (16) implies canonical Equation (17)"
       lean: "Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Finite one-way action/loss transfer implies canonical properization"
+      lean: "Blackwell.Palomar.invertible_transfer_proper_reduction_implies_canonical_properization"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Finite loss-basis Equation (15) implies normalized Equation (16)"
@@ -189,6 +192,10 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "No finite one-way action/loss transfer for the skew family"
+      lean: "Blackwell.Palomar.skewPhi_not_invertible_transfer_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
     - source: "Nine-vertex Equation (18) characterization for the skew family"
       lean: "Blackwell.Palomar.skew_canonicalProper_iff_vertex_constraints"
       module: "BlackwellSolution.lean"
@@ -211,6 +218,10 @@ alignment:
       status: "proved"
     - source: "No invertible canonical reduction for the second matrix family"
       lean: "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No finite one-way action/loss transfer for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_not_invertible_transfer_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Twelve-corner Equation (18) characterization for the second matrix family"

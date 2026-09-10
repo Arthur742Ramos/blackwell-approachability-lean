@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-one proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-four proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -82,6 +82,24 @@ Equation-(17) equality and converts properness of `psi` into
 invertible `normalizedProperReductionOn`, not just a correction equation
 introduced as an unexplained assumption.
 
+## Direct finite action/loss-transfer bridge
+
+`invertibleTransferProperReductionOn` makes the finite coordinate-change part
+of the source reduction explicit. It records a target comparator `theta`,
+action matrices `A`, `Ainv`, loss matrices `T`, `Tinv`, their two-sided inverse
+equations, properness on the transformed image `A(P)`, and the exact
+per-round regret identity on `P` and the source loss cube `[0,1]^3`.
+
+The proof of
+`invertible_transfer_proper_reduction_implies_canonical_properization` does
+not assume Equation (16). It conjugates the target comparator back to `P`,
+uses the three standard cube losses to recover the vector equality, and
+constructs `S = Ainv * Tinv.transpose`. The inverse identities prove that
+`S` is nonsingular and that the resulting correction is proper. The concrete
+skew and A/B corollaries rule out this one-way finite transfer, hence also any
+stronger reduction which supplies such a transfer. This does not package the
+source's general two-way affine/rate framework or prove its minimality facts.
+
 ## Equation-(15) loss-basis bridge
 
 The source obtains Equation (16) from the normalized pairing identity
@@ -100,7 +118,7 @@ injectivity makes the difference zero. The three resulting column equalities
 give `N = S M`.
 
 `lossBasisProperReductionOn` packages this finite source-normalized
-certificate with a proper matrix target. The two new concrete corollaries use
+certificate with a proper matrix target. The two concrete corollaries use
 the matrix representations of the skew and A/B families to rule it out. This
 still does not derive Equation (15), the loss basis, or the normalized setup
 from the source's full bidirectional affine-equivalence/rate machinery.
@@ -146,20 +164,20 @@ test, or its earlier reduction hypotheses.
 
 ## Scope and regression policy
 
-The development proves a finite loss-basis form of the source's Equation
-(15)-to-(16) step, the algebraic implication from Equation (16) to its
-canonical normal form (17), and concrete Equation-(18) membership reductions
-for the two cited families. It does not claim the source's preceding
-derivation of Equation (15), the required action/loss span witnesses, its
-general bidirectional affine-equivalence and rate/minimality theory, or the
-general Section 4.4.2 randomized algorithm, nor an online algorithm. That
-boundary is deliberate and is checked in the documentation and metadata gate.
+The development proves a direct finite action/loss-transfer implication for
+the canonical normal form, a finite loss-basis form of the source's Equation
+(15)-to-(16) step, the algebraic implication from Equation (16) to (17), and
+concrete Equation-(18) membership reductions for the two cited families. It
+does not claim the source's general affine reduction definition, its
+minimality/rate and set-span theory, its general Section 4.4.2 randomized
+algorithm, or an online algorithm. That boundary is deliberate and checked in
+the documentation and metadata gate.
 
 The older approachability, game, minimax, and norm-conversion files remain
 independent supporting experiments and are not selected by Comparator.
 `BlackwellIrreducibilityExamples.lean` exercises both family certificates,
-both generic obstructions, the Equation-(15)-to-(16) and
-Equation-(16)-to-(17) bridges, the Equation-(18) vertex/corner equivalences,
-and both classes of no-reduction corollaries.
+both generic obstructions, the direct-transfer bridge, the Equation-(15)-to-
+(16) and Equation-(16)-to-(17) bridges, the Equation-(18) vertex/corner
+equivalences, and all classes of no-reduction corollaries.
 The validation gate runs the official renderer notation audit and an axiom
-audit over exactly the twenty-one selected declarations.
+audit over exactly the twenty-four selected declarations.

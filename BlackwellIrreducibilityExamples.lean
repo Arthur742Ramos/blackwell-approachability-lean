@@ -37,6 +37,9 @@ example :
 example : ¬ canonicalProperReduction :=
   skewPhi_not_canonically_proper_reducible
 
+example : ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi :=
+  skewPhi_not_invertible_transfer_proper_reducible
+
 example : ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_normalized_proper_reducible
 
@@ -59,6 +62,10 @@ example :
       S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S :=
   sourceAB_not_canonically_proper_reducible
 
+example :
+    ¬ invertibleTransferProperReductionOn simplex3 sourceCoefficients sourcePhi :=
+  sourceAB_not_invertible_transfer_proper_reducible
+
 example : ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_normalized_proper_reducible
 
@@ -72,6 +79,13 @@ example {α : Type} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
     canonicalProperOn P Q φ S :=
   normalized_proper_reduction_implies_canonical_properization
     P Q φ ψ S hproper hintertwine
+
+example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S :=
+  invertible_transfer_proper_reduction_implies_canonical_properization
+    P Q φ hred
 
 example (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M :=

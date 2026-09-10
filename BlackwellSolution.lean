@@ -97,6 +97,22 @@ def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
 
 def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
 
+def unitCube3 : Set Vec3 :=
+  {l | ∀ i, 0 ≤ l i ∧ l i ≤ 1}
+
+def actionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (P : Set Vec3) : Set Vec3 :=
+  {p' | ∃ p ∈ P, p' = A *ᵥ p}
+
+def invertibleTransferProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      (∀ q ∈ Q, ∀ p ∈ P, θ q (A *ᵥ p) ∈ actionImage A P) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q p) l =
+          dotProduct (A *ᵥ p - θ q (A *ᵥ p)) (T *ᵥ l)
+
 def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
   fun i => B i j
 
@@ -219,6 +235,16 @@ theorem normalized_proper_reduction_implies_canonical_properization
     using Blackwell.Irreducibility.normalized_proper_reduction_implies_canonical_properization
       P Q φ ψ S hproper hintertwine
 
+theorem invertible_transfer_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  change ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ Blackwell.Irreducibility.canonicalProperOn P Q φ S
+  exact Blackwell.Irreducibility.invertible_transfer_proper_reduction_implies_canonical_properization
+    P Q φ hred
+
 theorem loss_basis_pairing_implies_normalized_matrix_identity
     (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
@@ -299,6 +325,13 @@ theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction :
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_not_canonically_proper_reducible
 
+theorem skewPhi_not_invertible_transfer_proper_reducible :
+    ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi := by
+  change ¬ Blackwell.Irreducibility.invertibleTransferProperReductionOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.simplex3
+      Blackwell.Irreducibility.skewPhi
+  exact Blackwell.Irreducibility.skewPhi_not_invertible_transfer_proper_reducible
+
 theorem skew_canonicalProper_iff_vertex_constraints
     (S : Matrix (Fin 3) (Fin 3) ℝ) :
     canonicalProper S ↔ skewCanonicalVertexConstraints S := by
@@ -369,6 +402,13 @@ theorem sourceAB_not_canonically_proper_reducible :
     Blackwell.Irreducibility.sourcePhi, Blackwell.Irreducibility.sourceA,
     Blackwell.Irreducibility.sourceB]
     using Blackwell.Irreducibility.sourceAB_not_canonically_proper_reducible
+
+theorem sourceAB_not_invertible_transfer_proper_reducible :
+    ¬ invertibleTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  change ¬ Blackwell.Irreducibility.invertibleTransferProperReductionOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.sourceCoefficients
+      Blackwell.Irreducibility.sourcePhi
+  exact Blackwell.Irreducibility.sourceAB_not_invertible_transfer_proper_reducible
 
 theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints
     (S : Matrix (Fin 3) (Fin 3) ℝ) :

@@ -23,14 +23,14 @@ project therefore defines the small domain-specific predicates
 `validImproperInstance`, `validImproperFamily`, `canonicalProper`,
 `canonicalProperReduction`, `affineHyperplaneWitness`, `extremePoint`, and
 `antipodalDisplacements` locally, while reusing Mathlib's general algebra.
-It additionally defines the source's pointwise `M_phi = Id - phi` notation and
-the normalized `M_psi = S M_phi` identity, keeping the source's reduction
-assumptions explicit rather than importing an unverified equivalence layer.
-It now also reuses Mathlib's transpose action and determinant-based
-injectivity to formalize the finite dual-basis step from the source's loss
-pairing identity to its normalized matrix identity, and finite-sum/vector
-algebra to certify the source's simplex vertex and coefficient-square-corner
-membership reductions.
+It additionally defines the source's pointwise `M_phi = Id - phi` notation,
+the normalized `M_psi = S M_phi` identity, and a finite direct action/loss
+transfer witness with explicit inverse matrices. It reuses Mathlib's transpose
+action and determinant-based injectivity both to derive a canonical correction
+from that witness and to formalize the finite dual-basis step from the
+source's loss-pairing identity to its normalized matrix identity. Finite-sum
+and vector algebra certify the source's simplex vertex and coefficient-square
+corner membership reductions.
 
 The construction follows Dann et al., Section 4.4.1. For the skew family, the
 fixed point and endpoint calculations were checked against the published
@@ -42,16 +42,20 @@ discovery as a proof oracle. The middle coordinate of the kernel is
 `2(36a² - 41ab + 71b²)`, as determined by direct multiplication against the
 transcribed matrices.
 
-The source's Equation (15) loss pairing is formalized at the three simplex
-vertices and an arbitrary full-rank target-loss basis; a determinant/injective
-transpose argument proves the source's normalized Equation (16),
-`M_psi = S M_phi`. Equation (16) is then proved to imply the displayed
-canonical Equation (17), `psi(p) = p + S (phi(p) - p)`. The development also
-formalizes the dimension-three affine-hyperplane transport in the proof of
-source Lemma 4 and the extreme-point antipodal mechanism in the proof of
-source Lemma 5. The local scope intentionally stops before the source's
-broader affine/rate/minimality and set-level span theory that derives Equation
-(15) and chooses such a basis from general affine reduction data, rather than
+For the source's finite three-action setting, an exact one-way action/loss
+transfer with invertible coordinate maps, proper target image, and per-round
+identity on `Delta_3 × [0,1]^3` is formalized directly. Its inverse equations
+and the three cube basis losses produce the canonical correction without
+assuming Equation (16). The source's Equation (15) loss pairing is separately
+formalized at the three simplex vertices and an arbitrary full-rank target-loss
+basis; a determinant/injective transpose argument proves the normalized
+Equation (16), `M_psi = S M_phi`. Equation (16) is then proved to imply the
+displayed canonical Equation (17), `psi(p) = p + S (phi(p) - p)`. The
+development also formalizes the dimension-three affine-hyperplane transport in
+the proof of source Lemma 4 and the extreme-point antipodal mechanism in the
+proof of source Lemma 5. The local scope intentionally stops before the
+source's broader affine/rate/minimality and set-level span theory, its general
+two-way reduction definition, and its randomized algorithm, rather than
 rephrasing a narrower theorem as a broader result.
 
 The source's Section 4.4.2 membership observation is formalized concretely:

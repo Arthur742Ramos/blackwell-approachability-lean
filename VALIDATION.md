@@ -7,16 +7,18 @@ It checks:
 - a complete Lean build, including both explicit source-family certificates and
   their regression examples;
 - an exact Mathlib-only Challenge dependency closure;
-- exactly twenty-one Challenge proof holes and no implementation placeholders;
-- the exact twenty-one selected theorem names and permitted axiom allowlist;
+- exactly twenty-four Challenge proof holes and no implementation placeholders;
+- the exact twenty-four selected theorem names and permitted axiom allowlist;
 - that Challenge and Solution both expose the fixed-point/impropriety,
-  affine-hyperplane, extreme-antipodal, invariant, canonical-reduction,
-  finite-loss-basis, and Equation-(15)/(16)/(17)/(18) bridge predicates
+  affine-hyperplane, extreme-antipodal, invariant, direct action/loss-transfer,
+  canonical-reduction, finite-loss-basis, and Equation-(15)/(16)/(17)/(18)
+  bridge predicates
   needed by the selected surface;
-- that the documentation and metadata distinguish the proved finite
-  Equation-(15)-to-(16), Equation-(16)-to-(17), and concrete
-  Equation-(18) vertex/corner bridges from the unformalized broader source
-  reduction theory and generic randomized algorithm;
+- that the documentation and metadata distinguish the proved direct
+  finite-transfer-to-canonical, Equation-(15)-to-(16),
+  Equation-(16)-to-(17), and concrete Equation-(18) vertex/corner bridges
+  from the unformalized broader source reduction theory and generic randomized
+  algorithm;
 - the official pinned Palomar renderer's isolated core-notation audit;
 - metadata and citation alignment; and
 - clean source formatting.

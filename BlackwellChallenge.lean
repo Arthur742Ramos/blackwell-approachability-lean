@@ -17,12 +17,13 @@ source's finite Equation-(15)-to-(16) and normalized Equation-(16)-to-(17)
 bridges, and concrete Equation-(18) vertex/corner membership criteria for
 the two cited families: the affine-hyperplane invariant transport of Lemma 4
 and the extreme-point, antipodal-displacement obstruction of Lemma 5. The
-result proves the finite full-rank-loss-basis implication for the normalized
-identity, its implication for the canonical normal form, and the exact
-nine- and twelve-constraint specializations of the source's finite-polytope test; it
-does not claim to formalize the paper's separate rate/minimality and span
-argument that derives Equation (15) from its most general bidirectional
-affine definition of linear equivalence, or its general randomized algorithm.
+result proves a direct finite action/loss-transfer implication for the
+canonical normal form, the finite full-rank-loss-basis implication for the
+normalized identity, its implication for the canonical normal form, and the
+exact nine- and twelve-constraint specializations of the source's
+finite-polytope test. It does not claim to formalize the paper's separate
+rate/minimality and set-span theory, its general two-way affine reduction
+framework, or its general randomized algorithm.
 -/
 
 namespace Blackwell.Palomar
@@ -144,6 +145,27 @@ def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
 
 /-- The standard basis vectors, which are also the simplex vertices. -/
 def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
+
+/-- The source loss set `[0,1]^3`. -/
+def unitCube3 : Set Vec3 :=
+  {l | ∀ i, 0 ≤ l i ∧ l i ≤ 1}
+
+/-- The image of an action set under an action-coordinate map. -/
+def actionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (P : Set Vec3) : Set Vec3 :=
+  {p' | ∃ p ∈ P, p' = A *ᵥ p}
+
+/-- A finite, exact action/loss-transfer reduction to a proper target.  The
+four matrices carry two-sided inverse witnesses, and the regret identity is
+checked on the source action set and `[0,1]^3` loss set. -/
+def invertibleTransferProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      (∀ q ∈ Q, ∀ p ∈ P, θ q (A *ᵥ p) ∈ actionImage A P) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q p) l =
+          dotProduct (A *ᵥ p - θ q (A *ᵥ p)) (T *ᵥ l)
 
 /-- A matrix column as a coordinate vector. -/
 def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
@@ -279,6 +301,15 @@ theorem normalized_proper_reduction_implies_canonical_properization
     canonicalProperOn P Q φ S := by
   sorry
 
+/-- An exact invertible action/loss transfer to a proper target derives the
+canonical correction form, without assuming Equation (16) in advance. -/
+theorem invertible_transfer_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  sorry
+
 /-- Equation (15), evaluated at three simplex vertices and a linearly
 independent target-loss basis, implies the source's matrix identity
 `N = S M` in Equation (16). -/
@@ -330,6 +361,12 @@ proper phi-regret. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
   sorry
 
+/-- The skew family has no exact invertible action/loss-transfer reduction to
+a proper target, even before requiring a reverse transfer. -/
+theorem skewPhi_not_invertible_transfer_proper_reducible :
+    ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi := by
+  sorry
+
 /-- For the skew-simplex family, the nine vertex constraints are equivalent
 to canonical properness on the full product of the two simplices. -/
 theorem skew_canonicalProper_iff_vertex_constraints
@@ -375,6 +412,12 @@ no invertible canonical reduction to proper phi-regret. -/
 theorem sourceAB_not_canonically_proper_reducible :
     ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
       S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S := by
+  sorry
+
+/-- The source A/B family has no exact invertible action/loss-transfer
+reduction to a proper target, even before requiring a reverse transfer. -/
+theorem sourceAB_not_invertible_transfer_proper_reducible :
+    ¬ invertibleTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
   sorry
 
 /-- For the source A/B family, the twelve coefficient-corner/action-vertex
