@@ -4,17 +4,17 @@ The local validation gate is `scripts/verify-palomar.sh`.
 
 It checks:
 
-- a complete Lean build, including the irreducibility module and its concrete
-  regression examples;
+- a complete Lean build, including both explicit source-family certificates and
+  their regression examples;
 - an exact Mathlib-only Challenge dependency closure;
-- exactly five Challenge proof holes and no implementation placeholders;
-- the exact five selected theorem names and permitted axiom allowlist;
-- that the Challenge/Solution each expose the valid-improper-instance,
-  affine-hyperplane invariant transport, canonical-proper, and no-reduction
-  predicates and declarations;
+- exactly nine Challenge proof holes and no implementation placeholders;
+- the exact nine selected theorem names and permitted axiom allowlist;
+- that Challenge and Solution both expose the fixed-point/impropriety,
+  affine-hyperplane, extreme-antipodal, invariant, and canonical-reduction
+  predicates needed by the selected surface;
 - that the documentation and metadata state the canonical normal form rather
-  than overclaiming a broader reduction theorem;
-- the official pinned Palomar renderer’s isolated core-notation audit;
+  than overclaiming the broader source reduction theory;
+- the official pinned Palomar renderer's isolated core-notation audit;
 - metadata and citation alignment; and
 - clean source formatting.
 

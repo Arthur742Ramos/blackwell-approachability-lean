@@ -1,7 +1,11 @@
 import BlackwellSolution
 
 #print axioms Blackwell.Palomar.skewPhi_valid_improper_instance
+#print axioms Blackwell.Palomar.sourceAB_valid_improper_family
 #print axioms Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+#print axioms Blackwell.Palomar.extreme_antipodal_no_canonical_properizer
 #print axioms Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant
 #print axioms Blackwell.Palomar.canonical_proper_matrices_are_singular
 #print axioms Blackwell.Palomar.skewPhi_not_canonically_proper_reducible
+#print axioms Blackwell.Palomar.sourceAB_has_nonzero_common_invariant
+#print axioms Blackwell.Palomar.sourceAB_not_canonically_proper_reducible

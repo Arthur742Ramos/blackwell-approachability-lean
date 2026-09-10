@@ -11,12 +11,10 @@ Schneider, and Sivan (COLT 2025), together with the paper's canonical
 single-invertible-matrix normal form for a prospective reduction to proper
 phi-regret.
 
-The five selected theorems establish that the family is a valid improper
-phi-regret instance; that every invertible canonical properizer of an action
-set in real three-space contained in an affine hyperplane induces a nonzero
-common invariant; that the explicit skew family has no such invariant;
-that every canonical properizing matrix is singular; and therefore that no
-invertible canonical proper reduction exists.  The result is scoped to this
+The selected theorems establish two explicit valid improper phi-regret
+families and both canonical-correction obstructions from Section 4.4.1: the
+affine-hyperplane invariant transport of Lemma 4 and the extreme-point,
+antipodal-displacement obstruction of Lemma 5.  The result is scoped to this
 canonical normal form; it does not claim to formalize the paper's separate
 rate/minimality argument that derives that form from its most general
 bidirectional affine definition of linear equivalence.
@@ -109,6 +107,46 @@ def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
 
+/-- The standard convex-combination characterization of an extreme action. -/
+def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
+  x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
+    0 < a → 0 < b → a + b = 1 →
+      x = a • y + b • z → y = x ∧ z = x
+
+/-- Two selected comparators have nonzero antipodal displacements at `x`. -/
+def antipodalDisplacements {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (x : Vec3) : Prop :=
+  ∃ q₁ ∈ Q, ∃ q₂ ∈ Q, ∃ c : ℝ, 0 < c ∧
+    nonzeroVec3 (displacementFor φ q₁ x) ∧
+      displacementFor φ q₂ x = -(c • displacementFor φ q₁ x)
+
+/-- Fixed points for all selected comparators plus a witnessed escape from the
+action set. -/
+def validImproperFamily {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  (∀ q ∈ Q, ∃ p ∈ P, φ q p = p) ∧
+    ∃ q ∈ Q, ∃ p ∈ P, φ q p ∉ P
+
+/-- The square of coefficients used in the second explicit source family. -/
+def sourceCoefficients : Set (ℝ × ℝ) :=
+  {q | -1 ≤ q.1 ∧ q.1 ≤ 1 ∧ -1 ≤ q.2 ∧ q.2 ≤ 1}
+
+/-- First matrix in the second Section 4.4.1 construction. -/
+def sourceA : Matrix (Fin 3) (Fin 3) ℝ :=
+  !![-6, 8, -9;
+      2, -1, -9;
+      4, -7, 18]
+
+/-- Second matrix in the second Section 4.4.1 construction. -/
+def sourceB : Matrix (Fin 3) (Fin 3) ℝ :=
+  !![10, -3, -7;
+      6, -6, 10;
+      -16, 9, -3]
+
+/-- The source's two-parameter family `Id + a A + b B`. -/
+def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
+  p + q.1 • (sourceA *ᵥ p) + q.2 • (sourceB *ᵥ p)
+
 /-- Every comparator must have a simplex fixed point, while at least one must
 escape the simplex, for the family to be valid and improper. -/
 def validImproperInstance : Prop :=
@@ -132,6 +170,14 @@ theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
     ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantOn P Q φ v := by
   sorry
 
+/-- Canonical-correction core of Lemma 5: an extreme action with antipodal
+nonzero comparator displacements rules out every invertible properizer. -/
+theorem extreme_antipodal_no_canonical_properizer
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3) (x : Vec3)
+    (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x) :
+    ∀ S : Matrix (Fin 3) (Fin 3) ℝ, S.det ≠ 0 → ¬ canonicalProperOn P Q φ S := by
+  sorry
+
 /-- The three skew comparators have no nonzero common invariant vector. -/
 theorem skewPhi_has_no_nonzero_common_invariant :
     ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
@@ -146,6 +192,27 @@ theorem canonical_proper_matrices_are_singular (S : Matrix (Fin 3) (Fin 3) ℝ)
 /-- Consequently the explicit family has no invertible canonical reduction to
 proper phi-regret. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
+  sorry
+
+/-- The second explicit Section 4.4.1 family is a valid improper phi-regret
+family, with a certified simplex fixed point for every square-bounded pair of
+coefficients. -/
+theorem sourceAB_valid_improper_family :
+    validImproperFamily simplex3 sourceCoefficients sourcePhi := by
+  sorry
+
+/-- The all-ones vector remains a nonzero common invariant for the second
+family; thus the affine-hyperplane mechanism alone does not exclude it. -/
+theorem sourceAB_has_nonzero_common_invariant :
+    ∃ v : Vec3, nonzeroVec3 v ∧
+      commonInvariantOn simplex3 sourceCoefficients sourcePhi v := by
+  sorry
+
+/-- Instantiating the Lemma-5 core shows that the second explicit family has
+no invertible canonical reduction to proper phi-regret. -/
+theorem sourceAB_not_canonically_proper_reducible :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S := by
   sorry
 
 end Blackwell.Palomar

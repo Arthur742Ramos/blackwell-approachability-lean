@@ -37,4 +37,26 @@ example :
 example : ¬ canonicalProperReduction :=
   skewPhi_not_canonically_proper_reducible
 
+example (q : ℝ × ℝ) : ∃ p ∈ simplex3, sourcePhi q p = p :=
+  sourcePhi_has_fixed_point q
+
+example : validImproperFamily simplex3 sourceCoefficients sourcePhi :=
+  sourceAB_valid_improper_family
+
+example :
+    ∃ v : Vec3, nonzeroVec3 v ∧
+      commonInvariantOn simplex3 sourceCoefficients sourcePhi v :=
+  sourceAB_has_nonzero_common_invariant
+
+example :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S :=
+  sourceAB_not_canonically_proper_reducible
+
+example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (x : Vec3) (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0) :
+    ¬ canonicalProperOn P Q φ S :=
+  extreme_antipodal_no_canonical_properizer P Q φ x hx hanti S hdet
+
 end Blackwell.Irreducibility.Examples

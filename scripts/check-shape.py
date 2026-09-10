@@ -20,15 +20,19 @@ if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 5:
-    raise SystemExit(f"error: expected five Challenge holes, found {holes}")
+if holes != 9:
+    raise SystemExit(f"error: expected nine Challenge holes, found {holes}")
 
 targets = [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
+    "Blackwell.Palomar.sourceAB_valid_improper_family",
     "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
+    "Blackwell.Palomar.extreme_antipodal_no_canonical_properizer",
     "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
+    "Blackwell.Palomar.sourceAB_has_nonzero_common_invariant",
+    "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible",
 ]
 expected = {
     "challenge_module": "BlackwellChallenge",
@@ -57,11 +61,20 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "def affineHyperplaneWitness",
         "def commonInvariantOn",
         "def canonicalProperOn",
+        "def extremePoint",
+        "def antipodalDisplacements",
+        "def validImproperFamily",
+        "def sourceCoefficients",
+        "def sourcePhi",
         "theorem skewPhi_valid_improper_instance",
         "theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
+        "theorem extreme_antipodal_no_canonical_properizer",
         "theorem skewPhi_has_no_nonzero_common_invariant",
         "theorem canonical_proper_matrices_are_singular",
         "theorem skewPhi_not_canonically_proper_reducible",
+        "theorem sourceAB_valid_improper_family",
+        "theorem sourceAB_has_nonzero_common_invariant",
+        "theorem sourceAB_not_canonically_proper_reducible",
     ):
         if required not in source:
             raise SystemExit(f"error: {source_path.name} is missing {required}")
@@ -100,5 +113,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "five holes, five selected targets."
+    "nine holes, nine selected targets."
 )

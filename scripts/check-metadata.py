@@ -6,7 +6,7 @@ import yaml
 root = Path(sys.argv[1])
 data = yaml.safe_load((root / "formalization.yaml").read_text(encoding="utf-8"))
 authors = ["Arthur Freitas Ramos"]
-assert data["version"] == "v0.6"
+assert data["version"] == "v0.7"
 project = data["project"]
 assert project["authors"] == authors
 assert project["responsible_maintainers"] == authors

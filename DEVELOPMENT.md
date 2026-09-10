@@ -1,71 +1,80 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly five proof
-placeholders, one for each selected source-backed theorem.
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly nine proof
+placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
-placeholders, and mirrors the public declarations definitionally. The Challenge
-uses its own local names so it remains independently renderable.
+placeholders, and mirrors the public declarations definitionally. The
+Challenge deliberately owns local definitions so its surface can render
+without implementation dependencies.
 
-The formalized action set is
+## First family: affine-normal transport
 
-```text
-Δ₃ = { p : Fin 3 → ℝ | pᵢ ≥ 0 and Σᵢ pᵢ = 1 }.
-```
-
-For `q=(a,b,c) ∈ Δ₃`, `skewPhi q` is the map `Id - Mq`, where `Mq` is the
-odd-dimensional skew-symmetric matrix from the cited construction. Its fixed
-point is `![c,b,a]`. The proof establishes this algebraically, then transfers
-simplex membership by permuting the coordinates of `q`.
-
-The selected central invariant argument is stated for an arbitrary action set
-`P : Set Vec3` that has an affine-hyperplane witness `⟨p,w⟩ = b`, and for an
-arbitrary selected comparator family on `P`. It transports the normal through
-a hypothetical invertible correction matrix `S`. The resulting `Sᵀw` is
-nonzero and satisfies
+For `q=(a,b,c) ∈ Δ₃`, `skewPhi q` is `Id - Mq`, where `Mq` is the
+odd-dimensional skew-symmetric matrix in the cited construction. Its fixed
+point is `![c,b,a]`. The source's canonical correction is
 
 ```text
-⟨phi q p - p, Sᵀw⟩ = 0
+p ↦ p + S (phi q p - p).
 ```
 
-for every selected comparator and every point of `P`. This is the
-dimension-three affine-hyperplane core of the proof of Lemma 4 in the source,
-under its displayed canonical correction equation. The source's skew family is
-then a direct simplex specialization. Three endpoint tests force every
-coordinate of any such common invariant to vanish, giving the source's first
-irreducibility mechanism in this concrete family.
-
-The earlier `columnSums S` transport lemma remains in the implementation as a
-simplex-specific regression result. The selected surface instead exposes the
-strictly more general affine-hyperplane statement. It does not hide the
-source's unformalized derivation of the canonical correction equation from the
-full bidirectional affine-equivalence definition.
-
-The complementary determinant argument uses the same three endpoint tests. If
-a candidate matrix `S` makes every corrected map
+The selected Lemma-4 core is stated for an arbitrary action set
+`P : Set Vec3` with a nonzero affine normal `w` satisfying `⟨p,w⟩ = b` on
+`P`, and an arbitrary selected comparator family. If an invertible `S` maps
+every corrected comparator back into `P`, then `Sᵀw` is nonzero and satisfies
 
 ```text
-p ↦ p + S (skewPhi q p - p)
+⟨phi q p - p, Sᵀw⟩ = 0.
 ```
 
-simplex-preserving, testing `(q,p)` at `(e₀,e₁)`, `(e₀,e₀)`, and `(e₁,e₀)`
-forces the sums of columns `0`, `1`, and `2` of `S` to vanish. Rewriting the
-three-by-three determinant with the resulting third-row equations proves
+The skew family then has no nonzero common invariant: three endpoint tests
+force all coordinates to zero. A complementary direct determinant proof tests
+three corrected endpoints, forces all column sums of `S` to vanish, and proves
 `det S = 0`.
 
-This is the canonical normal form of the source’s reduction analysis. The
-implementation deliberately does not fold in the larger theory that derives
-that form from general affine reduction data, nor does it formalize learning
-rates. That avoids overstating a finite matrix obstruction as a proof of every
-broader reduction theorem in the paper.
+## Second family: certified fixed points and antipodal obstruction
 
-The older approachability, game, minimax, and norm-conversion files remain in
-the repository as independent supporting experiments. They are deliberately not
-selected by the current Challenge or Comparator surface.
+The second Section 4.4.1 family has
 
-`BlackwellIrreducibilityExamples.lean` gives fast regression coverage for the
-affine-hyperplane transport theorem's simplex specialization, the retained
-simplex-specific transport lemma, the negative-coordinate impropriety witness,
-endpoint calculations, the valid improper-instance theorem, the
-no-common-invariant theorem, and the no-reduction corollary. The validation
-gate also builds every default library and runs the official renderer notation
-audit against exactly the five selected declarations.
+```text
+phi(a,b)(p) = p + a A p + b B p,     (a,b) ∈ [-1,1]²,
+```
+
+for the two published three-by-three matrices. The implementation does not
+trust a computer-search witness. It proves directly that
+
+```text
+k = (81a² - 46ab + 72b²,
+     2(36a² - 41ab + 71b²),
+     2(5a² + 8ab + 21b²))
+```
+
+is a right-kernel vector of `aA+bB`, that its entries are nonnegative, and
+that its mass `163a² - 112ab + 256b²` is strictly positive unless `(a,b)=0`.
+Thus `k / mass` is a simplex fixed point in the nonzero case; the zero case
+uses `vertex0`. The individual positivity proofs use explicit
+square-completion identities and `nlinarith` only as a certificate checker.
+
+The generic Lemma-5 core says that, at an extreme action, two nonzero
+antipodal displacements cannot both be canonically properized by an invertible
+matrix. Its proof forms the unique positive convex combination of the two
+corrected actions that returns to the extreme point, then uses matrix
+injectivity to contradict the nonzero displacement. For the second family,
+the first simplex vertex and coefficient endpoints `(1,0)`, `(-1,0)` give
+the required antipodal pair. The all-ones vector is also proved to be a common
+invariant of this family, which distinguishes the Lemma-5 route from the
+affine-normal route.
+
+## Scope and regression policy
+
+Both mechanisms assume the source's **canonical normal form** directly. The
+development does not claim the source's derivation of that equation from its
+general affine-equivalence machinery, its rate/minimality theory, or an online
+algorithm. That boundary is deliberate and is checked in the documentation
+and metadata gate.
+
+The older approachability, game, minimax, and norm-conversion files remain
+independent supporting experiments and are not selected by Comparator.
+`BlackwellIrreducibilityExamples.lean` exercises both family certificates,
+both generic obstructions, and both no-reduction corollaries. The validation
+gate runs the official renderer notation audit and an axiom audit over exactly
+the nine selected declarations.

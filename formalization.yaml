@@ -1,18 +1,14 @@
-version: "v0.6"
+version: "v0.7"
 project:
   name: "Irreducible improper phi-regret in Lean"
   description: >-
-    A Mathlib-only formalization of the explicit three-action improper
-    phi-regret construction from Dann, Mansour, Mohri, Schneider, and Sivan
-    (COLT 2025). It proves that every convexly mixed comparator has a fixed
-    point in the action simplex, that the family is genuinely improper, and
-    that an invertible canonical properizer on any action set in real
-    three-space with an affine-hyperplane witness induces a nonzero common
-    invariant.
-    It applies that transport mechanism to the explicit skew family, proves
-    that family has no such invariant, proves every canonical properizer is
-    singular, and consequently rules out an invertible canonical reduction to
-    proper phi-regret.
+    A Mathlib-only formalization of two explicit three-action improper
+    phi-regret families in Section 4.4.1 of Dann, Mansour, Mohri, Schneider,
+    and Sivan (COLT 2025). It proves valid-improper-family certificates for
+    both constructions, the affine-hyperplane invariant-transport core of
+    Lemma 4, and the extreme-point antipodal-displacement core of Lemma 5.
+    It then instantiates those mechanisms to rule out invertible canonical
+    properizers for the two cited finite-dimensional families.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -28,12 +24,12 @@ sources:
     type: "paper"
     relationship: "formalizes"
     note: >-
-      Formalizes the explicit skew-symmetric three-action construction of
-      Section 4.4.1 and the dimension-three affine-hyperplane core of its
-      Lemma 4 obstruction to the canonical single-invertible-matrix
-      proper-reduction normal form. The source develops a broader reduction
-      theory; this package records precisely the focused finite-dimensional
-      construction, invariant transport, and determinant proof.
+      Formalizes both explicit Section 4.4.1 three-action constructions and
+      the finite-dimensional canonical-correction arguments appearing in the
+      proofs of Lemmas 4 and 5. The source develops a broader reduction
+      theory; this package states exactly the canonical normal form assumed
+      by its selected results and does not claim the source's general
+      affine-equivalence derivation.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
@@ -41,28 +37,27 @@ sources:
     type: "paper"
     relationship: "builds-on"
     note: >-
-      Background for the approachability perspective retained in the supporting
-      library modules; it is not a selected theorem surface for this artifact.
+      Background for the approachability perspective retained in supporting
+      modules; it is not a selected theorem surface for this artifact.
     author_endorsement: "not-contacted"
 related_formalizations: []
 status:
   scope: >-
-    Five selected statements formalize a single source-backed result. The
-    explicit construction has action set Delta_3 and comparator family the
-    convex hull of the three maps in the cited construction. The first theorem
-    proves that every mixture has the concrete fixed point (c,b,a) and that a
-    vertex comparator exits Delta_3. The second is the reusable
-    dimension-three affine-hyperplane transport lemma: for an arbitrary action
-    set P with a nonzero normal w and constant b satisfying <p,w>=b on P, an
-    invertible canonical properizer transports w to the nonzero invariant
-    S^T w. The third proves the skew family admits no such vector. The fourth
-    proves that any correction matrix S satisfying
-    p + S(phi(p)-p) in Delta_3 for every comparator and action has determinant
-    zero. The fifth derives the absence of an invertible canonical proper
-    reduction. This is the canonical normal form from the source's reduction
-    analysis; it does not formalize its general affine reduction framework,
-    minimality/rate machinery, a regret algorithm, or a claim of mathematical
-    priority.
+    Nine selected statements formalize two source-backed finite-dimensional
+    results. For the skew simplex family, every mixture has the fixed point
+    (c,b,a), an explicit comparator escapes Delta_3, the affine-hyperplane
+    transport lemma yields a nonzero common invariant from any invertible
+    canonical properizer, the family has no such invariant, and every
+    canonical properizer is singular. For the second matrix family
+    phi_(a,b)=Id+aA+bB on the coefficient square, the development gives a
+    deterministic normalized-kernel fixed-point certificate for every
+    parameter, witnesses impropriety at (1,0), proves that the all-ones
+    vector is a common invariant, and applies the generic extreme-point
+    antipodal theorem at a simplex vertex to rule out an invertible
+    canonical properizer. Both obstructions assume the canonical normal form
+    p + S(phi(p)-p), not the paper's complete affine-reduction framework.
+    The package does not formalize a regret algorithm, rate preservation,
+    minimality, the derivation of that form, or a mathematical-priority claim.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -76,29 +71,27 @@ automation:
         theorem axiom audit; exact Comparator and NanoDa replay; hosted
         readiness workflow.
       prompting_notes: >-
-        User requested a strong, source-grounded result after a review found
-        the earlier classical certificate layer insufficiently substantive.
+        User requested a source-grounded result after a review found an
+        earlier classical certificate layer insufficiently substantive.
   notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
 fidelity:
   divergences: >-
-    The benchmark family and fixed-point formula follow the cited Section
-    4.4.1 construction exactly after identifying q=(a,b,c) in Delta_3 and
-    using phi_q=Id-M_q. The reduction predicate formalizes the paper's
-    canonical normal form phi'_q(p)=p+S(phi_q(p)-p), with invertibility over
-    real three-space represented by det(S) not equal to zero. The selected
-    transport lemma is the dimension-three affine-hyperplane implication used
-    in the proof of source Lemma 4: it assumes the canonical correction
-    directly and maps an affine normal w to S^T w. It is generic in the action
-    set P and selected comparator index set, then specializes to the cited
-    simplex family. The package does not prove the source's separate derivation
-    of this form from arbitrary affine maps, nor its rate-preservation/minimal-
-    instance theory. It makes no novel-result claim and does not implement an
-    online learner.
+    The skew family follows the cited Section 4.4.1 construction after
+    identifying q=(a,b,c) in Delta_3 and using phi_q=Id-M_q. The second family
+    uses the published matrices A and B with coefficient square [-1,1]^2; its
+    fixed point is proved from an explicit homogeneous kernel vector and
+    square-completion positivity certificates, including the zero-parameter
+    case. The two generic selected lemmas formalize the canonical-correction
+    implications used in the source proofs: affine-normal transport
+    (Lemma 4) and the extreme-antipodal obstruction (Lemma 5). They assume
+    p + S(phi(p)-p) directly. This package intentionally does not formalize
+    the source's full affine-equivalence definition or the arguments that
+    derive this equation, nor its rate/minimal-instance theory.
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The five
+    No independent human or Palomar editorial approval is claimed. The nine
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; the implementation and Solution contain
     no proof placeholders. Hosted Comparator verification and editorial review
@@ -106,12 +99,20 @@ review:
 alignment:
   namespace: "Blackwell.Palomar"
   statements:
-    - source: "Valid improper phi-regret instance in Section 4.4.1"
+    - source: "First valid improper phi-regret family in Section 4.4.1"
       lean: "Blackwell.Palomar.skewPhi_valid_improper_instance"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Second valid improper phi-regret family in Section 4.4.1"
+      lean: "Blackwell.Palomar.sourceAB_valid_improper_family"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Affine-hyperplane invariant transport in the proof of Lemma 4"
       lean: "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Extreme-point antipodal obstruction in the proof of Lemma 5"
+      lean: "Blackwell.Palomar.extreme_antipodal_no_canonical_properizer"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "No common invariant for the three skew comparators"
@@ -122,11 +123,19 @@ alignment:
       lean: "Blackwell.Palomar.canonical_proper_matrices_are_singular"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "No invertible canonical reduction to proper phi-regret"
+    - source: "No invertible canonical reduction for the skew family"
       lean: "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Common invariant of the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_has_nonzero_common_invariant"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No invertible canonical reduction for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
 acknowledgements: >-
   Lean and Mathlib contributors; Christoph Dann, Yishay Mansour, Mehryar Mohri,
-  Jon Schneider, and Balasubramanian Sivan for the source construction; and
+  Jon Schneider, and Balasubramanian Sivan for the source constructions; and
   David Blackwell for the broader approachability context.

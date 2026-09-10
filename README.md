@@ -1,14 +1,19 @@
 # Irreducible Improper φ-Regret in Lean
 
-This repository formalizes a concrete separation result from Dann, Mansour,
-Mohri, Schneider, and Sivan, “Rate-Preserving Reductions for Blackwell
-Approachability,” COLT 2025. It is a source-grounded formalization of a
-nontrivial finite-dimensional obstruction, not a claim of new mathematics.
+This repository formalizes two explicit three-action improper φ-regret
+constructions from Section 4.4.1 of Dann, Mansour, Mohri, Schneider, and
+Sivan, “Rate-Preserving Reductions for Blackwell Approachability,” COLT 2025.
+It is a source-grounded formalization of the paper's finite-dimensional
+obstructions, not a claim of new mathematics.
 
-## Result
+## Checked result
 
-Let `Δ₃` be the three-action probability simplex. For a comparator coefficient
-vector `q = (a,b,c) ∈ Δ₃`, define
+The public Challenge/Solution boundary selects nine declarations. Together,
+they prove two distinct canonical-correction obstructions.
+
+### Skew-simplex family and the Lemma-4 mechanism
+
+For `q = (a,b,c) ∈ Δ₃`, the first comparator is
 
 ```text
 φq(p₁,p₂,p₃) =
@@ -17,66 +22,84 @@ vector `q = (a,b,c) ∈ Δ₃`, define
    p₃ - b p₁ + c p₂).
 ```
 
-Equivalently, `φq = Id - Mq` for the skew-symmetric matrix
+Every comparator has the explicit fixed point `(c,b,a) ∈ Δ₃`, while
+`φ(1,0,0)(0,1,0) = (-1,1,0)` lies outside the simplex. The development proves:
+
+- an invertible canonical properizer of any real three-dimensional action set
+  contained in an affine hyperplane transports its normal `w` to a nonzero
+  common invariant `Sᵀw`;
+- the three skew comparators have no nonzero common invariant;
+- direct endpoint calculations force every simplex-preserving correction
+  matrix to have zero determinant; and
+- consequently no invertible canonical correction makes the family proper.
+
+The transport statement is the ambient-`ℝ³` canonical-correction core of the
+source's Lemma 4.
+
+### Matrix family and the Lemma-5 mechanism
+
+The second construction has coefficient set `[-1,1]²` and maps
 
 ```text
-        [ 0  a -b ]
-Mq =    [ -a 0  c ] .
-        [ b -c  0 ]
+φ(a,b)(p) = p + a A p + b B p,
+
+    [ -6   8  -9 ]              [ 10  -3  -7 ]
+A = [  2  -1  -9 ],       B = [  6  -6  10 ].
+    [  4  -7  18 ]              [-16   9  -3 ]
 ```
 
-The checked result establishes all of the following.
+For every `(a,b)`, Lean certifies a simplex fixed point. For nonzero
+coefficients it normalizes the nonnegative kernel vector
 
-- Every `φq` has the explicit fixed point `(c,b,a) ∈ Δ₃`.
-- The family is genuinely improper: `φ(1,0,0)(0,1,0) = (-1,1,0)`, which lies
-  outside `Δ₃`.
-- For any action set `P` in real three-space contained in an affine hyperplane
-  `⟨p,w⟩ = b`, an invertible canonical properizer transports the nonzero
-  normal `w` to `Sᵀw`, a nonzero vector `v` satisfying
-  `⟨φq(p) - p, v⟩ = 0` for every selected comparator and every `p ∈ P`.
-  This is the affine-hyperplane core of the source’s Lemma 4. The skew family
-  is a concrete simplex specialization.
-- Three concrete endpoint calculations prove that this skew family has no
-  nonzero common invariant vector.
-- If a real `3 × 3` matrix `S` made every map
-  `p ↦ p + S (φq(p) - p)` simplex-preserving, then `det S = 0`.
-  Therefore no invertible `S` can produce a proper comparator family in this
-  canonical normal form.
+```text
+k(a,b) = (81a² - 46ab + 72b²,
+          2(36a² - 41ab + 71b²),
+          2(5a² + 8ab + 21b²))
+```
 
-Together, the affine-normal transport, invariant-vector obstruction, and
-determinant calculation give the key separation: the improper family cannot
-be made proper through the single-invertible-matrix canonical normal form used
-in the source’s linear-reduction analysis.
+by mass `163a² - 112ab + 256b²`; the zero-coefficient case uses a vertex.
+The proof includes square-completion certificates for nonnegativity and strict
+positive mass, so it does not rely on an external numerical solver. It also
+shows that `(1,0)` is an improper comparator.
+
+The second generic theorem formalizes the canonical-correction core of the
+source's Lemma 5: if an extreme action has two selected comparators with
+nonzero antipodal displacements, no invertible correction can map both back
+into the action set. Instantiating it at the first simplex vertex and the
+coefficient endpoints `(1,0)` and `(-1,0)` rules out a canonical properizer of
+the matrix family. The all-ones vector is separately certified as a common
+invariant of that family, explaining why the Lemma-4 mechanism alone does not
+exclude it.
 
 ## Exact scope
 
-The formalization targets the explicit construction in Section 4.4.1 of the
-source and the dimension-three affine-hyperplane implication in the proof of
-its Lemma 4. It assumes the paper’s canonical correction equation directly,
-packages its affine-normal transport as a reusable lemma for arbitrary action
-sets `P : Set (Fin 3 → ℝ)`, then specializes it to the source's skew family.
-It does not formalize the paper’s wider affine-reduction machinery that derives
-this normal form, its minimality and rate-preservation arguments, or an online
-regret algorithm. That boundary is intentional: the five selected theorems
-establish the concrete fixed-point, impropriety, affine-hyperplane transport,
-skew-family obstruction, determinant, and no-reduction claims needed for this
-finite construction.
+The formalization assumes the paper's displayed **canonical normal form**
 
-The repository retains earlier Blackwell approachability, finite-game, minimax,
-and norm-conversion modules as supporting work, but they are not the Palomar
-selection.
+```text
+p ↦ p + S (φq(p) - p)
+```
+
+with `det S ≠ 0`, and proves the finite-dimensional consequences above. It
+does not formalize the paper's full bidirectional affine-equivalence
+definition, the derivation of this canonical equation from that definition,
+its rate-preservation/minimality machinery, an online learner, or a priority
+claim. In particular, the repository proves the canonical-normal-form cores
+of Lemmas 4 and 5 rather than silently upgrading them to the paper's full
+linear-equivalence theorems.
+
+Earlier Blackwell approachability, finite-game, minimax, and norm-conversion
+modules remain in the repository as supporting work; they are not part of the
+Palomar selection.
 
 ## Layout
 
-- `BlackwellIrreducibility.lean` contains the complete proof.
-- `BlackwellChallenge.lean` is the Mathlib-only five-theorem statement
-  surface.
-- `BlackwellSolution.lean` provides checked adapters to the implementation.
-- `BlackwellIrreducibilityExamples.lean` checks both the affine-hyperplane
-  and simplex transport specializations, explicit endpoint calculations, and
-  the headline predicates.
-- `formalization.yaml` records the source-to-statement relationship and the
-  exact scope.
+- `BlackwellIrreducibility.lean` contains the complete proof and the two
+  explicit source families.
+- `BlackwellChallenge.lean` is the Mathlib-only nine-theorem statement surface.
+- `BlackwellSolution.lean` supplies checked adapters to the implementation.
+- `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
+  the two generic obstructions, and their concrete no-reduction corollaries.
+- `formalization.yaml` records source alignment, scope, and review boundaries.
 
 ## Build and verification
 
@@ -87,24 +110,21 @@ lake build
 bash scripts/verify-palomar.sh
 ```
 
-The preparation gate checks the independent Challenge import closure, the exact
-five-declaration Challenge/Solution surface, absence of implementation
-placeholders, source dependency closure, named-theorem axiom allowlist, the
-official renderer’s isolated notation audit, metadata alignment, and executable
-construction regressions. The pinned Comparator/NanoDa replay is available via
-`scripts/verify-comparator.sh`; macOS requires the explicit
-`PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because Landrun’s kernel sandbox is
-Linux-only. Hosted verification uses real Landrun.
+The preparation gate checks the independent Challenge import closure, exact
+nine-declaration Challenge/Solution surface, implementation-placeholder ban,
+source dependency closure, named-theorem axiom allowlist, official renderer
+notation audit, metadata alignment, and executable regressions. The pinned
+Comparator/NanoDa replay is available through `scripts/verify-comparator.sh`.
+macOS requires the explicit `PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because
+Landrun's kernel sandbox is Linux-only; hosted verification uses real Landrun.
 
 ## Attribution
-
-The primary source is:
 
 > Christoph Dann, Yishay Mansour, Mehryar Mohri, Jon Schneider, and
 > Balasubramanian Sivan. “Rate-Preserving Reductions for Blackwell
 > Approachability.” *Proceedings of the Thirty Eighth Conference on Learning
 > Theory*, PMLR 291:1380–1414, 2025.
 
-The formalization follows the source’s explicit construction and credits it
+The formalization follows the source constructions and credits them
 accordingly. AI assistance was used for proof engineering. The final
 definitions, statements, and proofs are checked by Lean.
