@@ -162,9 +162,8 @@ for source_path in (
         )
 
 implementation_sources = [
-    path for path in root.rglob("*.lean")
-    if ".lake" not in path.parts and ".cache" not in path.parts
-    and path.name != "BlackwellChallenge.lean"
+    path for path in root.glob("*.lean")
+    if path.name != "BlackwellChallenge.lean"
 ]
 if not implementation_sources:
     raise SystemExit("error: no implementation Lean sources found")
