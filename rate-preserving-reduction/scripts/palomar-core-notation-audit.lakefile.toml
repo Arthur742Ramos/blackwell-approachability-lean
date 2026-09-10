@@ -1,0 +1,7 @@
+name = "PalomarCoreNotationAudit"
+defaultTargets = ["palomar-audit"]
+
+[[lean_exe]]
+name = "palomar-audit"
+root = "PalomarAudit"
+supportInterpreter = true

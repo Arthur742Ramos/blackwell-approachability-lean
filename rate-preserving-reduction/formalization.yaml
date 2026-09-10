@@ -1,0 +1,162 @@
+version: "v0.4"
+project:
+  name: "Finite tight Blackwell approachability-to-improper phi-regret reduction in Lean"
+  description: >-
+    A Mathlib-only finite-simplex, algorithmic specialization of Theorem 4 in
+    Dann, Mansour, Mohri, Schneider, and Sivan (COLT 2025). It realizes the
+    tensor action space as a joint simplex, defines the source improper
+    comparator by adding a mixed-constraint tensor the canonical action
+    marginal, proves that comparator escapes the action set, and proves exact
+    finite-horizon equality between approachability loss and improper
+    phi-regret under explicit causal strategy translations in both directions.
+  authors: ["Arthur Freitas Ramos"]
+  responsible_maintainers: ["Arthur Freitas Ramos"]
+  license: "BSD-3-Clause"
+classification:
+  arxiv: ["cs.GT", "cs.LG"]
+  msc2020: ["91A26", "68T05"]
+research_context:
+  question: >-
+    Can the tight approachability-to-improper-phi-regret construction be
+    formalized with an unambiguous tensor action representation and explicit
+    causal strategy translations?
+  selected_result: >-
+    For finite simplex actions and a finite convex hull of bilinear
+    constraints, the joint-simplex realization has a canonical marginal
+    decoder. The formally selected construction proves proper typing of lift
+    and decode, pointwise and finite-horizon exact loss identities, genuine
+    improperness of the comparator, and exact preservation for both online
+    strategy translations using the same prior-loss histories.
+  audience: >-
+    Learning theorists and game theorists studying Blackwell approachability,
+    regret transformations, and rate-preserving reductions, as well as Lean
+    users who need audited finite-dimensional online-learning reductions.
+  boundary: >-
+    This is a source-faithful finite convex-hull/simplex specialization of an
+    existing COLT 2025 theorem. It does not claim independent mathematical
+    novelty, the paper's arbitrary bounded-convex or abstract-tensor setting,
+    randomized strategies, complexity bounds, asymptotic rate infima, or its
+    later linear-equivalence characterizations.
+sources:
+  - title: "Rate-Preserving Reductions for Blackwell Approachability"
+    authors:
+      ["Christoph Dann", "Yishay Mansour", "Mehryar Mohri", "Jon Schneider",
+       "Balasubramanian Sivan"]
+    id: "https://proceedings.mlr.press/v291/dann25a.html"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Formalizes a finite-simplex specialization of the construction in
+      Theorem 4. The implementation uses the joint simplex as the convex hull
+      of elementary tensors, which supplies a canonical action marginal and
+      makes the comparator well-defined on every mixed tensor action. It
+      verifies exact trajectory and causal-strategy loss identities, but does
+      not claim the paper's full generality or asymptotic rate theory.
+    author_endorsement: "not-contacted"
+  - title: "An analog of the minimax theorem for vector payoffs"
+    authors: ["David Blackwell"]
+    id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-6/issue-1/An-analog-of-the-minimax-theorem-for-vector-payoffs/pjm/1103044269.full"
+    type: "paper"
+    relationship: "background"
+    note: "Historical background for Blackwell approachability."
+    author_endorsement: "not-contacted"
+related_formalizations:
+  - name: "Irreducible improper phi-regret in Lean"
+    relationship: "builds-on"
+    note: >-
+      A separate approved Palomar entry at the repository root formalizes
+      finite irreducibility obstructions. This nested project has an
+      independent Challenge, Solution, Comparator configuration, and intended
+      blank existing-id field; it is not a version update of that entry.
+status:
+  scope: >-
+    Nine selected statements formalize the finite-simplex reduction. The
+    action and constraint spaces are probability simplexes; joint tensor
+    actions are nonnegative tables of mass one; the action marginal and
+    anchored rank-one lift are shown to preserve the required action spaces.
+    The shift comparator adds a rank-one table with the same marginal, so its
+    total mass is two and it is improper. For every coordinate loss, the
+    source pairing difference B(x,l)-B(shift(w,x),l) equals the original
+    mixed constraint score. The equality is summed over arbitrary finite
+    horizons, lifted to the supremum objectives, and transported through
+    explicit functions from loss histories to actions. Thus both causal
+    strategy translations preserve every finite loss sequence exactly. The
+    package does not prove arbitrary-convex-set, randomized, complexity, or
+    asymptotic rate claims.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+automation:
+  methods:
+    - method: "agent"
+      models: ["GPT-5 Codex"]
+      framework: "Lean 4 and Mathlib"
+      tool_setup: >-
+        Pinned Lake dependency; independent Mathlib-only Challenge; named
+        theorem axiom audit; exact Comparator and NanoDa replay; hosted
+        readiness workflow.
+      prompting_notes: >-
+        User requested a new standalone Palomar candidate with a
+        source-faithful strong result rather than a version update of the
+        approved irreducibility artifact.
+  notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
+fidelity:
+  divergences: >-
+    The cited theorem writes X = U tensor P. This project takes finite
+    U=Delta_m and P=Delta_n and realizes their convex tensor hull as the
+    joint simplex Delta_(m x n). The action marginal is consequently
+    canonical. The source comparator phi_w(u' tensor p)=(u'+w) tensor p is
+    implemented as x + w tensor marginal(x), which agrees on elementary
+    tensors and is well-defined on every joint action. The source loss map
+    M_B is represented by reducedLoss. The development proves the exact
+    loss identities for deterministic history-based strategies and finite
+    loss lists. It does not formalize the general continuous setting,
+    randomized algorithms, or the source's rate-definition limits.
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: >-
+    No independent human or Palomar editorial approval is claimed. The nine
+    Challenge holes occur only in the independent statement surface and are
+    excluded from status.sorry_count; implementation, Solution, and examples
+    have no proof placeholders. Hosted Comparator verification and editorial
+    review remain separate states.
+alignment:
+  namespace: "Blackwell.RateReduction.Palomar"
+  statements:
+    - source: "Joint action marginal lies in the original simplex"
+      lean: "Blackwell.RateReduction.Palomar.marginal_simplex"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Elementary tensor lies in the joint simplex"
+      lean: "Blackwell.RateReduction.Palomar.outer_jointSimplex"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Marginal is a left inverse of the anchored tensor lift"
+      lean: "Blackwell.RateReduction.Palomar.marginal_outer"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Theorem 4 one-step pairing identity"
+      lean: "Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Finite-horizon sum of the pairing identity"
+      lean: "Blackwell.RateReduction.Palomar.regretSum_eq_approachSum"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Exact objective equality for arbitrary joint trajectories"
+      lean: "Blackwell.RateReduction.Palomar.regretLoss_eq_approachLoss"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Improperness of the source comparator"
+      lean: "Blackwell.RateReduction.Palomar.shift_is_improper"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Explicit finite-trajectory tight reduction"
+      lean: "Blackwell.RateReduction.Palomar.finiteTensorTightReduction_of_anchor"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Explicit causal-strategy tight reduction"
+      lean: "Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor"
+      module: "RateReductionSolution.lean"
+      status: "proved"

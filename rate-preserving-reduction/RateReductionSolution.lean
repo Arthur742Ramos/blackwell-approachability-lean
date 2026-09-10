@@ -1,0 +1,211 @@
+import RateReduction
+
+set_option autoImplicit false
+
+/-!
+# Proof surface: finite tight approachability-to-improper-regret reduction
+
+The declarations below mirror `RateReductionChallenge.lean`.  Their proofs
+adapt the independently checked finite-simplex construction in
+`RateReduction.lean`; the public theorem names remain local so that the
+Challenge needs only Mathlib.
+-/
+
+namespace Blackwell.RateReduction.Palomar
+
+open scoped BigOperators
+
+noncomputable section
+
+abbrev Dist (n : Type) := n → ℝ
+abbrev Joint (m n : Type) := m → n → ℝ
+
+def simplex {n : Type} [Fintype n] (p : Dist n) : Prop :=
+  Blackwell.RateReduction.simplex p
+
+abbrev Mixed (n : Type) [Fintype n] := {p : Dist n // simplex p}
+
+def jointSimplex {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  Blackwell.RateReduction.jointSimplex x
+
+abbrev JointMixed (m n : Type) [Fintype m] [Fintype n] :=
+  {x : Joint m n // jointSimplex x}
+
+def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
+  Blackwell.RateReduction.marginal x
+
+def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
+  Blackwell.RateReduction.outer w p
+
+def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
+  Blackwell.RateReduction.shift w x
+
+theorem marginal_simplex {m n : Type} [Fintype m] [Fintype n]
+    {x : Joint m n} (hx : jointSimplex x) : simplex (marginal x) := by
+  exact Blackwell.RateReduction.marginal_simplex hx
+
+theorem outer_jointSimplex {m n : Type} [Fintype m] [Fintype n]
+    {w : Dist m} {p : Dist n} (hw : simplex w) (hp : simplex p) :
+    jointSimplex (outer w p) := by
+  exact Blackwell.RateReduction.outer_jointSimplex hw hp
+
+theorem marginal_outer {m n : Type} [Fintype m] [Fintype n]
+    {w : Dist m} {p : Dist n} (hw : simplex w) :
+    marginal (outer w p) = p := by
+  exact Blackwell.RateReduction.marginal_outer hw
+
+def lift {m n : Type} [Fintype m] [Fintype n]
+    (anchor : Mixed m) (p : Mixed n) : JointMixed m n :=
+  Blackwell.RateReduction.lift anchor p
+
+def decode {m n : Type} [Fintype m] [Fintype n]
+    (x : JointMixed m n) : Mixed n :=
+  Blackwell.RateReduction.decode x
+
+lemma decode_lift {m n : Type} [Fintype m] [Fintype n]
+    (anchor : Mixed m) (p : Mixed n) : decode (lift anchor p) = p := by
+  exact Blackwell.RateReduction.decode_lift anchor p
+
+abbrev Payoff (m n d : Type) := m → n → d → ℝ
+
+def reducedLoss {m n d : Type} [Fintype d]
+    (u : Payoff m n d) (l : Dist d) : Joint m n :=
+  Blackwell.RateReduction.reducedLoss u l
+
+def flatten {m n : Type} (x : Joint m n) : m × n → ℝ :=
+  Blackwell.RateReduction.flatten x
+
+def pairing {m n : Type} [Fintype m] [Fintype n]
+    (x y : Joint m n) : ℝ :=
+  Blackwell.RateReduction.pairing x y
+
+def score {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (w : Dist m) (p : Dist n) (l : Dist d) : ℝ :=
+  Blackwell.RateReduction.score u w p l
+
+theorem pairing_shift_sub_pairing_eq_score
+    {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (w : Dist m) (x : Joint m n) (l : Dist d) :
+    pairing x (reducedLoss u l) - pairing (shift w x) (reducedLoss u l) =
+      score u w (marginal x) l := by
+  exact Blackwell.RateReduction.pairing_shift_sub_pairing_eq_score u w x l
+
+def approachSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (w : Mixed m)
+    (p : Fin T → Mixed n) (l : Fin T → Dist d) : ℝ :=
+  ∑ t, score u w.1 (p t).1 (l t)
+
+def regretSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (w : Mixed m)
+    (x : Fin T → JointMixed m n) (l : Fin T → Dist d) : ℝ :=
+  ∑ t, (pairing (x t).1 (reducedLoss u (l t)) -
+    pairing (shift w.1 (x t).1) (reducedLoss u (l t)))
+
+theorem regretSum_eq_approachSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (w : Mixed m)
+    (x : Fin T → JointMixed m n) (l : Fin T → Dist d) :
+    regretSum u w x l = approachSum u w (fun t => decode (x t)) l := by
+  exact Blackwell.RateReduction.regretSum_eq_approachSum u w x l
+
+def approachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (p : Fin T → Mixed n)
+    (l : Fin T → Dist d) : ℝ :=
+  sSup (Set.range fun w : Mixed m => approachSum u w p l)
+
+def regretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
+    (l : Fin T → Dist d) : ℝ :=
+  sSup (Set.range fun w : Mixed m => regretSum u w x l)
+
+def liftTrajectory {m n : Type} [Fintype m] [Fintype n]
+    (anchor : Mixed m) {T : ℕ} (p : Fin T → Mixed n) : Fin T → JointMixed m n :=
+  fun t => lift anchor (p t)
+
+def decodeTrajectory {m n : Type} [Fintype m] [Fintype n]
+    {T : ℕ} (x : Fin T → JointMixed m n) : Fin T → Mixed n :=
+  fun t => decode (x t)
+
+theorem regretLoss_eq_approachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
+    (l : Fin T → Dist d) :
+    regretLoss u x l = approachLoss u (decodeTrajectory x) l := by
+  exact Blackwell.RateReduction.regretLoss_eq_approachLoss u x l
+
+theorem approach_to_regret_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (anchor : Mixed m)
+    (p : Fin T → Mixed n) (l : Fin T → Dist d) :
+    regretLoss u (liftTrajectory anchor p) l = approachLoss u p l := by
+  exact Blackwell.RateReduction.approach_to_regret_exact u anchor p l
+
+theorem regret_to_approach_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
+    (l : Fin T → Dist d) :
+    approachLoss u (decodeTrajectory x) l = regretLoss u x l := by
+  exact Blackwell.RateReduction.regret_to_approach_exact u x l
+
+def FiniteTensorTightReduction {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) : Prop :=
+  ∃ anchor : Mixed m,
+    (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
+      regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
+    ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
+      approachLoss u (decodeTrajectory x) l = regretLoss u x l
+
+def shiftImproper {m n : Type} [Fintype m] [Fintype n] : Prop :=
+  ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
+
+theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n] :
+    shiftImproper (m := m) (n := n) := by
+  exact Blackwell.RateReduction.shift_is_improper
+
+theorem finiteTensorTightReduction_of_anchor
+    {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u := by
+  exact Blackwell.RateReduction.finiteTensorTightReduction_of_anchor u anchor
+
+abbrev OnlineStrategy (A L : Type) := List L → A
+
+def runTrajectory {A L : Type} (alg : OnlineStrategy A L)
+    (losses : List L) : Fin losses.length → A :=
+  fun t => alg (losses.take t.1)
+
+def lossTrajectory {L : Type} (losses : List L) : Fin losses.length → L :=
+  fun t => losses.get t
+
+def liftStrategy {m n d : Type} [Fintype m] [Fintype n]
+    (anchor : Mixed m) (alg : OnlineStrategy (Mixed n) (Dist d)) :
+    OnlineStrategy (JointMixed m n) (Dist d) :=
+  fun history => lift anchor (alg history)
+
+def decodeStrategy {m n d : Type} [Fintype m] [Fintype n]
+    (alg : OnlineStrategy (JointMixed m n) (Dist d)) :
+    OnlineStrategy (Mixed n) (Dist d) :=
+  fun history => decode (alg history)
+
+def onlineApproachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (alg : OnlineStrategy (Mixed n) (Dist d))
+    (losses : List (Dist d)) : ℝ :=
+  approachLoss u (runTrajectory alg losses) (lossTrajectory losses)
+
+def onlineRegretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (alg : OnlineStrategy (JointMixed m n) (Dist d))
+    (losses : List (Dist d)) : ℝ :=
+  regretLoss u (runTrajectory alg losses) (lossTrajectory losses)
+
+def AlgorithmicFiniteTensorTightReduction {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d) : Prop :=
+  ∃ anchor : Mixed m,
+    (∀ alg losses,
+      onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
+    ∀ alg losses,
+      onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
+
+theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d]
+    (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u := by
+  exact Blackwell.RateReduction.algorithmicFiniteTensorTightReduction_of_anchor u anchor
+
+end
+
+end Blackwell.RateReduction.Palomar

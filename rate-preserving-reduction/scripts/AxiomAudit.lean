@@ -1,0 +1,11 @@
+import RateReductionSolution
+
+#print axioms Blackwell.RateReduction.Palomar.marginal_simplex
+#print axioms Blackwell.RateReduction.Palomar.outer_jointSimplex
+#print axioms Blackwell.RateReduction.Palomar.marginal_outer
+#print axioms Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score
+#print axioms Blackwell.RateReduction.Palomar.regretSum_eq_approachSum
+#print axioms Blackwell.RateReduction.Palomar.regretLoss_eq_approachLoss
+#print axioms Blackwell.RateReduction.Palomar.shift_is_improper
+#print axioms Blackwell.RateReduction.Palomar.finiteTensorTightReduction_of_anchor
+#print axioms Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor

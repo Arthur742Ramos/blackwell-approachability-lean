@@ -1,0 +1,21 @@
+{
+  "challenge_module": "RateReductionChallenge",
+  "solution_module": "RateReductionSolution",
+  "theorem_names": [
+    "Blackwell.RateReduction.Palomar.marginal_simplex",
+    "Blackwell.RateReduction.Palomar.outer_jointSimplex",
+    "Blackwell.RateReduction.Palomar.marginal_outer",
+    "Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score",
+    "Blackwell.RateReduction.Palomar.regretSum_eq_approachSum",
+    "Blackwell.RateReduction.Palomar.regretLoss_eq_approachLoss",
+    "Blackwell.RateReduction.Palomar.shift_is_improper",
+    "Blackwell.RateReduction.Palomar.finiteTensorTightReduction_of_anchor",
+    "Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

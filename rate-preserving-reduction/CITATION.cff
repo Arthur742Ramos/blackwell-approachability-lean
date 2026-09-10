@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it and its source paper."
+title: "A finite tight reduction from Blackwell approachability to improper phi-regret in Lean"
+version: "0.1.0"
+date-released: 2026-09-10
+license: BSD-3-Clause
+authors:
+  - family-names: Ramos
+    given-names: Arthur Freitas
+references:
+  - type: conference-paper
+    title: "Rate-Preserving Reductions for Blackwell Approachability"
+    authors:
+      - family-names: Dann
+        given-names: Christoph
+      - family-names: Mansour
+        given-names: Yishay
+      - family-names: Mohri
+        given-names: Mehryar
+      - family-names: Schneider
+        given-names: Jon
+      - family-names: Sivan
+        given-names: Balasubramanian
+    year: 2025
+    url: "https://proceedings.mlr.press/v291/dann25a.html"
