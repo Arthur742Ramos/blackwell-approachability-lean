@@ -6,6 +6,25 @@ Sivan, “Rate-Preserving Reductions for Blackwell Approachability,” COLT 2025
 It is a source-grounded formalization of the paper's finite-dimensional
 obstructions, not a claim of new mathematics.
 
+## Research context and intended audience
+
+The source paper asks a concrete learning-theory question: when can an
+improper φ-regret instance be transferred, without losing its convergence
+rate, to a standard proper φ-regret instance by an invertible linear
+reduction?  Its Section 4.4.1 examples give two different negative mechanisms
+for that program.  The skew-simplex family fails the shared left-invariant
+condition; the A/B family retains that invariant but fails at an extreme
+simplex action through antipodal displacements.
+
+The selected formal results verify both counterexample mechanisms together
+with the finite loss-pairing and vertex/corner steps that turn the reduction
+equations into concrete, exact constraints.  They are therefore relevant to
+learning theorists studying Blackwell approachability, regret transformations,
+and finite convex games, as well as to formalization researchers auditing
+reduction arguments with explicit matrix data.  The contribution is an
+auditable mechanization of existing COLT research—not a claim of independent
+novelty, priority, or a formalization of the paper's entire rate theory.
+
 ## Checked result
 
 The public Challenge/Solution boundary selects twenty-one declarations. Together,

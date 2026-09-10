@@ -23,6 +23,11 @@ aligned = [item["lean"] for item in data["alignment"]["statements"]]
 assert aligned == selected
 assert data["classification"]["arxiv"]
 assert data["classification"]["msc2020"]
+research_context = data["research_context"]
+for key in ("question", "selected_result", "audience", "boundary"):
+    assert isinstance(research_context[key], str) and research_context[key].strip()
+assert "rate-preserving" in research_context["question"]
+assert "existing COLT 2025" in research_context["boundary"]
 assert data["sources"]
 allowed_source_relationships = {
     "formalizes",

@@ -4,8 +4,10 @@ project:
   description: >-
     A Mathlib-only formalization of two explicit three-action improper
     phi-regret families in Section 4.4.1 of Dann, Mansour, Mohri, Schneider,
-    and Sivan (COLT 2025). It proves valid-improper-family certificates for
-    both constructions, the affine-hyperplane invariant-transport core of
+    and Sivan (COLT 2025). They are the paper's finite counterexample families
+    for its rate-preserving linear-reduction program. It proves
+    valid-improper-family certificates for both constructions, the
+    affine-hyperplane invariant-transport core of
     Lemma 4, the extreme-point antipodal-displacement core of Lemma 5, and
     finite-dimensional Equation-(15)-to-(16), Equation-(16)-to-(17), and
     concrete Equation-(18) vertex/corner bridges. It then instantiates those
@@ -18,6 +20,27 @@ project:
 classification:
   arxiv: ["cs.GT", "cs.LG"]
   msc2020: ["91A26", "68T05"]
+research_context:
+  question: >-
+    When can an improper phi-regret instance be transferred by a
+    rate-preserving invertible linear reduction to a proper phi-regret
+    instance?
+  selected_result: >-
+    The two Section 4.4.1 counterexample families exhibit distinct obstructions
+    to that reduction program. The selected Lean surface verifies their
+    fixed-point/impropriety certificates, their canonical reduction
+    obstructions, the finite loss-pairing bridge, and the exact finite
+    vertex/corner criteria used to test canonical properness.
+  audience: >-
+    Researchers in learning theory and game theory working on Blackwell
+    approachability, regret transformations, and finite convex games; and
+    formalization researchers who need auditable finite-dimensional reduction
+    arguments with explicit matrix data.
+  boundary: >-
+    This is a mechanization of existing COLT 2025 results. It does not claim
+    independent mathematical novelty, the paper's complete affine-equivalence
+    or rate-preservation theory, or its general randomized reduction
+    algorithm.
 sources:
   - title: "Rate-Preserving Reductions for Blackwell Approachability"
     authors:
