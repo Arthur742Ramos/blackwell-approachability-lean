@@ -19,6 +19,10 @@ example : skewPhi vertex0 vertex0 1 = 1 := by
 example : validImproperInstance :=
   skewPhi_valid_improper_instance
 
+example :
+    ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v :=
+  skewPhi_has_no_nonzero_common_invariant
+
 example : ¬ canonicalProperReduction :=
   skewPhi_not_canonically_proper_reducible
 

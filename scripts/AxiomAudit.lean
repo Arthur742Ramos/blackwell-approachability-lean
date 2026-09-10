@@ -1,5 +1,7 @@
 import BlackwellSolution
 
 #print axioms Blackwell.Palomar.skewPhi_valid_improper_instance
+#print axioms Blackwell.Palomar.canonical_proper_has_nonzero_common_invariant
+#print axioms Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant
 #print axioms Blackwell.Palomar.canonical_proper_matrices_are_singular
 #print axioms Blackwell.Palomar.skewPhi_not_canonically_proper_reducible

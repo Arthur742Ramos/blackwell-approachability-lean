@@ -19,11 +19,15 @@ project therefore defines the small domain-specific predicates
 `canonicalProperReduction` locally, while reusing Mathlib’s general algebra.
 
 The construction follows Dann et al., Section 4.4.1. The fixed point and the
-three endpoint calculations were checked against the published formulas:
-for `q=(a,b,c)`, `M_q` is skew-symmetric and `(c,b,a)` is in its kernel. The
-canonical normal form is stated exactly as `p + S (phi(p) - p)`. The local
-scope intentionally stops before the source’s broader affine/rate/minimality
-theory, rather than rephrasing a narrower theorem as that broader result.
+three endpoint calculations were checked against the published formulas: for
+`q=(a,b,c)`, `M_q` is skew-symmetric and `(c,b,a)` is in its kernel. The
+canonical normal form is stated exactly as `p + S (phi(p) - p)`. In addition to
+the determinant consequence, the development formalizes the finite
+common-invariant mechanism of the source's first obstruction: an invertible
+properizer transports the simplex sum functional to a nonzero common invariant,
+which the three skew maps cannot share. The local scope intentionally stops
+before the source’s broader affine/rate/minimality theory, rather than
+rephrasing a narrower theorem as that broader result.
 
 No external formalization is imported. The Challenge source is independently
 Mathlib-only; the implementation exposes public helpers so the checked Solution

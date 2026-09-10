@@ -20,11 +20,13 @@ if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 3:
-    raise SystemExit(f"error: expected three Challenge holes, found {holes}")
+if holes != 5:
+    raise SystemExit(f"error: expected five Challenge holes, found {holes}")
 
 targets = [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
+    "Blackwell.Palomar.canonical_proper_has_nonzero_common_invariant",
+    "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
 ]
@@ -43,9 +45,14 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
     source = source_path.read_text(encoding="utf-8")
     for required in (
         "def validImproperInstance",
+        "def nonzeroVec3",
+        "def displacement",
+        "def commonInvariant",
         "def canonicalProper",
         "def canonicalProperReduction",
         "theorem skewPhi_valid_improper_instance",
+        "theorem canonical_proper_has_nonzero_common_invariant",
+        "theorem skewPhi_has_no_nonzero_common_invariant",
         "theorem canonical_proper_matrices_are_singular",
         "theorem skewPhi_not_canonically_proper_reducible",
     ):
@@ -86,5 +93,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "three holes, three selected targets."
+    "five holes, five selected targets."
 )

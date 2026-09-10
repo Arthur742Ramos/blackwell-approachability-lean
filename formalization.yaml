@@ -5,8 +5,9 @@ project:
     A Mathlib-only formalization of the explicit three-action improper
     phi-regret construction from Dann, Mansour, Mohri, Schneider, and Sivan
     (COLT 2025). It proves that every convexly mixed comparator has a fixed
-    point in the action simplex, that the family is genuinely improper, and
-    that every matrix in the paper's canonical proper-reduction normal form is
+    point in the action simplex, that the family is genuinely improper, that
+    an invertible canonical properizer would induce a nonzero common invariant
+    which this family cannot possess, and that every canonical properizer is
     singular. Consequently no invertible canonical reduction turns the family
     into proper phi-regret.
   authors: ["Arthur Freitas Ramos"]
@@ -28,7 +29,8 @@ sources:
       Section 4.4.1 and its obstruction to the canonical single-invertible-
       matrix proper-reduction normal form. The source develops a broader
       reduction theory; this package records precisely the focused finite-
-      dimensional construction and determinant proof.
+      dimensional construction, common-invariant obstruction, and determinant
+      proof.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
@@ -42,17 +44,20 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Three selected statements formalize a single source-backed result. The
+    Five selected statements formalize a single source-backed result. The
     action set is Delta_3 and the comparator family is the convex hull of the
     three explicit maps in the cited construction. The first theorem proves
     that every mixture has the concrete fixed point (c,b,a) and that a vertex
-    comparator exits Delta_3. The second proves that any correction matrix S
-    satisfying p + S(phi(p)-p) in Delta_3 for every comparator and action has
-    determinant zero. The third derives the absence of an invertible canonical
-    proper reduction. This is the canonical normal form from the source's
-    reduction analysis; it does not formalize its general affine reduction
-    framework, minimality/rate machinery, a regret algorithm, or a claim of
-    mathematical priority.
+    comparator exits Delta_3. The second proves that an invertible canonical
+    properizer transports the simplex sum functional to a nonzero common
+    invariant; the third proves the skew family admits no such vector. The
+    fourth proves that any correction matrix S satisfying
+    p + S(phi(p)-p) in Delta_3 for every comparator and action has determinant
+    zero. The fifth derives the absence of an invertible canonical proper
+    reduction. This is the canonical normal form from the source's reduction
+    analysis; it does not formalize its general affine reduction framework,
+    minimality/rate machinery, a regret algorithm, or a claim of mathematical
+    priority.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -75,15 +80,17 @@ fidelity:
     4.4.1 construction exactly after identifying q=(a,b,c) in Delta_3 and
     using phi_q=Id-M_q. The reduction predicate formalizes the paper's
     canonical normal form phi'_q(p)=p+S(phi_q(p)-p), with invertibility over
-    real three-space represented by det(S) not equal to zero. The package does
-    not prove the source's separate derivation of this form from arbitrary
-    affine maps, nor its rate-preservation/minimal-instance theory. It makes
-    no novel-result claim and does not implement an online learner.
+    real three-space represented by det(S) not equal to zero. Its proof also
+    formalizes the concrete common-invariant obstruction used for this family.
+    The package does not prove the source's separate derivation of this form
+    from arbitrary affine maps, nor its rate-preservation/minimal-instance
+    theory. It makes no novel-result claim and does not implement an online
+    learner.
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The three
+    No independent human or Palomar editorial approval is claimed. The five
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; the implementation and Solution contain
     no proof placeholders. Hosted Comparator verification and editorial review
@@ -93,6 +100,14 @@ alignment:
   statements:
     - source: "Valid improper phi-regret instance in Section 4.4.1"
       lean: "Blackwell.Palomar.skewPhi_valid_improper_instance"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Common-invariant consequence of a canonical properizer"
+      lean: "Blackwell.Palomar.canonical_proper_has_nonzero_common_invariant"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No common invariant for the three skew comparators"
+      lean: "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Canonical properization obstruction for the skew family"

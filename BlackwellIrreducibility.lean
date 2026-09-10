@@ -32,6 +32,11 @@ open scoped BigOperators Matrix
 /-- Real coordinate vectors for the three-action simplex. -/
 abbrev Vec3 := Fin 3 → ℝ
 
+/-- Coordinatewise witness that a three-vector is nonzero.  Keeping this
+predicate explicit makes the public theorem boundary independent of the
+renderer's function-space zero notation. -/
+def nonzeroVec3 (v : Vec3) : Prop := ∃ i, v i ≠ 0
+
 /-- The probability simplex on three actions. -/
 def simplex3 : Set Vec3 :=
   {p | (∀ i, 0 ≤ p i) ∧ ∑ i, p i = 1}
@@ -50,10 +55,20 @@ def skewPhi (q p : Vec3) : Vec3 :=
     p 1 + q 0 * p 0 - q 2 * p 2,
     p 2 - q 1 * p 0 + q 2 * p 1]
 
+/-- The displacement of an action under a comparator.  Naming it keeps the
+public invariant statements independent of function-space subtraction
+notation. -/
+def displacement (q p : Vec3) : Vec3 := skewPhi q p - p
+
+/-- A vector is common-invariant when it annihilates every comparator
+displacement on the action simplex. -/
+def commonInvariant (v : Vec3) : Prop :=
+  ∀ q ∈ simplex3, ∀ p ∈ simplex3, dotProduct (displacement q p) v = 0
+
 /-- The canonical correction used after the paper's linear-equivalence
 normalization. -/
 def corrected (S : Matrix (Fin 3) (Fin 3) ℝ) (q p : Vec3) : Vec3 :=
-  p + S *ᵥ (skewPhi q p - p)
+  p + S *ᵥ displacement q p
 
 /-- A matrix makes the entire comparator family proper in the canonical
 normal form precisely when each corrected map sends the simplex to itself. -/
@@ -123,7 +138,7 @@ lemma corrected_column0_sum (S : Matrix (Fin 3) (Fin 3) ℝ)
     ext i
     fin_cases i <;> norm_num [skewPhi, vertex0, vertex1]
   have hs := h.2
-  rw [corrected, hdiff] at hs
+  rw [corrected, displacement, hdiff] at hs
   norm_num [Matrix.mulVec, dotProduct, vertex0, vertex1, Fin.sum_univ_succ] at hs ⊢
   linarith
 
@@ -134,7 +149,7 @@ lemma corrected_column1_sum (S : Matrix (Fin 3) (Fin 3) ℝ)
     ext i
     fin_cases i <;> norm_num [skewPhi, vertex0, vertex1]
   have hs := h.2
-  rw [corrected, hdiff] at hs
+  rw [corrected, displacement, hdiff] at hs
   norm_num [Matrix.mulVec, dotProduct, vertex0, vertex1, Fin.sum_univ_succ] at hs ⊢
   linarith
 
@@ -145,7 +160,7 @@ lemma corrected_column2_sum (S : Matrix (Fin 3) (Fin 3) ℝ)
     ext i
     fin_cases i <;> norm_num [skewPhi, vertex0, vertex1, vertex2]
   have hs := h.2
-  rw [corrected, hdiff] at hs
+  rw [corrected, displacement, hdiff] at hs
   norm_num [Matrix.mulVec, dotProduct, vertex0, vertex2, Fin.sum_univ_succ] at hs ⊢
   linarith
 
@@ -159,6 +174,73 @@ lemma det_eq_zero_of_column_sums (S : Matrix (Fin 3) (Fin 3) ℝ)
   rw [Matrix.det_fin_three]
   rw [hs20, hs21, hs22]
   ring
+
+/-- The column-sum functional of a three-by-three matrix.  In the source's
+invariant-vector argument this is the vector obtained by transporting the
+simplex's affine defining functional through a candidate correction matrix. -/
+def columnSums (S : Matrix (Fin 3) (Fin 3) ℝ) : Vec3 :=
+  fun j => ∑ i, S i j
+
+lemma sum_mulVec_eq_dot_columnSums (S : Matrix (Fin 3) (Fin 3) ℝ) (x : Vec3) :
+    ∑ i, (S *ᵥ x) i = dotProduct (columnSums S) x := by
+  simp only [Matrix.mulVec, dotProduct, columnSums]
+  rw [Finset.sum_comm]
+  simp_rw [Finset.sum_mul]
+
+/-- A proper canonical correction transports the simplex's sum functional to
+a nonzero common invariant of the original comparator family.  This is the
+finite-dimensional mechanism behind the first irreducibility obstruction in
+Dann et al., Section 4.4.1. -/
+theorem canonical_proper_has_nonzero_common_invariant
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
+    (hproper : canonicalProper S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
+  let v : Vec3 := columnSums S
+  have hv : nonzeroVec3 v := by
+    by_contra hnot
+    rw [nonzeroVec3] at hnot
+    have hvzero : ∀ i, v i = 0 := by
+      intro i
+      by_contra hzero
+      exact hnot ⟨i, hzero⟩
+    apply hdet
+    apply det_eq_zero_of_column_sums S
+    · simpa [v, columnSums, Fin.sum_univ_succ, add_assoc] using hvzero 0
+    · simpa [v, columnSums, Fin.sum_univ_succ, add_assoc] using hvzero 1
+    · simpa [v, columnSums, Fin.sum_univ_succ, add_assoc] using hvzero 2
+  refine ⟨v, hv, ?_⟩
+  rw [commonInvariant]
+  intro q hq p hp
+  have hsum : ∑ i, (S *ᵥ displacement q p) i = 0 := by
+    have hcorrect := (hproper q hq p hp).2
+    have hcorrect' : (∑ i, p i) + ∑ i, (S *ᵥ displacement q p) i = 1 := by
+      simpa [corrected, displacement, Pi.add_apply, Finset.sum_add_distrib]
+        using hcorrect
+    linarith [hcorrect', hp.2]
+  rw [sum_mulVec_eq_dot_columnSums] at hsum
+  simpa [v, dotProduct, mul_comm] using hsum
+
+/-- The three skew comparators have no nonzero vector that is invariant for
+every comparator.  Three explicit vertex tests force all coordinates of such
+a vector to vanish. -/
+theorem skewPhi_has_no_nonzero_common_invariant :
+    ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
+  rintro ⟨v, hv, hinvariant⟩
+  rw [commonInvariant] at hinvariant
+  have h0 := hinvariant vertex0 vertex0_mem_simplex3
+    vertex1 vertex1_mem_simplex3
+  have h1 := hinvariant vertex0 vertex0_mem_simplex3
+    vertex0 vertex0_mem_simplex3
+  have h2 := hinvariant vertex1 vertex1_mem_simplex3
+    vertex0 vertex0_mem_simplex3
+  norm_num [displacement, skewPhi, vertex0, vertex1, vertex2, dotProduct,
+    Fin.sum_univ_succ] at h0 h1 h2
+  rw [nonzeroVec3] at hv
+  obtain ⟨i, hi⟩ := hv
+  fin_cases i
+  · exact hi (by simpa using h0)
+  · exact hi (by simpa using h1)
+  · exact hi (by simpa using h2)
 
 lemma skewPhi_fixed_point_in_simplex (q : Vec3) (hq : q ∈ simplex3) :
     ∃ p ∈ simplex3, skewPhi q p = p := by
@@ -198,6 +280,8 @@ theorem canonical_proper_matrices_are_singular (S : Matrix (Fin 3) (Fin 3) ℝ)
 that turns all its comparators into proper simplex self-maps. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
   rintro ⟨S, hdet, hproper⟩
-  exact hdet (canonical_proper_matrices_are_singular S hproper)
+  obtain ⟨v, hv, hinvariant⟩ :=
+    canonical_proper_has_nonzero_common_invariant S hdet hproper
+  exact skewPhi_has_no_nonzero_common_invariant ⟨v, hv, hinvariant⟩
 
 end Blackwell.Irreducibility

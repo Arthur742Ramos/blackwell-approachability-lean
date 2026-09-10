@@ -30,23 +30,31 @@ The checked result establishes all of the following.
 - Every `φq` has the explicit fixed point `(c,b,a) ∈ Δ₃`.
 - The family is genuinely improper: `φ(1,0,0)(0,1,0) = (-1,1,0)`, which lies
   outside `Δ₃`.
+- Any invertible canonical properizer would transport the simplex's affine
+  sum functional to a nonzero vector `v` satisfying
+  `⟨φq(p) - p, v⟩ = 0` for every comparator and every simplex point.
+- Three concrete endpoint calculations prove that this skew family has no
+  nonzero common invariant vector.
 - If a real `3 × 3` matrix `S` made every map
   `p ↦ p + S (φq(p) - p)` simplex-preserving, then `det S = 0`.
   Therefore no invertible `S` can produce a proper comparator family in this
   canonical normal form.
 
-The last bullet is the key separation: the improper family cannot be made
-proper through the single-invertible-matrix canonical normal form used in the
-source’s linear-reduction analysis.
+Together, the invariant-vector obstruction and determinant calculation give
+the key separation: the improper family cannot be made proper through the
+single-invertible-matrix canonical normal form used in the source’s
+linear-reduction analysis.
 
 ## Exact scope
 
 The formalization targets the explicit construction in Section 4.4.1 of the
-source and its canonical normal form. It does not formalize the paper’s wider
-affine-reduction machinery, its minimality and rate-preservation arguments, or
-an online regret algorithm. That boundary is intentional: the three selected
-theorems are the concrete fixed-point, impropriety, and determinant-obstruction
-claims needed for this finite construction.
+source and its canonical normal form. It includes the finite-dimensional
+common-invariant mechanism used by the source's first irreducibility
+obstruction. It does not formalize the paper’s wider affine-reduction
+machinery, its minimality and rate-preservation arguments, or an online regret
+algorithm. That boundary is intentional: the five selected theorems establish
+the concrete fixed-point, impropriety, invariant-obstruction, determinant, and
+no-reduction claims needed for this finite construction.
 
 The repository retains earlier Blackwell approachability, finite-game, minimax,
 and norm-conversion modules as supporting work, but they are not the Palomar
@@ -55,7 +63,7 @@ selection.
 ## Layout
 
 - `BlackwellIrreducibility.lean` contains the complete proof.
-- `BlackwellChallenge.lean` is the Mathlib-only three-theorem statement
+- `BlackwellChallenge.lean` is the Mathlib-only five-theorem statement
   surface.
 - `BlackwellSolution.lean` provides checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` checks the explicit endpoint
@@ -73,7 +81,7 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, the exact
-three-declaration Challenge/Solution surface, absence of implementation
+five-declaration Challenge/Solution surface, absence of implementation
 placeholders, source dependency closure, named-theorem axiom allowlist, the
 official renderer’s isolated notation audit, metadata alignment, and executable
 construction regressions. The pinned Comparator/NanoDa replay is available via

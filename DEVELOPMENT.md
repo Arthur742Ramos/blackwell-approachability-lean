@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly three proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly five proof
 placeholders, one for each selected source-backed theorem.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The Challenge
@@ -17,8 +17,20 @@ odd-dimensional skew-symmetric matrix from the cited construction. Its fixed
 point is `![c,b,a]`. The proof establishes this algebraically, then transfers
 simplex membership by permuting the coordinates of `q`.
 
-The central determinant argument uses only three endpoint tests. If a candidate
-matrix `S` makes every corrected map
+The central invariant argument transports the simplex's coordinate-sum
+functional through a hypothetical invertible correction matrix `S`. The
+resulting `columnSums S` is nonzero and satisfies
+
+```text
+⟨skewPhi q p - p, columnSums S⟩ = 0
+```
+
+for every comparator and simplex point. Three endpoint tests force every
+coordinate of any such common invariant to vanish, giving the source's first
+irreducibility mechanism in this concrete family.
+
+The complementary determinant argument uses the same three endpoint tests. If
+a candidate matrix `S` makes every corrected map
 
 ```text
 p ↦ p + S (skewPhi q p - p)
@@ -40,7 +52,8 @@ the repository as independent supporting experiments. They are deliberately not
 selected by the current Challenge or Comparator surface.
 
 `BlackwellIrreducibilityExamples.lean` gives fast regression coverage for the
-negative-coordinate impropriety witness, an endpoint calculation, the valid
-improper-instance theorem, and the no-reduction corollary. The validation gate
-also builds every default library and runs the official renderer notation audit
-against exactly the three selected declarations.
+negative-coordinate impropriety witness, endpoint calculations, the valid
+improper-instance theorem, the no-common-invariant theorem, and the
+no-reduction corollary. The validation gate also builds every default library
+and runs the official renderer notation audit against exactly the five selected
+declarations.
