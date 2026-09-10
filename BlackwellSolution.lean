@@ -17,7 +17,7 @@ open scoped BigOperators Matrix
 
 universe u
 
-abbrev Vec3 := Blackwell.Irreducibility.Vec3
+abbrev Vec3 := Fin 3 → ℝ
 
 def nonzeroVec3 (v : Vec3) : Prop := ∃ i, v i ≠ 0
 
@@ -34,7 +34,9 @@ def skewPhi (q p : Vec3) : Vec3 :=
     p 2 - q 1 * p 0 + q 2 * p 1]
 
 def skewDisplacementMatrix (q : Vec3) : Matrix (Fin 3) (Fin 3) ℝ :=
-  Blackwell.Irreducibility.skewDisplacementMatrix q
+  !![0, q 0, -q 1;
+     -q 0, 0, q 2;
+     q 1, -q 2, 0]
 
 def displacement (q p : Vec3) : Vec3 := skewPhi q p - p
 
@@ -93,26 +95,31 @@ def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
   ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
     S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
 
-def basisVector (j : Fin 3) : Vec3 := Blackwell.Irreducibility.basisVector j
+def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
 
 def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
-  Blackwell.Irreducibility.matrixColumn B j
+  fun i => B i j
 
 def lossBasisPairingIntertwining
     (M N S B : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
-  Blackwell.Irreducibility.lossBasisPairingIntertwining M N S B
+  ∀ i j : Fin 3,
+    dotProduct (M *ᵥ basisVector j) (S.transpose *ᵥ matrixColumn B i) =
+      dotProduct (N *ᵥ basisVector j) (matrixColumn B i)
 
 def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
     (q : α) (p : Vec3) : Vec3 :=
-  Blackwell.Irreducibility.matrixComparator N q p
+  p - N q *ᵥ p
 
 def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
-  Blackwell.Irreducibility.matrixProperOn P Q N
+  ∀ q ∈ Q, ∀ p ∈ P, matrixComparator N q p ∈ P
 
 def lossBasisProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
-  Blackwell.Irreducibility.lossBasisProperReductionOn P Q M
+  ∃ N : α → Matrix (Fin 3) (Fin 3) ℝ,
+    ∃ S B : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ B.det ≠ 0 ∧ matrixProperOn P Q N ∧
+        ∀ q ∈ Q, lossBasisPairingIntertwining (M q) (N q) S B
 
 def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
   x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
@@ -147,7 +154,7 @@ def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
   p + q.1 • (sourceA *ᵥ p) + q.2 • (sourceB *ᵥ p)
 
 def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
-  Blackwell.Irreducibility.sourceDisplacementMatrix q
+  -(q.1 • sourceA + q.2 • sourceB)
 
 def validImproperInstance : Prop :=
   (∀ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p = p) ∧
@@ -264,18 +271,10 @@ theorem skewPhi_not_normalized_proper_reducible :
 
 theorem skewPhi_not_loss_basis_proper_reducible :
     ¬ lossBasisProperReductionOn simplex3 simplex3 skewDisplacementMatrix := by
-  simpa [lossBasisProperReductionOn, matrixProperOn, matrixComparator,
-    lossBasisPairingIntertwining, basisVector, matrixColumn, simplex3,
-    skewDisplacementMatrix,
-    Blackwell.Irreducibility.lossBasisProperReductionOn,
-    Blackwell.Irreducibility.matrixProperOn,
-    Blackwell.Irreducibility.matrixComparator,
-    Blackwell.Irreducibility.lossBasisPairingIntertwining,
-    Blackwell.Irreducibility.basisVector,
-    Blackwell.Irreducibility.matrixColumn,
-    Blackwell.Irreducibility.simplex3,
-    Blackwell.Irreducibility.skewDisplacementMatrix]
-    using Blackwell.Irreducibility.skewPhi_not_loss_basis_proper_reducible
+  change ¬ Blackwell.Irreducibility.lossBasisProperReductionOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.simplex3
+      Blackwell.Irreducibility.skewDisplacementMatrix
+  exact Blackwell.Irreducibility.skewPhi_not_loss_basis_proper_reducible
 
 theorem sourceAB_valid_improper_family :
     validImproperFamily simplex3 sourceCoefficients sourcePhi := by
@@ -331,19 +330,9 @@ theorem sourceAB_not_normalized_proper_reducible :
 
 theorem sourceAB_not_loss_basis_proper_reducible :
     ¬ lossBasisProperReductionOn simplex3 sourceCoefficients sourceDisplacementMatrix := by
-  simpa [lossBasisProperReductionOn, matrixProperOn, matrixComparator,
-    lossBasisPairingIntertwining, basisVector, matrixColumn, simplex3,
-    sourceCoefficients, sourceDisplacementMatrix, sourceA, sourceB,
-    Blackwell.Irreducibility.lossBasisProperReductionOn,
-    Blackwell.Irreducibility.matrixProperOn,
-    Blackwell.Irreducibility.matrixComparator,
-    Blackwell.Irreducibility.lossBasisPairingIntertwining,
-    Blackwell.Irreducibility.basisVector,
-    Blackwell.Irreducibility.matrixColumn,
-    Blackwell.Irreducibility.simplex3,
-    Blackwell.Irreducibility.sourceCoefficients,
-    Blackwell.Irreducibility.sourceDisplacementMatrix,
-    Blackwell.Irreducibility.sourceA, Blackwell.Irreducibility.sourceB]
-    using Blackwell.Irreducibility.sourceAB_not_loss_basis_proper_reducible
+  change ¬ Blackwell.Irreducibility.lossBasisProperReductionOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.sourceCoefficients
+      Blackwell.Irreducibility.sourceDisplacementMatrix
+  exact Blackwell.Irreducibility.sourceAB_not_loss_basis_proper_reducible
 
 end Blackwell.Palomar
