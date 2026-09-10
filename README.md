@@ -30,9 +30,11 @@ The checked result establishes all of the following.
 - Every `φq` has the explicit fixed point `(c,b,a) ∈ Δ₃`.
 - The family is genuinely improper: `φ(1,0,0)(0,1,0) = (-1,1,0)`, which lies
   outside `Δ₃`.
-- Any invertible canonical properizer would transport the simplex's affine
-  sum functional to a nonzero vector `v` satisfying
-  `⟨φq(p) - p, v⟩ = 0` for every comparator and every simplex point.
+- For any selected family of comparators on `Δ₃`, an invertible canonical
+  properizer transports the simplex's affine sum functional to a nonzero
+  vector `v` satisfying `⟨φq(p) - p, v⟩ = 0` for every selected comparator and
+  every simplex point. The skew family is a specialization of this reusable
+  transport lemma.
 - Three concrete endpoint calculations prove that this skew family has no
   nonzero common invariant vector.
 - If a real `3 × 3` matrix `S` made every map
@@ -48,13 +50,15 @@ linear-reduction analysis.
 ## Exact scope
 
 The formalization targets the explicit construction in Section 4.4.1 of the
-source and its canonical normal form. It includes the finite-dimensional
-common-invariant mechanism used by the source's first irreducibility
-obstruction. It does not formalize the paper’s wider affine-reduction
-machinery, its minimality and rate-preservation arguments, or an online regret
-algorithm. That boundary is intentional: the five selected theorems establish
-the concrete fixed-point, impropriety, invariant-obstruction, determinant, and
-no-reduction claims needed for this finite construction.
+source and its canonical normal form. It packages the finite-dimensional
+common-invariant argument as a reusable lemma for an arbitrary selected family
+on the three-action simplex, then specializes it to the source's skew family.
+It does not formalize the paper’s wider affine-reduction machinery, its
+minimality and rate-preservation arguments, or an online regret algorithm.
+That boundary is intentional: the five selected theorems establish the
+concrete fixed-point, impropriety, general invariant transport, skew-family
+obstruction, determinant, and no-reduction claims needed for this finite
+construction.
 
 The repository retains earlier Blackwell approachability, finite-game, minimax,
 and norm-conversion modules as supporting work, but they are not the Palomar
@@ -66,8 +70,9 @@ selection.
 - `BlackwellChallenge.lean` is the Mathlib-only five-theorem statement
   surface.
 - `BlackwellSolution.lean` provides checked adapters to the implementation.
-- `BlackwellIrreducibilityExamples.lean` checks the explicit endpoint
-  calculations and the two headline predicates.
+- `BlackwellIrreducibilityExamples.lean` checks the generic-lemma
+  specialization, explicit endpoint calculations, and the two headline
+  predicates.
 - `formalization.yaml` records the source-to-statement relationship and the
   exact scope.
 

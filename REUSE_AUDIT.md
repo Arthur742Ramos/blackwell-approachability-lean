@@ -15,8 +15,9 @@ Searches over this pinned Mathlib checkout found linear-equivalence and matrix
 infrastructure but no existing formalization of phi-regret, improper
 phi-regret, the cited comparator family, or its reduction obstruction. The
 project therefore defines the small domain-specific predicates
-`validImproperInstance`, `canonicalProper`, and
-`canonicalProperReduction` locally, while reusing Mathlib’s general algebra.
+`validImproperInstance`, `canonicalProper`, `canonicalProperReduction`, and
+the generic selected-family predicates locally, while reusing Mathlib’s general
+algebra.
 
 The construction follows Dann et al., Section 4.4.1. The fixed point and the
 three endpoint calculations were checked against the published formulas: for
@@ -25,9 +26,11 @@ canonical normal form is stated exactly as `p + S (phi(p) - p)`. In addition to
 the determinant consequence, the development formalizes the finite
 common-invariant mechanism of the source's first obstruction: an invertible
 properizer transports the simplex sum functional to a nonzero common invariant,
-which the three skew maps cannot share. The local scope intentionally stops
-before the source’s broader affine/rate/minimality theory, rather than
-rephrasing a narrower theorem as that broader result.
+which the three skew maps cannot share. The transport proof is stated for an
+arbitrary selected comparator family on the three-action simplex and is then
+specialized to the cited family. The local scope intentionally stops before the
+source’s broader affine/rate/minimality theory, rather than rephrasing a
+narrower theorem as that broader result.
 
 No external formalization is imported. The Challenge source is independently
 Mathlib-only; the implementation exposes public helpers so the checked Solution

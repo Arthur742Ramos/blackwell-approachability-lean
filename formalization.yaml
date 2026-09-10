@@ -1,4 +1,4 @@
-version: "v0.4"
+version: "v0.5"
 project:
   name: "Irreducible improper phi-regret in Lean"
   description: >-
@@ -6,10 +6,11 @@ project:
     phi-regret construction from Dann, Mansour, Mohri, Schneider, and Sivan
     (COLT 2025). It proves that every convexly mixed comparator has a fixed
     point in the action simplex, that the family is genuinely improper, that
-    an invertible canonical properizer would induce a nonzero common invariant
-    which this family cannot possess, and that every canonical properizer is
-    singular. Consequently no invertible canonical reduction turns the family
-    into proper phi-regret.
+    an invertible canonical properizer of any selected three-action comparator
+    family induces a nonzero common invariant, that the explicit skew family
+    cannot possess one, and that every canonical properizer is singular.
+    Consequently no invertible canonical reduction turns the family into
+    proper phi-regret.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -48,9 +49,10 @@ status:
     action set is Delta_3 and the comparator family is the convex hull of the
     three explicit maps in the cited construction. The first theorem proves
     that every mixture has the concrete fixed point (c,b,a) and that a vertex
-    comparator exits Delta_3. The second proves that an invertible canonical
+    comparator exits Delta_3. The second is a reusable transport lemma: for
+    any selected three-action comparator family, an invertible canonical
     properizer transports the simplex sum functional to a nonzero common
-    invariant; the third proves the skew family admits no such vector. The
+    invariant. The third proves the skew family admits no such vector. The
     fourth proves that any correction matrix S satisfying
     p + S(phi(p)-p) in Delta_3 for every comparator and action has determinant
     zero. The fifth derives the absence of an invertible canonical proper
@@ -80,12 +82,13 @@ fidelity:
     4.4.1 construction exactly after identifying q=(a,b,c) in Delta_3 and
     using phi_q=Id-M_q. The reduction predicate formalizes the paper's
     canonical normal form phi'_q(p)=p+S(phi_q(p)-p), with invertibility over
-    real three-space represented by det(S) not equal to zero. Its proof also
-    formalizes the concrete common-invariant obstruction used for this family.
-    The package does not prove the source's separate derivation of this form
-    from arbitrary affine maps, nor its rate-preservation/minimal-instance
-    theory. It makes no novel-result claim and does not implement an online
-    learner.
+    real three-space represented by det(S) not equal to zero. The generic
+    transport lemma is proved for an arbitrary selected comparator index set
+    on the same three-action simplex; specializing it to the skew family is
+    the concrete common-invariant obstruction used by the source. The package
+    does not prove the source's separate derivation of this form from arbitrary
+    affine maps, nor its rate-preservation/minimal-instance theory. It makes
+    no novel-result claim and does not implement an online learner.
 review:
   status: "self-assessed"
   reviewers: []
@@ -102,8 +105,8 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_valid_improper_instance"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "Common-invariant consequence of a canonical properizer"
-      lean: "Blackwell.Palomar.canonical_proper_has_nonzero_common_invariant"
+    - source: "General common-invariant transport lemma, specialized in Section 4.4.1"
+      lean: "Blackwell.Palomar.canonical_properizer_has_nonzero_common_invariant"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "No common invariant for the three skew comparators"

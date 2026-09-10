@@ -12,18 +12,21 @@ single-invertible-matrix normal form for a prospective reduction to proper
 phi-regret.
 
 The five selected theorems establish that the family is a valid improper
-phi-regret instance; that every invertible canonical properizer would induce a
-nonzero common invariant; that the explicit skew family has no such invariant;
-that every canonical properizing matrix is singular; and therefore that no
-invertible canonical proper reduction exists.  The result is scoped to this
-canonical normal form; it does not claim to formalize the paper's separate
-rate/minimality argument that derives that form from its most general
-bidirectional affine definition of linear equivalence.
+phi-regret instance; that every invertible canonical properizer of any
+three-action comparator family induces a nonzero common invariant; that the
+explicit skew family has no such invariant; that every canonical properizing
+matrix is singular; and therefore that no invertible canonical proper
+reduction exists.  The result is scoped to this canonical normal form; it does
+not claim to formalize the paper's separate rate/minimality argument that
+derives that form from its most general bidirectional affine definition of
+linear equivalence.
 -/
 
 namespace Blackwell.Palomar
 
 open scoped BigOperators Matrix
+
+universe u
 
 /-- Real coordinate vectors for the three-action simplex. -/
 abbrev Vec3 := Fin 3 → ℝ
@@ -71,6 +74,25 @@ def canonicalProper (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
 def canonicalProperReduction : Prop :=
   ∃ S : Matrix (Fin 3) (Fin 3) ℝ, S.det ≠ 0 ∧ canonicalProper S
 
+/-- The displacement for an arbitrary three-action comparator family. -/
+def displacementFor {α : Type u} (φ : α → Vec3 → Vec3) (q : α) (p : Vec3) : Vec3 :=
+  φ q p - p
+
+/-- A vector annihilates all displacements in a selected comparator family. -/
+def commonInvariantFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (v : Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ simplex3, dotProduct (displacementFor φ q p) v = 0
+
+/-- The canonical correction for an arbitrary comparator family. -/
+def correctedFor {α : Type u} (φ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (q : α) (p : Vec3) : Vec3 :=
+  p + S *ᵥ displacementFor φ q p
+
+/-- A single matrix canonically properizes every comparator selected by `Q`. -/
+def canonicalProperFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ simplex3, correctedFor φ S q p ∈ simplex3
+
 /-- Every comparator must have a simplex fixed point, while at least one must
 escape the simplex, for the family to be valid and improper. -/
 def validImproperInstance : Prop :=
@@ -83,12 +105,13 @@ comparator sends an allowed action outside the simplex. -/
 theorem skewPhi_valid_improper_instance : validImproperInstance := by
   sorry
 
-/-- An invertible canonical properizer would transport the simplex's affine
-sum functional to a nonzero vector invariant for every comparator. -/
-theorem canonical_proper_has_nonzero_common_invariant
+/-- An invertible canonical properizer of any three-action comparator family
+transports the simplex sum functional to a nonzero common invariant. -/
+theorem canonical_properizer_has_nonzero_common_invariant
+    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
-    (hproper : canonicalProper S) :
-    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
+    (hproper : canonicalProperFor Q φ S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantFor Q φ v := by
   sorry
 
 /-- The three skew comparators have no nonzero common invariant vector. -/

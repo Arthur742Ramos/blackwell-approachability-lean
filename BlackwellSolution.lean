@@ -15,6 +15,8 @@ namespace Blackwell.Palomar
 
 open scoped BigOperators Matrix
 
+universe u
+
 abbrev Vec3 := Fin 3 → ℝ
 
 def nonzeroVec3 (v : Vec3) : Prop := ∃ i, v i ≠ 0
@@ -45,6 +47,21 @@ def canonicalProper (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
 def canonicalProperReduction : Prop :=
   ∃ S : Matrix (Fin 3) (Fin 3) ℝ, S.det ≠ 0 ∧ canonicalProper S
 
+def displacementFor {α : Type u} (φ : α → Vec3 → Vec3) (q : α) (p : Vec3) : Vec3 :=
+  φ q p - p
+
+def commonInvariantFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (v : Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ simplex3, dotProduct (displacementFor φ q p) v = 0
+
+def correctedFor {α : Type u} (φ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (q : α) (p : Vec3) : Vec3 :=
+  p + S *ᵥ displacementFor φ q p
+
+def canonicalProperFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ simplex3, correctedFor φ S q p ∈ simplex3
+
 def validImproperInstance : Prop :=
   (∀ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p = p) ∧
     ∃ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p ∉ simplex3
@@ -57,20 +74,21 @@ theorem skewPhi_valid_improper_instance : validImproperInstance := by
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_valid_improper_instance
 
-theorem canonical_proper_has_nonzero_common_invariant
+theorem canonical_properizer_has_nonzero_common_invariant
+    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
-    (hproper : canonicalProper S) :
-    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
-  simpa [nonzeroVec3, commonInvariant, canonicalProper, simplex3, corrected,
-    displacement, skewPhi,
-    Blackwell.Irreducibility.canonicalProper,
+    (hproper : canonicalProperFor Q φ S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantFor Q φ v := by
+  simpa [nonzeroVec3, commonInvariantFor, canonicalProperFor, simplex3,
+    correctedFor, displacementFor,
+    Blackwell.Irreducibility.canonicalProperFor,
     Blackwell.Irreducibility.nonzeroVec3,
-    Blackwell.Irreducibility.commonInvariant,
-    Blackwell.Irreducibility.simplex3, Blackwell.Irreducibility.corrected,
-    Blackwell.Irreducibility.displacement,
-    Blackwell.Irreducibility.skewPhi]
-    using Blackwell.Irreducibility.canonical_proper_has_nonzero_common_invariant
-      S hdet hproper
+    Blackwell.Irreducibility.commonInvariantFor,
+    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.correctedFor,
+    Blackwell.Irreducibility.displacementFor]
+    using Blackwell.Irreducibility.canonical_properizer_has_nonzero_common_invariant
+      Q φ S hdet hproper
 
 theorem skewPhi_has_no_nonzero_common_invariant :
     ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by

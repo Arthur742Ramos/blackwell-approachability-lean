@@ -19,6 +19,11 @@ example : skewPhi vertex0 vertex0 1 = 1 := by
 example : validImproperInstance :=
   skewPhi_valid_improper_instance
 
+example (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
+    (hproper : canonicalProperFor simplex3 skewPhi S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantFor simplex3 skewPhi v :=
+  canonical_properizer_has_nonzero_common_invariant simplex3 skewPhi S hdet hproper
+
 example :
     ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v :=
   skewPhi_has_no_nonzero_common_invariant
