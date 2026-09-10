@@ -20,8 +20,8 @@ if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 27:
-    raise SystemExit(f"error: expected twenty-seven Challenge holes, found {holes}")
+if holes != 30:
+    raise SystemExit(f"error: expected thirty Challenge holes, found {holes}")
 
 targets = [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
@@ -29,6 +29,7 @@ targets = [
     "Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization",
     "Blackwell.Palomar.invertible_transfer_proper_reduction_implies_canonical_properization",
     "Blackwell.Palomar.invertible_affine_transfer_proper_reduction_implies_canonical_properization",
+    "Blackwell.Palomar.affine_linear_equivalence_implies_canonical_properization",
     "Blackwell.Palomar.loss_basis_pairing_implies_normalized_matrix_identity",
     "Blackwell.Palomar.matrixProperOn_simplex3_iff_on_vertices",
     "Blackwell.Palomar.canonicalProperOn_simplex3_iff_vertex_constraints",
@@ -39,6 +40,7 @@ targets = [
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
     "Blackwell.Palomar.skewPhi_not_invertible_transfer_proper_reducible",
     "Blackwell.Palomar.skewPhi_not_invertible_affine_transfer_proper_reducible",
+    "Blackwell.Palomar.skewPhi_not_affine_linearly_equivalent_to_proper",
     "Blackwell.Palomar.skew_canonicalProper_iff_vertex_constraints",
     "Blackwell.Palomar.skewPhi_no_invertible_nine_vertex_properizer",
     "Blackwell.Palomar.skewPhi_not_normalized_proper_reducible",
@@ -47,6 +49,7 @@ targets = [
     "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible",
     "Blackwell.Palomar.sourceAB_not_invertible_transfer_proper_reducible",
     "Blackwell.Palomar.sourceAB_not_invertible_affine_transfer_proper_reducible",
+    "Blackwell.Palomar.sourceAB_not_affine_linearly_equivalent_to_proper",
     "Blackwell.Palomar.sourceAB_canonicalProperOn_iff_twelve_corner_constraints",
     "Blackwell.Palomar.sourceAB_no_invertible_twelve_corner_properizer",
     "Blackwell.Palomar.sourceAB_not_normalized_proper_reducible",
@@ -87,6 +90,7 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "def unitCube3",
         "def actionImage",
         "def affineActionImage",
+        "def affineLinearEquivalenceToProperOn",
         "def invertibleAffineTransferProperReductionOn",
         "def invertibleTransferProperReductionOn",
         "def matrixColumn",
@@ -111,6 +115,7 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "theorem normalized_proper_reduction_implies_canonical_properization",
         "theorem invertible_transfer_proper_reduction_implies_canonical_properization",
         "theorem invertible_affine_transfer_proper_reduction_implies_canonical_properization",
+        "theorem affine_linear_equivalence_implies_canonical_properization",
         "theorem loss_basis_pairing_implies_normalized_matrix_identity",
         "theorem matrixProperOn_simplex3_iff_on_vertices",
         "theorem canonicalProperOn_simplex3_iff_vertex_constraints",
@@ -120,6 +125,7 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "theorem skewPhi_not_canonically_proper_reducible",
         "theorem skewPhi_not_invertible_transfer_proper_reducible",
         "theorem skewPhi_not_invertible_affine_transfer_proper_reducible",
+        "theorem skewPhi_not_affine_linearly_equivalent_to_proper",
         "theorem skew_canonicalProper_iff_vertex_constraints",
         "theorem skewPhi_no_invertible_nine_vertex_properizer",
         "theorem skewPhi_not_normalized_proper_reducible",
@@ -129,6 +135,7 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "theorem sourceAB_not_canonically_proper_reducible",
         "theorem sourceAB_not_invertible_transfer_proper_reducible",
         "theorem sourceAB_not_invertible_affine_transfer_proper_reducible",
+        "theorem sourceAB_not_affine_linearly_equivalent_to_proper",
         "theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints",
         "theorem sourceAB_no_invertible_twelve_corner_properizer",
         "theorem sourceAB_not_normalized_proper_reducible",
@@ -171,5 +178,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "twenty-seven holes, twenty-seven selected targets."
+    "thirty holes, thirty selected targets."
 )

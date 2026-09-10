@@ -161,6 +161,25 @@ def affineActionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (a : Vec3)
     (P : Set Vec3) : Set Vec3 :=
   {p' | ∃ p ∈ P, p' = A *ᵥ p + a}
 
+/-- A source-style affine linear equivalence to a proper target, after fixing
+the comparator correspondence and restricting to the explicit
+bijective-coordinate regime.  Both directional pairing identities are kept:
+the target action and loss sets are the corresponding affine images. -/
+def affineLinearEquivalenceToProperOn {α : Type u} (P : Set Vec3)
+    (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (P' L' : Set Vec3) (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ) (a t : Vec3),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      P' = affineActionImage A a P ∧
+      L' = affineActionImage T t unitCube3 ∧
+      properOn P' Q θ ∧
+      (∀ q ∈ Q, ∀ p' ∈ P', ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q (Ainv *ᵥ (p' - a))) l =
+          dotProduct (p' - θ q p') (T *ᵥ l + t)) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l' ∈ L',
+        dotProduct (sourceMFor φ q p) (Tinv *ᵥ (l' - t)) =
+          dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) l'
+
 /-- An exact invertible affine action/loss-transfer certificate to a proper
 target family.  It retains the action translation `a` and loss translation
 `t`, with the regret equality required on the source action set and the
@@ -342,6 +361,15 @@ theorem invertible_affine_transfer_proper_reduction_implies_canonical_properizat
       S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
   sorry
 
+/-- A two-direction affine linear equivalence in the explicit
+bijective-coordinate regime yields the canonical properizer. -/
+theorem affine_linear_equivalence_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hEq : affineLinearEquivalenceToProperOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  sorry
+
 /-- Equation (15), evaluated at three simplex vertices and a linearly
 independent target-loss basis, implies the source's matrix identity
 `N = S M` in Equation (16). -/
@@ -405,6 +433,12 @@ theorem skewPhi_not_invertible_affine_transfer_proper_reducible :
     ¬ invertibleAffineTransferProperReductionOn simplex3 simplex3 skewPhi := by
   sorry
 
+/-- The skew family has no source-style two-direction affine linear
+equivalence to a proper target in the explicit bijective-coordinate regime. -/
+theorem skewPhi_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 simplex3 skewPhi := by
+  sorry
+
 /-- For the skew-simplex family, the nine vertex constraints are equivalent
 to canonical properness on the full product of the two simplices. -/
 theorem skew_canonicalProper_iff_vertex_constraints
@@ -462,6 +496,12 @@ theorem sourceAB_not_invertible_transfer_proper_reducible :
 reduction to a proper target. -/
 theorem sourceAB_not_invertible_affine_transfer_proper_reducible :
     ¬ invertibleAffineTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  sorry
+
+/-- The source A/B family has no source-style two-direction affine linear
+equivalence to a proper target in the explicit bijective-coordinate regime. -/
+theorem sourceAB_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 sourceCoefficients sourcePhi := by
   sorry
 
 /-- For the source A/B family, the twelve coefficient-corner/action-vertex

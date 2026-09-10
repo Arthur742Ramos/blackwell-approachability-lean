@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-seven proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly thirty proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -82,7 +82,7 @@ Equation-(17) equality and converts properness of `psi` into
 invertible `normalizedProperReductionOn`, not just a correction equation
 introduced as an unexplained assumption.
 
-## Direct finite affine action/loss-transfer bridge
+## Direct finite affine action/loss-transfer and two-direction equivalence bridge
 
 `invertibleTransferProperReductionOn` records the homogeneous finite
 coordinate-change part of the source reduction. Its affine extension,
@@ -100,9 +100,20 @@ three standard cube losses to recover the vector equality, and constructs
 `S = Ainv * Tinv.transpose`. The inverse identities prove that `S` is
 nonsingular and that the resulting correction is proper. The concrete skew
 and A/B corollaries rule out this one-way finite affine transfer, hence also
-any stronger reduction which supplies such a transfer. This does not package
-the source's general bidirectional affine/rate framework or prove its
-minimality facts.
+any stronger reduction which supplies such a transfer.
+
+`affineLinearEquivalenceToProperOn` also records the source's two directional
+pairing identities after fixing the comparator correspondence. It introduces
+target action/loss sets, requires them to be exactly the affine images under
+the coordinate maps, and retains explicit inverse matrices for both maps. Its
+reverse pairing identity produces `invertibleAffineTransferProperReductionOn`,
+so `affine_linear_equivalence_implies_canonical_properization` is a checked
+bridge from that two-direction source-style regime to a canonical properizer.
+The selected skew and A/B corollaries therefore rule it out as well.
+
+This is not a proof of the source's general reduction-to-bijection step:
+minimality, arbitrary comparator bijections, arbitrary target dimensions, and
+rate preservation remain outside the formalized boundary.
 
 ## Equation-(15) loss-basis bridge
 
@@ -168,21 +179,23 @@ test, or its earlier reduction hypotheses.
 
 ## Scope and regression policy
 
-The development proves a direct finite affine action/loss-transfer implication
-for the canonical normal form, a finite loss-basis form of the source's
+The development proves direct finite affine action/loss-transfer and
+two-direction affine-equivalence implications for the canonical normal form,
+a finite loss-basis form of the source's
 Equation
 (15)-to-(16) step, the algebraic implication from Equation (16) to (17), and
 concrete Equation-(18) membership reductions for the two cited families. It
-does not claim the source's general affine reduction definition, its
-minimality/rate and set-span theory, its general Section 4.4.2 randomized
+does not derive the source's general affine-reduction maps from minimality,
+or formalize its rate and set-span theory, its general Section 4.4.2 randomized
 algorithm, or an online algorithm. That boundary is deliberate and checked in
 the documentation and metadata gate.
 
 The older approachability, game, minimax, and norm-conversion files remain
 independent supporting experiments and are not selected by Comparator.
 `BlackwellIrreducibilityExamples.lean` exercises both family certificates,
-both generic obstructions, the direct-transfer bridge, the Equation-(15)-to-
+both generic obstructions, the direct-transfer and two-direction-equivalence
+bridges, the Equation-(15)-to-
 (16) and Equation-(16)-to-(17) bridges, the Equation-(18) vertex/corner
 equivalences, and all classes of no-reduction corollaries.
 The validation gate runs the official renderer notation audit and an axiom
-audit over exactly the twenty-seven selected declarations.
+audit over exactly the thirty selected declarations.

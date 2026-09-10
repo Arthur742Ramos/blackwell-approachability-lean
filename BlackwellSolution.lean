@@ -107,6 +107,21 @@ def affineActionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (a : Vec3)
     (P : Set Vec3) : Set Vec3 :=
   {p' | ∃ p ∈ P, p' = A *ᵥ p + a}
 
+def affineLinearEquivalenceToProperOn {α : Type u} (P : Set Vec3)
+    (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (P' L' : Set Vec3) (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ) (a t : Vec3),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      P' = affineActionImage A a P ∧
+      L' = affineActionImage T t unitCube3 ∧
+      properOn P' Q θ ∧
+      (∀ q ∈ Q, ∀ p' ∈ P', ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q (Ainv *ᵥ (p' - a))) l =
+          dotProduct (p' - θ q p') (T *ᵥ l + t)) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l' ∈ L',
+        dotProduct (sourceMFor φ q p) (Tinv *ᵥ (l' - t)) =
+          dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) l'
+
 def invertibleAffineTransferProperReductionOn {α : Type u} (P : Set Vec3)
     (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
   ∃ (θ : α → Vec3 → Vec3)
@@ -271,6 +286,16 @@ theorem invertible_affine_transfer_proper_reduction_implies_canonical_properizat
     Blackwell.Irreducibility.invertible_affine_transfer_proper_reduction_implies_canonical_properization
       P Q φ hred
 
+theorem affine_linear_equivalence_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hEq : affineLinearEquivalenceToProperOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  change ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ Blackwell.Irreducibility.canonicalProperOn P Q φ S
+  exact Blackwell.Irreducibility.affine_linear_equivalence_implies_canonical_properization
+    P Q φ hEq
+
 theorem loss_basis_pairing_implies_normalized_matrix_identity
     (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
@@ -365,6 +390,13 @@ theorem skewPhi_not_invertible_affine_transfer_proper_reducible :
       Blackwell.Irreducibility.skewPhi
   exact Blackwell.Irreducibility.skewPhi_not_invertible_affine_transfer_proper_reducible
 
+theorem skewPhi_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 simplex3 skewPhi := by
+  change ¬ Blackwell.Irreducibility.affineLinearEquivalenceToProperOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.simplex3
+      Blackwell.Irreducibility.skewPhi
+  exact Blackwell.Irreducibility.skewPhi_not_affine_linearly_equivalent_to_proper
+
 theorem skew_canonicalProper_iff_vertex_constraints
     (S : Matrix (Fin 3) (Fin 3) ℝ) :
     canonicalProper S ↔ skewCanonicalVertexConstraints S := by
@@ -449,6 +481,13 @@ theorem sourceAB_not_invertible_affine_transfer_proper_reducible :
     Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.sourceCoefficients
       Blackwell.Irreducibility.sourcePhi
   exact Blackwell.Irreducibility.sourceAB_not_invertible_affine_transfer_proper_reducible
+
+theorem sourceAB_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 sourceCoefficients sourcePhi := by
+  change ¬ Blackwell.Irreducibility.affineLinearEquivalenceToProperOn
+    Blackwell.Irreducibility.simplex3 Blackwell.Irreducibility.sourceCoefficients
+      Blackwell.Irreducibility.sourcePhi
+  exact Blackwell.Irreducibility.sourceAB_not_affine_linearly_equivalent_to_proper
 
 theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints
     (S : Matrix (Fin 3) (Fin 3) ℝ) :

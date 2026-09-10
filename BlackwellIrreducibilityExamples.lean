@@ -43,6 +43,9 @@ example : ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi :=
 example : ¬ invertibleAffineTransferProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_invertible_affine_transfer_proper_reducible
 
+example : ¬ affineLinearEquivalenceToProperOn simplex3 simplex3 skewPhi :=
+  skewPhi_not_affine_linearly_equivalent_to_proper
+
 example : ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_normalized_proper_reducible
 
@@ -73,6 +76,10 @@ example :
     ¬ invertibleAffineTransferProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_invertible_affine_transfer_proper_reducible
 
+example :
+    ¬ affineLinearEquivalenceToProperOn simplex3 sourceCoefficients sourcePhi :=
+  sourceAB_not_affine_linearly_equivalent_to_proper
+
 example : ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_normalized_proper_reducible
 
@@ -100,6 +107,12 @@ example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
       S.det ≠ 0 ∧ canonicalProperOn P Q φ S :=
   invertible_affine_transfer_proper_reduction_implies_canonical_properization
     P Q φ hred
+
+example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hEq : affineLinearEquivalenceToProperOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S :=
+  affine_linear_equivalence_implies_canonical_properization P Q φ hEq
 
 example (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M :=

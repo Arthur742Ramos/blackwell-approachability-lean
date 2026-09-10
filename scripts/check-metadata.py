@@ -15,15 +15,15 @@ assert project["license"] == "BSD-3-Clause"
 citation = yaml.safe_load((root / "CITATION.cff").read_text(encoding="utf-8"))
 got = [f'{a["given-names"]} {a["family-names"]}' for a in citation["authors"]]
 assert got == authors
-assert citation["version"] == "0.11.0"
-assert 'version := v!"0.11.0"' in (root / "lakefile.lean").read_text(encoding="utf-8")
+assert citation["version"] == "0.12.0"
+assert 'version := v!"0.12.0"' in (root / "lakefile.lean").read_text(encoding="utf-8")
 
 selected = json.loads((root / "comparator.json").read_text(encoding="utf-8"))[
     "theorem_names"
 ]
 aligned = [item["lean"] for item in data["alignment"]["statements"]]
 assert aligned == selected
-assert len(selected) == 27
+assert len(selected) == 30
 assert data["classification"]["arxiv"]
 assert data["classification"]["msc2020"]
 research_context = data["research_context"]
@@ -31,7 +31,7 @@ for key in ("question", "selected_result", "audience", "boundary"):
     assert isinstance(research_context[key], str) and research_context[key].strip()
 assert "rate-preserving" in research_context["question"]
 assert "existing COLT 2025" in research_context["boundary"]
-assert "one-way affine action/loss" in research_context["selected_result"]
+assert "two-direction affine" in research_context["selected_result"]
 assert data["sources"]
 allowed_source_relationships = {
     "formalizes",
@@ -50,7 +50,7 @@ assert any(
 )
 assert data["automation"]["methods"]
 assert isinstance(data["review"]["status"], str)
-assert "Twenty-seven selected statements" in data["status"]["scope"]
+assert "Thirty selected statements" in data["status"]["scope"]
 
 allowed_relationships = {
     "",

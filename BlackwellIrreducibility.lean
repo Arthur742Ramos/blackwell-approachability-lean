@@ -21,7 +21,8 @@ p |-> p + S (phi(p) - p)
 with an invertible correction matrix `S`.  The selected results prove that no
 such matrix can make every member of either cited family proper, derive this
 canonical normal form from finite one-way homogeneous and affine action/loss
-transfer witnesses,
+transfer witnesses and from a source-style two-direction affine equivalence
+in an explicit bijective-coordinate regime,
 formalize the source's normalized Equation-(16)-to-(17) rearrangement, and
 reduce canonical properness to the source's finite Equation-(18)
 vertex/corner constraints for these two families. The formalization is
@@ -245,6 +246,28 @@ allows affine, rather than only homogeneous linear, action maps. -/
 def affineActionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (a : Vec3)
     (P : Set Vec3) : Set Vec3 :=
   {p' | ∃ p ∈ P, p' = A *ᵥ p + a}
+
+/-- A finite-dimensional, affine-coordinate version of the two directional
+pairing identities in the source's definition of linear equivalence.  The
+target action and loss sets are exactly the displayed affine images, and the
+same comparator index is used after fixing the source's bijection of
+benchmark families.  Explicit two-sided inverse matrices implement the
+bijective-coordinate regime reached after the source's minimality reduction;
+the source's separate proof of that reduction is not assumed here. -/
+def affineLinearEquivalenceToProperOn {α : Type u} (P : Set Vec3)
+    (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (P' L' : Set Vec3) (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ) (a t : Vec3),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      P' = affineActionImage A a P ∧
+      L' = affineActionImage T t unitCube3 ∧
+      properOn P' Q θ ∧
+      (∀ q ∈ Q, ∀ p' ∈ P', ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q (Ainv *ᵥ (p' - a))) l =
+          dotProduct (p' - θ q p') (T *ᵥ l + t)) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l' ∈ L',
+        dotProduct (sourceMFor φ q p) (Tinv *ᵥ (l' - t)) =
+          dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) l'
 
 /-- A finite, exact affine action/loss-transfer reduction to a proper target
 family.  `A p + a` is the source-to-target action map and `T l + t` is the
@@ -524,6 +547,45 @@ theorem invertible_affine_transfer_proper_reduction_implies_canonical_properizat
       _ = ψ q p := by simp [sourceMFor]
   rw [hcanonical]
   exact hψproper q hq p hp
+
+/-- The reverse direction of a source-style two-way affine linear equivalence
+supplies the finite affine transfer certificate used by the canonical
+properization bridge. -/
+theorem affine_linear_equivalence_implies_affine_transfer
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hEq : affineLinearEquivalenceToProperOn P Q φ) :
+    invertibleAffineTransferProperReductionOn P Q φ := by
+  obtain ⟨P', L', θ, A, Ainv, T, Tinv, a, t, hAinvA, hAAinv, hTinvT, hTTinv,
+    hP', hL', hproper, _hforward, hbackward⟩ := hEq
+  refine ⟨θ, A, Ainv, T, Tinv, a, t, hAinvA, hAAinv, hTinvT, hTTinv, ?_, ?_⟩
+  · intro q hq p hp
+    have hp' : A *ᵥ p + a ∈ P' := by
+      rw [hP']
+      exact ⟨p, hp, rfl⟩
+    rw [← hP']
+    exact hproper q hq (A *ᵥ p + a) hp'
+  · intro q hq p hp l hl
+    have hl' : T *ᵥ l + t ∈ L' := by
+      rw [hL']
+      exact ⟨l, hl, rfl⟩
+    have h := hbackward q hq p hp (T *ᵥ l + t) hl'
+    have hinverse : Tinv *ᵥ (T *ᵥ l + t - t) = l := by
+      rw [show T *ᵥ l + t - t = T *ᵥ l by abel]
+      rw [Matrix.mulVec_mulVec, hTinvT]
+      simp
+    rw [hinverse] at h
+    exact h
+
+/-- A source-style affine linear equivalence to a proper target in the
+explicit bijective-coordinate regime yields the canonical properizer used in
+the finite irreducibility arguments. -/
+theorem affine_linear_equivalence_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hEq : affineLinearEquivalenceToProperOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  exact invertible_affine_transfer_proper_reduction_implies_canonical_properization
+    P Q φ (affine_linear_equivalence_implies_affine_transfer P Q φ hEq)
 
 /-- The comparator family represented by displacement matrices `N_q`, namely
 `p ↦ p - N_q p`. -/
@@ -1386,6 +1448,16 @@ theorem sourceAB_not_invertible_affine_transfer_proper_reducible :
       simplex3 sourceCoefficients sourcePhi hred
   exact sourceAB_not_canonically_proper_reducible ⟨S, hdet, hproper⟩
 
+/-- The second source family is not affinely linearly equivalent to a proper
+target through the source's two directional pairing identities in the
+explicit bijective-coordinate regime. -/
+theorem sourceAB_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 sourceCoefficients sourcePhi := by
+  intro hEq
+  apply sourceAB_not_canonically_proper_reducible
+  exact affine_linear_equivalence_implies_canonical_properization
+    simplex3 sourceCoefficients sourcePhi hEq
+
 /-- Equivalently, the twelve finite Equation-(18) corner constraints for the
 source A/B family allow no invertible correction matrix. -/
 theorem sourceAB_no_invertible_twelve_corner_properizer :
@@ -1555,6 +1627,19 @@ theorem skewPhi_not_invertible_affine_transfer_proper_reducible :
     invertible_affine_transfer_proper_reduction_implies_canonical_properization
       simplex3 simplex3 skewPhi hred
   apply skewPhi_not_canonically_proper_reducible
+  refine ⟨S, hdet, ?_⟩
+  simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
+    displacement, displacementFor] using hproper
+
+/-- The skew-simplex family is not affinely linearly equivalent to a proper
+target through the source's two directional pairing identities in the
+explicit bijective-coordinate regime. -/
+theorem skewPhi_not_affine_linearly_equivalent_to_proper :
+    ¬ affineLinearEquivalenceToProperOn simplex3 simplex3 skewPhi := by
+  intro hEq
+  apply skewPhi_not_canonically_proper_reducible
+  obtain ⟨S, hdet, hproper⟩ :=
+    affine_linear_equivalence_implies_canonical_properization simplex3 simplex3 skewPhi hEq
   refine ⟨S, hdet, ?_⟩
   simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
     displacement, displacementFor] using hproper

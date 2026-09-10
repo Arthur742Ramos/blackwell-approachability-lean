@@ -27,7 +27,7 @@ novelty, priority, or a formalization of the paper's entire rate theory.
 
 ## Checked result
 
-The public Challenge/Solution boundary selects twenty-seven declarations.
+The public Challenge/Solution boundary selects thirty declarations.
 Together, they prove two distinct canonical-correction obstructions and
 connect them to the source's direct action/loss transfer, normalized reduction
 identities, and finite membership criterion.
@@ -109,7 +109,7 @@ proper reduction*—an invertible `S`, a proper target family on the same
 indexed comparators, and `Mψ = S Mφ`—not merely a separately postulated
 canonical correction.
 
-### Direct finite affine action/loss-transfer bridge
+### Direct finite affine action/loss-transfer and two-direction equivalence bridge
 
 The source's irreducibility discussion begins with an exact per-round regret
 identity under invertible affine action and loss coordinate changes. The
@@ -127,8 +127,22 @@ losses then recover the vector identity. It therefore does not assume either
 homogeneity or Equation (16). Thus both cited families have no exact
 invertible finite affine action/loss transfer to a proper target, even before
 a reverse transfer is required. This rules out a broader coordinate-change
-shape than the homogeneous special case, while keeping the source's general
-bidirectional affine and rate/minimality framework outside the claimed scope.
+shape than the homogeneous special case.
+
+The selected surface now also packages the source's two directional pairing
+identities as `affineLinearEquivalenceToProperOn`. It fixes the comparator
+correspondence, gives both action and loss maps explicit affine inverses, and
+requires the target action and loss sets to be exactly their affine images.
+The reverse pairing identity instantiates the direct affine-transfer bridge,
+so Lean proves that such a two-direction equivalence yields a canonical
+properizer. Both cited families consequently rule out this source-style
+equivalence to a proper target.
+
+This is deliberately the explicit bijective-coordinate regime of the source
+analysis, not a claim that all of the paper's general hypotheses have been
+formalized: the repository does not derive invertibility or exact-image facts
+from minimality, formalize arbitrary target dimensions or comparator
+correspondences, or prove rate preservation.
 
 ### Loss-pairing / dual-basis bridge
 
@@ -176,14 +190,16 @@ output of an external LP solver.
 ## Exact scope
 
 The formalization proves the direct finite affine action/loss-transfer-to-canonical
-bridge, the finite-dimensional Equation-(15)-to-(16) dual-basis argument, the
-algebraic Equation-(16)-to-(17) bridge, the `Δ₃` action-vertex criterion, and
-the exact 9-/12-constraint specializations of Equation (18) above. It remains
-a canonical normal form formalization: it does **not** package the paper's
-general two-way affine reduction definition, its rate/minimality and set-span
-theory, the general randomized cone/span algorithm of Section 4.4.2, an
-online learner, or a priority claim. In particular, the repository proves
-finite canonical cores of Lemmas 4 and 5 plus direct-transfer,
+bridge, a source-style two-direction affine-equivalence-to-canonical bridge in
+an explicit bijective-coordinate regime, the finite-dimensional
+Equation-(15)-to-(16) dual-basis argument, the algebraic Equation-(16)-to-(17)
+bridge, the `Δ₃` action-vertex criterion, and the exact 9-/12-constraint
+specializations of Equation (18) above. It remains a canonical normal form
+formalization: it does **not** derive the paper's general affine-reduction
+maps from minimality, formalize its rate/minimality and set-span theory, the
+general randomized cone/span algorithm of Section 4.4.2, an online learner, or
+a priority claim. In particular, the repository proves finite canonical cores
+of Lemmas 4 and 5 plus direct-transfer, two-direction-equivalence,
 normalized-identity, and vertex/corner bridges, rather than silently upgrading
 them to the paper's whole reduction or algorithmic theory.
 
@@ -195,7 +211,7 @@ Palomar selection.
 
 - `BlackwellIrreducibility.lean` contains the complete proof and the two
   explicit source families.
-- `BlackwellChallenge.lean` is the Mathlib-only twenty-seven-theorem statement surface.
+- `BlackwellChallenge.lean` is the Mathlib-only thirty-theorem statement surface.
 - `BlackwellSolution.lean` supplies checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
   the two generic obstructions, and their concrete no-reduction corollaries.
@@ -211,7 +227,7 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, exact
-twenty-seven-declaration Challenge/Solution surface, implementation-placeholder
+thirty-declaration Challenge/Solution surface, implementation-placeholder
 ban, source dependency closure, named-theorem axiom allowlist, official
 renderer notation audit, metadata alignment, and executable regressions. The
 pinned Comparator/NanoDa replay is available through
