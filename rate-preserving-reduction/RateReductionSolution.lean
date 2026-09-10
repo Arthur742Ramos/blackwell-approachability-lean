@@ -21,25 +21,25 @@ abbrev Dist (n : Type) := n → ℝ
 abbrev Joint (m n : Type) := m → n → ℝ
 
 def simplex {n : Type} [Fintype n] (p : Dist n) : Prop :=
-  Blackwell.RateReduction.simplex p
+  (∀ i, 0 ≤ p i) ∧ (∑ i, p i) = 1
 
 abbrev Mixed (n : Type) [Fintype n] := {p : Dist n // simplex p}
 
 def jointSimplex {m n : Type} [Fintype m] [Fintype n]
     (x : Joint m n) : Prop :=
-  Blackwell.RateReduction.jointSimplex x
+  (∀ i j, 0 ≤ x i j) ∧ (∑ i, ∑ j, x i j) = 1
 
 abbrev JointMixed (m n : Type) [Fintype m] [Fintype n] :=
   {x : Joint m n // jointSimplex x}
 
 def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
-  Blackwell.RateReduction.marginal x
+  fun j => ∑ i, x i j
 
 def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
-  Blackwell.RateReduction.outer w p
+  fun i j => w i * p j
 
 def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
-  Blackwell.RateReduction.shift w x
+  fun i j => x i j + outer w (marginal x) i j
 
 theorem marginal_simplex {m n : Type} [Fintype m] [Fintype n]
     {x : Joint m n} (hx : jointSimplex x) : simplex (marginal x) := by
@@ -57,11 +57,11 @@ theorem marginal_outer {m n : Type} [Fintype m] [Fintype n]
 
 def lift {m n : Type} [Fintype m] [Fintype n]
     (anchor : Mixed m) (p : Mixed n) : JointMixed m n :=
-  Blackwell.RateReduction.lift anchor p
+  ⟨outer anchor.1 p.1, outer_jointSimplex anchor.2 p.2⟩
 
 def decode {m n : Type} [Fintype m] [Fintype n]
     (x : JointMixed m n) : Mixed n :=
-  Blackwell.RateReduction.decode x
+  ⟨marginal x.1, marginal_simplex x.2⟩
 
 lemma decode_lift {m n : Type} [Fintype m] [Fintype n]
     (anchor : Mixed m) (p : Mixed n) : decode (lift anchor p) = p := by
@@ -71,18 +71,18 @@ abbrev Payoff (m n d : Type) := m → n → d → ℝ
 
 def reducedLoss {m n d : Type} [Fintype d]
     (u : Payoff m n d) (l : Dist d) : Joint m n :=
-  Blackwell.RateReduction.reducedLoss u l
+  fun i j => -(∑ k, u i j k * l k)
 
 def flatten {m n : Type} (x : Joint m n) : m × n → ℝ :=
-  Blackwell.RateReduction.flatten x
+  fun ij => x ij.1 ij.2
 
 def pairing {m n : Type} [Fintype m] [Fintype n]
     (x y : Joint m n) : ℝ :=
-  Blackwell.RateReduction.pairing x y
+  dotProduct (flatten x) (flatten y)
 
 def score {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     (u : Payoff m n d) (w : Dist m) (p : Dist n) (l : Dist d) : ℝ :=
-  Blackwell.RateReduction.score u w p l
+  pairing (outer w p) (-reducedLoss u l)
 
 theorem pairing_shift_sub_pairing_eq_score
     {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
