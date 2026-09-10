@@ -13,13 +13,13 @@ phi-regret.
 
 The selected theorems establish two explicit valid improper phi-regret
 families, both canonical-correction obstructions from Section 4.4.1, and the
-source's normalized Equation-(16)-to-(17) bridge: the affine-hyperplane
-invariant transport of Lemma 4 and the extreme-point,
+source's finite Equation-(15)-to-(16) and normalized Equation-(16)-to-(17)
+bridges: the affine-hyperplane invariant transport of Lemma 4 and the extreme-point,
 antipodal-displacement obstruction of Lemma 5.  The result proves the
-normalized identity's implication for the canonical normal form; it does not
-claim to formalize the paper's separate rate/minimality and span argument that
-derives Equation (16) from its most general bidirectional affine definition of
-linear equivalence.
+finite full-rank-loss-basis implication for the normalized identity and its
+implication for the canonical normal form; it does not claim to formalize the
+paper's separate rate/minimality and span argument that derives Equation (15)
+from its most general bidirectional affine definition of linear equivalence.
 -/
 
 namespace Blackwell.Palomar
@@ -51,6 +51,12 @@ def skewPhi (q p : Vec3) : Vec3 :=
   ![p 0 - q 0 * p 1 + q 1 * p 2,
     p 1 + q 0 * p 0 - q 2 * p 2,
     p 2 - q 1 * p 0 + q 2 * p 1]
+
+/-- The displacement matrix `Id - phi_q` for the skew-simplex family. -/
+def skewDisplacementMatrix (q : Vec3) : Matrix (Fin 3) (Fin 3) ℝ :=
+  !![0, q 0, -q 1;
+     -q 0, 0, q 2;
+     q 1, -q 2, 0]
 
 /-- The displacement of an action under a comparator. -/
 def displacement (q p : Vec3) : Vec3 := skewPhi q p - p
@@ -133,6 +139,41 @@ def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
   ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
     S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
 
+/-- The standard basis vectors, which are also the simplex vertices. -/
+def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
+
+/-- A matrix column as a coordinate vector. -/
+def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
+  fun i => B i j
+
+/-- The source's Equation-(15) loss-pairing identity checked at simplex
+vertices against a chosen target-loss basis. -/
+def lossBasisPairingIntertwining
+    (M N S B : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i j : Fin 3,
+    dotProduct (M *ᵥ basisVector j) (S.transpose *ᵥ matrixColumn B i) =
+      dotProduct (N *ᵥ basisVector j) (matrixColumn B i)
+
+/-- A comparator family represented by displacement matrices. -/
+def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (q : α) (p : Vec3) : Vec3 :=
+  p - N q *ᵥ p
+
+/-- Matrix-represented target comparators preserve the action set. -/
+def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, matrixComparator N q p ∈ P
+
+/-- A finite-loss-basis version of the source's normalized proper reduction:
+an invertible correction, three independent target losses, a proper matrix
+target, and Equation (15) at the simplex vertices. -/
+def lossBasisProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∃ N : α → Matrix (Fin 3) (Fin 3) ℝ,
+    ∃ S B : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ B.det ≠ 0 ∧ matrixProperOn P Q N ∧
+        ∀ q ∈ Q, lossBasisPairingIntertwining (M q) (N q) S B
+
 /-- The standard convex-combination characterization of an extreme action. -/
 def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
   x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
@@ -173,6 +214,10 @@ def sourceB : Matrix (Fin 3) (Fin 3) ℝ :=
 def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
   p + q.1 • (sourceA *ᵥ p) + q.2 • (sourceB *ᵥ p)
 
+/-- The displacement matrix `Id - phi_(a,b)` for the second family. -/
+def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
+  -(q.1 • sourceA + q.2 • sourceB)
+
 /-- Every comparator must have a simplex fixed point, while at least one must
 escape the simplex, for the family to be valid and improper. -/
 def validImproperInstance : Prop :=
@@ -205,6 +250,14 @@ theorem normalized_proper_reduction_implies_canonical_properization
     canonicalProperOn P Q φ S := by
   sorry
 
+/-- Equation (15), evaluated at three simplex vertices and a linearly
+independent target-loss basis, implies the source's matrix identity
+`N = S M` in Equation (16). -/
+theorem loss_basis_pairing_implies_normalized_matrix_identity
+    (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
+    (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
+  sorry
+
 /-- Canonical-correction core of Lemma 5: an extreme action with antipodal
 nonzero comparator displacements rules out every invertible properizer. -/
 theorem extreme_antipodal_no_canonical_properizer
@@ -235,6 +288,12 @@ theorem skewPhi_not_normalized_proper_reducible :
     ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi := by
   sorry
 
+/-- The skew-simplex family has no finite-loss-basis Equation-(15) reduction
+to a proper matrix comparator family. -/
+theorem skewPhi_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 simplex3 skewDisplacementMatrix := by
+  sorry
+
 /-- The second explicit Section 4.4.1 family is a valid improper phi-regret
 family, with a certified simplex fixed point for every square-bounded pair of
 coefficients. -/
@@ -260,6 +319,12 @@ theorem sourceAB_not_canonically_proper_reducible :
 satisfying the source's Equation-(16) identity. -/
 theorem sourceAB_not_normalized_proper_reducible :
     ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  sorry
+
+/-- The second matrix family has no finite-loss-basis Equation-(15) reduction
+to a proper matrix comparator family. -/
+theorem sourceAB_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 sourceCoefficients sourceDisplacementMatrix := by
   sorry
 
 end Blackwell.Palomar

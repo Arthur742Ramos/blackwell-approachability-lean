@@ -8,9 +8,9 @@ obstructions, not a claim of new mathematics.
 
 ## Checked result
 
-The public Challenge/Solution boundary selects twelve declarations. Together,
+The public Challenge/Solution boundary selects fifteen declarations. Together,
 they prove two distinct canonical-correction obstructions and connect them to
-the source's normalized reduction identity.
+the source's normalized reduction identities.
 
 ### Skew-simplex family and the Lemma-4 mechanism
 
@@ -89,17 +89,37 @@ proper reduction*—an invertible `S`, a proper target family on the same
 indexed comparators, and `Mψ = S Mφ`—not merely a separately postulated
 canonical correction.
 
+### Loss-pairing / dual-basis bridge
+
+The preceding source step is the normalized loss-pairing identity
+
+```text
+⟨Mφ p, Sᵀℓ'⟩ = ⟨Mψ p, ℓ'⟩.                                  (15)
+```
+
+The new finite-dimensional theorem proves that testing (15) at the three
+simplex vertices against any three linearly independent target losses already
+forces `Mψ = S Mφ`. It does so by transporting the three pairings through the
+transpose of the loss-basis matrix, using its nonzero determinant to separate
+vectors, and then recovering the three matrix columns from the simplex basis.
+
+This supports two further source-faithful corollaries: neither explicit family
+admits an invertible proper *finite-loss-basis reduction* satisfying (15).
+It formalizes the concrete dual-basis form of the paper’s full-span argument,
+not just the later Equation-(16) rearrangement.
+
 ## Exact scope
 
-The formalization proves the algebraic Equation-(16)-to-(17) bridge and the
-finite-dimensional consequences of the source's canonical normal form above.
-It does **not** formalize the paper's
+The formalization proves the finite-dimensional Equation-(15)-to-(16) dual
+basis argument, the algebraic Equation-(16)-to-(17) bridge, and the
+consequences of the source's canonical normal form above. It does **not**
+formalize the paper's
 full bidirectional affine-equivalence definition, the rate/minimality and
-span arguments that derive Equation (16) from that definition, an online
-learner, or a priority claim. In particular, the repository proves the
-canonical-normal-form cores of Lemmas 4 and 5 plus the normalized-identity
-bridge, rather than silently upgrading them to the paper's full
-linear-equivalence theorems.
+span arguments that produce a loss basis and Equation (15) from that
+definition, an online learner, or a priority claim. In particular, the
+repository proves the canonical-normal-form cores of Lemmas 4 and 5 plus the
+finite normalized-identity bridges, rather than silently upgrading them to the
+paper's full linear-equivalence theorems.
 
 Earlier Blackwell approachability, finite-game, minimax, and norm-conversion
 modules remain in the repository as supporting work; they are not part of the
@@ -109,7 +129,7 @@ Palomar selection.
 
 - `BlackwellIrreducibility.lean` contains the complete proof and the two
   explicit source families.
-- `BlackwellChallenge.lean` is the Mathlib-only twelve-theorem statement surface.
+- `BlackwellChallenge.lean` is the Mathlib-only fifteen-theorem statement surface.
 - `BlackwellSolution.lean` supplies checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
   the two generic obstructions, and their concrete no-reduction corollaries.
@@ -125,7 +145,7 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, exact
-twelve-declaration Challenge/Solution surface, implementation-placeholder ban,
+fifteen-declaration Challenge/Solution surface, implementation-placeholder ban,
 source dependency closure, named-theorem axiom allowlist, official renderer
 notation audit, metadata alignment, and executable regressions. The pinned
 Comparator/NanoDa replay is available through `scripts/verify-comparator.sh`.

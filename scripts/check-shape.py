@@ -20,22 +20,25 @@ if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 12:
-    raise SystemExit(f"error: expected twelve Challenge holes, found {holes}")
+if holes != 15:
+    raise SystemExit(f"error: expected fifteen Challenge holes, found {holes}")
 
 targets = [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
     "Blackwell.Palomar.sourceAB_valid_improper_family",
     "Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization",
+    "Blackwell.Palomar.loss_basis_pairing_implies_normalized_matrix_identity",
     "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
     "Blackwell.Palomar.extreme_antipodal_no_canonical_properizer",
     "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
     "Blackwell.Palomar.skewPhi_not_normalized_proper_reducible",
+    "Blackwell.Palomar.skewPhi_not_loss_basis_proper_reducible",
     "Blackwell.Palomar.sourceAB_has_nonzero_common_invariant",
     "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible",
     "Blackwell.Palomar.sourceAB_not_normalized_proper_reducible",
+    "Blackwell.Palomar.sourceAB_not_loss_basis_proper_reducible",
 ]
 expected = {
     "challenge_module": "BlackwellChallenge",
@@ -68,6 +71,14 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "def normalizedMIntertwining",
         "def properOn",
         "def normalizedProperReductionOn",
+        "def basisVector",
+        "def matrixColumn",
+        "def lossBasisPairingIntertwining",
+        "def matrixComparator",
+        "def matrixProperOn",
+        "def lossBasisProperReductionOn",
+        "def skewDisplacementMatrix",
+        "def sourceDisplacementMatrix",
         "def extremePoint",
         "def antipodalDisplacements",
         "def validImproperFamily",
@@ -76,15 +87,18 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "theorem skewPhi_valid_improper_instance",
         "theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
         "theorem normalized_proper_reduction_implies_canonical_properization",
+        "theorem loss_basis_pairing_implies_normalized_matrix_identity",
         "theorem extreme_antipodal_no_canonical_properizer",
         "theorem skewPhi_has_no_nonzero_common_invariant",
         "theorem canonical_proper_matrices_are_singular",
         "theorem skewPhi_not_canonically_proper_reducible",
         "theorem skewPhi_not_normalized_proper_reducible",
+        "theorem skewPhi_not_loss_basis_proper_reducible",
         "theorem sourceAB_valid_improper_family",
         "theorem sourceAB_has_nonzero_common_invariant",
         "theorem sourceAB_not_canonically_proper_reducible",
         "theorem sourceAB_not_normalized_proper_reducible",
+        "theorem sourceAB_not_loss_basis_proper_reducible",
     ):
         if required not in source:
             raise SystemExit(f"error: {source_path.name} is missing {required}")
@@ -123,5 +137,5 @@ for path in sorted(implementation_sources):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "twelve holes, twelve selected targets."
+    "fifteen holes, fifteen selected targets."
 )

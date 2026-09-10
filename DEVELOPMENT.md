@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly twelve proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly fifteen proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -82,19 +82,43 @@ Equation-(17) equality and converts properness of `psi` into
 invertible `normalizedProperReductionOn`, not just a correction equation
 introduced as an unexplained assumption.
 
+## Equation-(15) loss-basis bridge
+
+The source obtains Equation (16) from the normalized pairing identity
+
+```text
+<M_phi p, S^T ell'> = <M_psi p, ell'>.  (15)
+```
+
+using the fact that the action and target-loss spaces have full span. The
+selected `loss_basis_pairing_implies_normalized_matrix_identity` gives the
+concrete `ℝ³` core of that step. It evaluates the pairing at the three standard
+simplex vertices and against the columns of any matrix `B` with nonzero
+determinant. For each action basis vector, the three pairings say that the
+transpose of `B` annihilates the difference `N e_j - S M e_j`; determinant
+injectivity makes the difference zero. The three resulting column equalities
+give `N = S M`.
+
+`lossBasisProperReductionOn` packages this finite source-normalized
+certificate with a proper matrix target. The two new concrete corollaries use
+the matrix representations of the skew and A/B families to rule it out. This
+still does not derive Equation (15), the loss basis, or the normalized setup
+from the source's full bidirectional affine-equivalence/rate machinery.
+
 ## Scope and regression policy
 
-The development proves the algebraic implication from the source's normalized
-Equation (16) to its canonical normal form (17). It does not claim the
-source's preceding derivation of Equation (16) from its general bidirectional
-affine-equivalence machinery, its rate/minimality and span theory, or an
+The development proves a finite loss-basis form of the source's Equation
+(15)-to-(16) step and the algebraic implication from Equation (16) to its
+canonical normal form (17). It does not claim the source's preceding
+derivation of Equation (15), the required action/loss span witnesses, or its
+general bidirectional affine-equivalence and rate/minimality theory, nor an
 online algorithm. That boundary is deliberate and is checked in the
 documentation and metadata gate.
 
 The older approachability, game, minimax, and norm-conversion files remain
 independent supporting experiments and are not selected by Comparator.
 `BlackwellIrreducibilityExamples.lean` exercises both family certificates,
-both generic obstructions, the Equation-(16) bridge, and both normalized
-no-reduction corollaries. The validation gate runs the official renderer
-notation audit and an axiom audit over exactly the twelve selected
-declarations.
+both generic obstructions, the Equation-(15)-to-(16) and
+Equation-(16)-to-(17) bridges, and both classes of no-reduction corollaries.
+The validation gate runs the official renderer notation audit and an axiom
+audit over exactly the fifteen selected declarations.

@@ -40,6 +40,9 @@ example : ¬ canonicalProperReduction :=
 example : ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_normalized_proper_reducible
 
+example : ¬ lossBasisProperReductionOn simplex3 simplex3 skewDisplacementMatrix :=
+  skewPhi_not_loss_basis_proper_reducible
+
 example (q : ℝ × ℝ) : ∃ p ∈ simplex3, sourcePhi q p = p :=
   sourcePhi_has_fixed_point q
 
@@ -59,12 +62,20 @@ example :
 example : ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_normalized_proper_reducible
 
+example :
+    ¬ lossBasisProperReductionOn simplex3 sourceCoefficients sourceDisplacementMatrix :=
+  sourceAB_not_loss_basis_proper_reducible
+
 example {α : Type} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hproper : properOn P Q ψ)
     (hintertwine : normalizedMIntertwining Q φ ψ S) :
     canonicalProperOn P Q φ S :=
   normalized_proper_reduction_implies_canonical_properization
     P Q φ ψ S hproper hintertwine
+
+example (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
+    (hpair : lossBasisPairingIntertwining M N S B) : N = S * M :=
+  loss_basis_pairing_implies_normalized_matrix_identity M N S B hB hpair
 
 example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     (x : Vec3) (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x)

@@ -17,7 +17,7 @@ open scoped BigOperators Matrix
 
 universe u
 
-abbrev Vec3 := Fin 3 → ℝ
+abbrev Vec3 := Blackwell.Irreducibility.Vec3
 
 def nonzeroVec3 (v : Vec3) : Prop := ∃ i, v i ≠ 0
 
@@ -32,6 +32,9 @@ def skewPhi (q p : Vec3) : Vec3 :=
   ![p 0 - q 0 * p 1 + q 1 * p 2,
     p 1 + q 0 * p 0 - q 2 * p 2,
     p 2 - q 1 * p 0 + q 2 * p 1]
+
+def skewDisplacementMatrix (q : Vec3) : Matrix (Fin 3) (Fin 3) ℝ :=
+  Blackwell.Irreducibility.skewDisplacementMatrix q
 
 def displacement (q p : Vec3) : Vec3 := skewPhi q p - p
 
@@ -90,6 +93,27 @@ def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
   ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
     S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
 
+def basisVector (j : Fin 3) : Vec3 := Blackwell.Irreducibility.basisVector j
+
+def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
+  Blackwell.Irreducibility.matrixColumn B j
+
+def lossBasisPairingIntertwining
+    (M N S B : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  Blackwell.Irreducibility.lossBasisPairingIntertwining M N S B
+
+def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (q : α) (p : Vec3) : Vec3 :=
+  Blackwell.Irreducibility.matrixComparator N q p
+
+def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  Blackwell.Irreducibility.matrixProperOn P Q N
+
+def lossBasisProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  Blackwell.Irreducibility.lossBasisProperReductionOn P Q M
+
 def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
   x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
     0 < a → 0 < b → a + b = 1 →
@@ -121,6 +145,9 @@ def sourceB : Matrix (Fin 3) (Fin 3) ℝ :=
 
 def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
   p + q.1 • (sourceA *ᵥ p) + q.2 • (sourceB *ᵥ p)
+
+def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
+  Blackwell.Irreducibility.sourceDisplacementMatrix q
 
 def validImproperInstance : Prop :=
   (∀ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p = p) ∧
@@ -166,6 +193,16 @@ theorem normalized_proper_reduction_implies_canonical_properization
     Blackwell.Irreducibility.displacementFor]
     using Blackwell.Irreducibility.normalized_proper_reduction_implies_canonical_properization
       P Q φ ψ S hproper hintertwine
+
+theorem loss_basis_pairing_implies_normalized_matrix_identity
+    (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
+    (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
+  simpa [basisVector, matrixColumn, lossBasisPairingIntertwining,
+    Blackwell.Irreducibility.basisVector,
+    Blackwell.Irreducibility.matrixColumn,
+    Blackwell.Irreducibility.lossBasisPairingIntertwining]
+    using Blackwell.Irreducibility.loss_basis_pairing_implies_normalized_matrix_identity
+      M N S B hB hpair
 
 theorem extreme_antipodal_no_canonical_properizer
     {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3) (x : Vec3)
@@ -225,6 +262,21 @@ theorem skewPhi_not_normalized_proper_reducible :
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_not_normalized_proper_reducible
 
+theorem skewPhi_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 simplex3 skewDisplacementMatrix := by
+  simpa [lossBasisProperReductionOn, matrixProperOn, matrixComparator,
+    lossBasisPairingIntertwining, basisVector, matrixColumn, simplex3,
+    skewDisplacementMatrix,
+    Blackwell.Irreducibility.lossBasisProperReductionOn,
+    Blackwell.Irreducibility.matrixProperOn,
+    Blackwell.Irreducibility.matrixComparator,
+    Blackwell.Irreducibility.lossBasisPairingIntertwining,
+    Blackwell.Irreducibility.basisVector,
+    Blackwell.Irreducibility.matrixColumn,
+    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.skewDisplacementMatrix]
+    using Blackwell.Irreducibility.skewPhi_not_loss_basis_proper_reducible
+
 theorem sourceAB_valid_improper_family :
     validImproperFamily simplex3 sourceCoefficients sourcePhi := by
   simpa [validImproperFamily, simplex3, sourceCoefficients, sourcePhi, sourceA,
@@ -276,5 +328,22 @@ theorem sourceAB_not_normalized_proper_reducible :
     Blackwell.Irreducibility.sourcePhi, Blackwell.Irreducibility.sourceA,
     Blackwell.Irreducibility.sourceB]
     using Blackwell.Irreducibility.sourceAB_not_normalized_proper_reducible
+
+theorem sourceAB_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 sourceCoefficients sourceDisplacementMatrix := by
+  simpa [lossBasisProperReductionOn, matrixProperOn, matrixComparator,
+    lossBasisPairingIntertwining, basisVector, matrixColumn, simplex3,
+    sourceCoefficients, sourceDisplacementMatrix, sourceA, sourceB,
+    Blackwell.Irreducibility.lossBasisProperReductionOn,
+    Blackwell.Irreducibility.matrixProperOn,
+    Blackwell.Irreducibility.matrixComparator,
+    Blackwell.Irreducibility.lossBasisPairingIntertwining,
+    Blackwell.Irreducibility.basisVector,
+    Blackwell.Irreducibility.matrixColumn,
+    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.sourceCoefficients,
+    Blackwell.Irreducibility.sourceDisplacementMatrix,
+    Blackwell.Irreducibility.sourceA, Blackwell.Irreducibility.sourceB]
+    using Blackwell.Irreducibility.sourceAB_not_loss_basis_proper_reducible
 
 end Blackwell.Palomar

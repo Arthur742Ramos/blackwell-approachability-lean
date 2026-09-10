@@ -59,6 +59,13 @@ def skewPhi (q p : Vec3) : Vec3 :=
     p 1 + q 0 * p 0 - q 2 * p 2,
     p 2 - q 1 * p 0 + q 2 * p 1]
 
+/-- The source's displacement matrix `M_q = Id - phi_q` for the first
+skew-simplex family. -/
+def skewDisplacementMatrix (q : Vec3) : Matrix (Fin 3) (Fin 3) ℝ :=
+  !![0, q 0, -q 1;
+     -q 0, 0, q 2;
+     q 1, -q 2, 0]
+
 /-- The displacement of an action under a comparator.  Naming it keeps the
 public invariant statements independent of function-space subtraction
 notation. -/
@@ -198,6 +205,132 @@ theorem no_normalized_proper_reduction_of_no_canonical_properizer
   exact normalized_proper_reduction_implies_canonical_properization
     P Q φ ψ S hproper hintertwine
 
+/-- The `j`th standard basis vector of `ℝ^3`.  The three such vectors are
+also the vertices of the action simplex. -/
+def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
+
+/-- The `j`th column of a three-by-three matrix, regarded as a vector. -/
+def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
+  fun i => B i j
+
+lemma dotProduct_basisVector (x : Vec3) (j : Fin 3) :
+    dotProduct x (basisVector j) = x j := by
+  simp [dotProduct, basisVector]
+
+lemma basisVector_mem_simplex3 (j : Fin 3) : basisVector j ∈ simplex3 := by
+  constructor
+  · intro i
+    by_cases h : i = j <;> simp [basisVector, h]
+  · simp [basisVector]
+
+lemma mulVec_basisVector (M : Matrix (Fin 3) (Fin 3) ℝ) (i j : Fin 3) :
+    (M *ᵥ basisVector j) i = M i j := by
+  change ∑ k, M i k * basisVector j k = M i j
+  simp [basisVector]
+
+lemma transpose_mulVec_eq_dot_matrixColumn
+    (B : Matrix (Fin 3) (Fin 3) ℝ) (x : Vec3) (j : Fin 3) :
+    (B.transpose *ᵥ x) j = dotProduct (matrixColumn B j) x := by
+  simp [Matrix.mulVec, dotProduct, matrixColumn]
+
+/-- The finite-dimensional core of the source's derivation from Equation
+(15) to Equation (16).  If the loss-pairing identity holds at the three
+simplex vertices against any three linearly independent target losses, then
+the corresponding matrices satisfy `N = S * M`.  This is the exact dual-basis
+separation step behind the source's use of `span(L') = ℝ^d`. -/
+def lossBasisPairingIntertwining (M N S B : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i j : Fin 3,
+    dotProduct (M *ᵥ basisVector j) (S.transpose *ᵥ matrixColumn B i) =
+      dotProduct (N *ᵥ basisVector j) (matrixColumn B i)
+
+theorem loss_basis_pairing_implies_normalized_matrix_identity
+    (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
+    (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
+  have hBT : B.transpose.det ≠ 0 := by simpa using hB
+  have hcolumn : ∀ j : Fin 3, N *ᵥ basisVector j = S *ᵥ (M *ᵥ basisVector j) := by
+    intro j
+    let x : Vec3 := N *ᵥ basisVector j - S *ᵥ (M *ᵥ basisVector j)
+    have hx : B.transpose *ᵥ x = 0 := by
+      ext i
+      rw [transpose_mulVec_eq_dot_matrixColumn]
+      have htransport :
+          dotProduct (S *ᵥ (M *ᵥ basisVector j)) (matrixColumn B i) =
+            dotProduct (M *ᵥ basisVector j) (S.transpose *ᵥ matrixColumn B i) := by
+        calc
+          dotProduct (S *ᵥ (M *ᵥ basisVector j)) (matrixColumn B i) =
+              dotProduct (matrixColumn B i) (S *ᵥ (M *ᵥ basisVector j)) :=
+            dotProduct_comm _ _
+          _ = dotProduct (M *ᵥ basisVector j) (S.transpose *ᵥ matrixColumn B i) :=
+            (Matrix.dotProduct_transpose_mulVec (A := S)
+              (x := M *ᵥ basisVector j) (y := matrixColumn B i)).symm
+      have hzero : dotProduct x (matrixColumn B i) = 0 := by
+        calc
+          dotProduct x (matrixColumn B i) =
+              dotProduct (N *ᵥ basisVector j) (matrixColumn B i) -
+                dotProduct (S *ᵥ (M *ᵥ basisVector j)) (matrixColumn B i) := by
+            simp [x, dotProduct, Pi.sub_apply, sub_mul, Finset.sum_sub_distrib]
+          _ = 0 := by linarith [htransport, hpair i j]
+      simpa [dotProduct_comm] using hzero
+    have hxzero : x = 0 := Matrix.eq_zero_of_mulVec_eq_zero hBT hx
+    simpa [x, sub_eq_zero] using hxzero
+  ext i j
+  have h := congrFun (hcolumn j) i
+  rw [Matrix.mulVec_mulVec] at h
+  simpa [mulVec_basisVector, Matrix.mul_apply] using h
+
+/-- The comparator family represented by displacement matrices `N_q`, namely
+`p ↦ p - N_q p`. -/
+def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (q : α) (p : Vec3) : Vec3 :=
+  p - N q *ᵥ p
+
+/-- Matrix-represented target comparators are proper on an action set. -/
+def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, matrixComparator N q p ∈ P
+
+/-- A source-normalized reduction certificate at the finite-dimensional
+Equation-(15) layer.  `B` packages three linearly independent target losses;
+the pairing identity is checked at the three simplex vertices. -/
+def lossBasisProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∃ N : α → Matrix (Fin 3) (Fin 3) ℝ,
+    ∃ S B : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ B.det ≠ 0 ∧ matrixProperOn P Q N ∧
+        ∀ q ∈ Q, lossBasisPairingIntertwining (M q) (N q) S B
+
+/-- A finite-loss-basis reduction satisfying the source's Equation (15)
+produces the canonical properizer in Equation (17), provided the original
+comparators are represented by the matrices `M_q = Id - phi_q`. -/
+theorem loss_basis_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : ∀ q : α, ∀ p : Vec3, φ q p = p - M q *ᵥ p)
+    (hred : lossBasisProperReductionOn P Q M) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ, S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  obtain ⟨N, S, B, hS, hB, hproper, hpair⟩ := hred
+  refine ⟨S, hS, ?_⟩
+  intro q hq p hp
+  have hmatrix : N q = S * M q :=
+    loss_basis_pairing_implies_normalized_matrix_identity (M q) (N q) S B hB
+      (hpair q hq)
+  have htarget : matrixComparator N q p ∈ P := hproper q hq p hp
+  have hcorrect : correctedFor φ S q p = matrixComparator N q p := by
+    rw [correctedFor, displacementFor, hrepresentation q p]
+    rw [show (p - M q *ᵥ p) - p = -(M q *ᵥ p) by abel]
+    rw [Matrix.mulVec_neg]
+    rw [matrixComparator, hmatrix, Matrix.mulVec_mulVec]
+    abel
+  rw [hcorrect]
+  exact htarget
+
+lemma skewPhi_eq_matrixComparator (q : Vec3) (p : Vec3) :
+    skewPhi q p = matrixComparator skewDisplacementMatrix q p := by
+  ext i
+  fin_cases i <;>
+    simp [skewPhi, skewDisplacementMatrix, matrixComparator,
+      dotProduct, Fin.sum_univ_succ] <;> ring
+
 /-- The standard convex-combination characterization of an extreme point of
 an action set.  It is stated locally so the public obstruction theorem has a
 small, explicit hypothesis. -/
@@ -246,6 +379,18 @@ def sourceB : Matrix (Fin 3) (Fin 3) ℝ :=
 /-- The source's two-parameter family `Id + a A + b B`. -/
 def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
   p + q.1 • (sourceA *ᵥ p) + q.2 • (sourceB *ᵥ p)
+
+/-- The source's displacement matrix `Id - phi_(a,b)` for the second
+explicit family. -/
+def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
+  -(q.1 • sourceA + q.2 • sourceB)
+
+lemma sourcePhi_eq_matrixComparator (q : ℝ × ℝ) (p : Vec3) :
+    sourcePhi q p = matrixComparator sourceDisplacementMatrix q p := by
+  rw [matrixComparator, sourceDisplacementMatrix, sourcePhi]
+  rw [Matrix.neg_mulVec, Matrix.add_mulVec, Matrix.smul_mulVec,
+    Matrix.smul_mulVec]
+  abel
 
 /-- A homogeneous right-kernel certificate for `a A + b B`. -/
 def sourceKernel (a b : ℝ) : Vec3 :=
@@ -698,6 +843,16 @@ theorem sourceAB_not_normalized_proper_reducible :
   exact no_normalized_proper_reduction_of_no_canonical_properizer
     simplex3 sourceCoefficients sourcePhi sourceAB_not_canonically_proper_reducible
 
+/-- The second explicit source family also rules out every finite-loss-basis
+Equation-(15) reduction to a proper matrix comparator family. -/
+theorem sourceAB_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 sourceCoefficients sourceDisplacementMatrix := by
+  intro hred
+  apply sourceAB_not_canonically_proper_reducible
+  exact loss_basis_proper_reduction_implies_canonical_properization
+    simplex3 sourceCoefficients sourcePhi sourceDisplacementMatrix
+    (fun q p => sourcePhi_eq_matrixComparator q p) hred
+
 /-- Every invertible canonical properizer of a three-action comparator family
 transports the simplex sum functional to a nonzero common invariant.  This is
 the reusable finite-dimensional lemma behind the source's first
@@ -826,6 +981,20 @@ theorem skewPhi_not_normalized_proper_reducible :
   refine ⟨S, hdet, ?_⟩
   have hcanonical := normalized_proper_reduction_implies_canonical_properization
     simplex3 simplex3 skewPhi ψ S hproper hintertwine
+  simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
+    displacement, displacementFor] using hcanonical
+
+/-- The first explicit source family also rules out every finite-loss-basis
+Equation-(15) reduction to a proper matrix comparator family. -/
+theorem skewPhi_not_loss_basis_proper_reducible :
+    ¬ lossBasisProperReductionOn simplex3 simplex3 skewDisplacementMatrix := by
+  intro hred
+  apply skewPhi_not_canonically_proper_reducible
+  obtain ⟨S, hdet, hcanonical⟩ :=
+    loss_basis_proper_reduction_implies_canonical_properization
+      simplex3 simplex3 skewPhi skewDisplacementMatrix
+      (fun q p => skewPhi_eq_matrixComparator q p) hred
+  refine ⟨S, hdet, ?_⟩
   simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
     displacement, displacementFor] using hcanonical
 

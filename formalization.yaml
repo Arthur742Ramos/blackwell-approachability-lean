@@ -1,4 +1,4 @@
-version: "v0.8"
+version: "v0.4"
 project:
   name: "Irreducible improper phi-regret in Lean"
   description: >-
@@ -7,9 +7,10 @@ project:
     and Sivan (COLT 2025). It proves valid-improper-family certificates for
     both constructions, the affine-hyperplane invariant-transport core of
     Lemma 4, the extreme-point antipodal-displacement core of Lemma 5, and
-    the normalized Equation-(16)-to-(17) bridge. It then instantiates those
-    mechanisms to rule out invertible canonical and normalized proper
-    reductions for the two cited finite-dimensional families.
+    finite-dimensional Equation-(15)-to-(16) and Equation-(16)-to-(17)
+    bridges. It then instantiates those mechanisms to rule out invertible
+    canonical, normalized, and finite-loss-basis proper reductions for the
+    two cited finite-dimensional families.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -28,16 +29,17 @@ sources:
       Formalizes both explicit Section 4.4.1 three-action constructions and
       the finite-dimensional canonical-correction arguments appearing in the
       proofs of Lemmas 4 and 5. The source develops a broader reduction
-      theory; this package proves the normalized Equation-(16)-to-(17)
-      implication for the source's canonical normal form used by its selected
-      results but does not claim the
-      source's preceding general affine-equivalence derivation.
+      theory; this package proves a finite full-rank-loss-basis form of the
+      source's Equation-(15)-to-(16) step and the normalized
+      Equation-(16)-to-(17) implication for its selected results, but does
+      not claim the source's preceding general affine-equivalence derivation
+      of the canonical normal form.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
     id: "https://projecteuclid.org/journals/pacific-journal-of-mathematics/volume-6/issue-1/An-analog-of-the-minimax-theorem-for-vector-payoffs/pjm/1103044269.full"
     type: "paper"
-    relationship: "builds-on"
+    relationship: "background"
     note: >-
       Background for the approachability perspective retained in supporting
       modules; it is not a selected theorem surface for this artifact.
@@ -45,24 +47,27 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Twelve selected statements formalize two source-backed finite-dimensional
+    Fifteen selected statements formalize two source-backed finite-dimensional
     results. For the skew simplex family, every mixture has the fixed point
     (c,b,a), an explicit comparator escapes Delta_3, the affine-hyperplane
     transport lemma yields a nonzero common invariant from any invertible
     canonical properizer, the family has no such invariant, and every
-    canonical properizer is singular. The normalized identity
-    M_psi = S M_phi is proved to imply the source's canonical Equation (17),
-    so the selected skew corollary also rules out every invertible normalized
-    proper reduction. For the second matrix family
+    canonical properizer is singular. The source's Equation (15), at a
+    full-rank loss basis and simplex basis, is proved to imply
+    M_psi = S M_phi in Equation (16), which in turn implies the source's
+    canonical Equation (17); the selected skew corollaries rule out every
+    invertible normalized and finite-loss-basis proper reduction. For the
+    second matrix family
     phi_(a,b)=Id+aA+bB on the coefficient square, the development gives a
     deterministic normalized-kernel fixed-point certificate for every
     parameter, witnesses impropriety at (1,0), proves that the all-ones
     vector is a common invariant, and applies the generic extreme-point
     antipodal theorem at a simplex vertex to rule out an invertible
-    canonical properizer and every invertible normalized proper reduction.
-    The package does not formalize the source's complete affine-reduction
-    framework, a regret algorithm, rate preservation, minimality, the
-    derivation of Equation (16), or a mathematical-priority claim.
+    canonical properizer and every invertible normalized or finite-loss-basis
+    proper reduction. The package does not formalize the source's complete
+    affine-reduction framework, a regret algorithm, rate preservation,
+    minimality, the derivation of Equation (15) or a loss basis from arbitrary
+    source sets, or a mathematical-priority claim.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -89,16 +94,17 @@ fidelity:
     case. The two generic selected lemmas formalize the canonical-correction
     implications used in the source proofs: affine-normal transport
     (Lemma 4) and the extreme-antipodal obstruction (Lemma 5). A third
-    selected lemma proves that the source's normalized M_psi = S M_phi
-    identity implies p + S(phi(p)-p), and the concrete no-go results are
-    lifted to that normalized form. This package intentionally does not
-    formalize the source's full affine-equivalence definition or the
-    rate/minimality and span arguments that derive Equation (16).
+    selected lemma uses a full-rank target-loss basis and the simplex basis to
+    derive M_psi = S M_phi from the source's Equation (15); a fourth proves
+    Equation (16) implies p + S(phi(p)-p), and the concrete no-go results are
+    lifted to both finite normalized forms. This package intentionally does
+    not formalize the source's full affine-equivalence definition or the
+    rate/minimality and set-level span arguments that produce Equation (15).
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The twelve
+    No independent human or Palomar editorial approval is claimed. The fifteen
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; the implementation and Solution contain
     no proof placeholders. Hosted Comparator verification and editorial review
@@ -116,6 +122,10 @@ alignment:
       status: "proved"
     - source: "Normalized Equation (16) implies canonical Equation (17)"
       lean: "Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Finite loss-basis Equation (15) implies normalized Equation (16)"
+      lean: "Blackwell.Palomar.loss_basis_pairing_implies_normalized_matrix_identity"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Affine-hyperplane invariant transport in the proof of Lemma 4"
@@ -142,6 +152,10 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_not_normalized_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "No finite-loss-basis Equation (15) proper reduction for the skew family"
+      lean: "Blackwell.Palomar.skewPhi_not_loss_basis_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
     - source: "Common invariant of the second matrix family"
       lean: "Blackwell.Palomar.sourceAB_has_nonzero_common_invariant"
       module: "BlackwellSolution.lean"
@@ -152,6 +166,10 @@ alignment:
       status: "proved"
     - source: "No invertible normalized proper reduction for the second matrix family"
       lean: "Blackwell.Palomar.sourceAB_not_normalized_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No finite-loss-basis Equation (15) proper reduction for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_not_loss_basis_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
 acknowledgements: >-

@@ -6,7 +6,7 @@ import yaml
 root = Path(sys.argv[1])
 data = yaml.safe_load((root / "formalization.yaml").read_text(encoding="utf-8"))
 authors = ["Arthur Freitas Ramos"]
-assert data["version"] == "v0.8"
+assert data["version"] == "v0.4"
 project = data["project"]
 assert project["authors"] == authors
 assert project["responsible_maintainers"] == authors
@@ -24,6 +24,21 @@ assert aligned == selected
 assert data["classification"]["arxiv"]
 assert data["classification"]["msc2020"]
 assert data["sources"]
+allowed_source_relationships = {
+    "formalizes",
+    "adapts",
+    "independently-proves",
+    "background",
+    "other",
+}
+assert all(
+    source["relationship"] in allowed_source_relationships
+    for source in data["sources"]
+)
+assert any(
+    source["relationship"] in {"formalizes", "adapts", "independently-proves"}
+    for source in data["sources"]
+)
 assert data["automation"]["methods"]
 assert isinstance(data["review"]["status"], str)
 
