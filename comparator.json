@@ -3,7 +3,7 @@
   "solution_module": "BlackwellSolution",
   "theorem_names": [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
-    "Blackwell.Palomar.canonical_properizer_has_nonzero_common_invariant",
+    "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
     "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible"

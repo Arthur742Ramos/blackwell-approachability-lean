@@ -25,7 +25,7 @@ if holes != 5:
 
 targets = [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
-    "Blackwell.Palomar.canonical_properizer_has_nonzero_common_invariant",
+    "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
     "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
@@ -54,8 +54,11 @@ for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.
         "def commonInvariantFor",
         "def correctedFor",
         "def canonicalProperFor",
+        "def affineHyperplaneWitness",
+        "def commonInvariantOn",
+        "def canonicalProperOn",
         "theorem skewPhi_valid_improper_instance",
-        "theorem canonical_properizer_has_nonzero_common_invariant",
+        "theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
         "theorem skewPhi_has_no_nonzero_common_invariant",
         "theorem canonical_proper_matrices_are_singular",
         "theorem skewPhi_not_canonically_proper_reducible",

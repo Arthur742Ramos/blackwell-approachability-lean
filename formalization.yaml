@@ -1,15 +1,17 @@
-version: "v0.5"
+version: "v0.6"
 project:
   name: "Irreducible improper phi-regret in Lean"
   description: >-
     A Mathlib-only formalization of the explicit three-action improper
     phi-regret construction from Dann, Mansour, Mohri, Schneider, and Sivan
     (COLT 2025). It proves that every convexly mixed comparator has a fixed
-    point in the action simplex, that the family is genuinely improper, that
-    an invertible canonical properizer of any selected three-action comparator
-    family induces a nonzero common invariant, that the explicit skew family
-    cannot possess one, and that every canonical properizer is singular.
-    Consequently no invertible canonical reduction turns the family into
+    point in the action simplex, that the family is genuinely improper, and
+    that an invertible canonical properizer on any action set in real
+    three-space with an affine-hyperplane witness induces a nonzero common
+    invariant.
+    It applies that transport mechanism to the explicit skew family, proves
+    that family has no such invariant, proves every canonical properizer is
+    singular, and consequently rules out an invertible canonical reduction to
     proper phi-regret.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
@@ -27,11 +29,11 @@ sources:
     relationship: "formalizes"
     note: >-
       Formalizes the explicit skew-symmetric three-action construction of
-      Section 4.4.1 and its obstruction to the canonical single-invertible-
-      matrix proper-reduction normal form. The source develops a broader
-      reduction theory; this package records precisely the focused finite-
-      dimensional construction, common-invariant obstruction, and determinant
-      proof.
+      Section 4.4.1 and the dimension-three affine-hyperplane core of its
+      Lemma 4 obstruction to the canonical single-invertible-matrix
+      proper-reduction normal form. The source develops a broader reduction
+      theory; this package records precisely the focused finite-dimensional
+      construction, invariant transport, and determinant proof.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
@@ -46,14 +48,15 @@ related_formalizations: []
 status:
   scope: >-
     Five selected statements formalize a single source-backed result. The
-    action set is Delta_3 and the comparator family is the convex hull of the
-    three explicit maps in the cited construction. The first theorem proves
-    that every mixture has the concrete fixed point (c,b,a) and that a vertex
-    comparator exits Delta_3. The second is a reusable transport lemma: for
-    any selected three-action comparator family, an invertible canonical
-    properizer transports the simplex sum functional to a nonzero common
-    invariant. The third proves the skew family admits no such vector. The
-    fourth proves that any correction matrix S satisfying
+    explicit construction has action set Delta_3 and comparator family the
+    convex hull of the three maps in the cited construction. The first theorem
+    proves that every mixture has the concrete fixed point (c,b,a) and that a
+    vertex comparator exits Delta_3. The second is the reusable
+    dimension-three affine-hyperplane transport lemma: for an arbitrary action
+    set P with a nonzero normal w and constant b satisfying <p,w>=b on P, an
+    invertible canonical properizer transports w to the nonzero invariant
+    S^T w. The third proves the skew family admits no such vector. The fourth
+    proves that any correction matrix S satisfying
     p + S(phi(p)-p) in Delta_3 for every comparator and action has determinant
     zero. The fifth derives the absence of an invertible canonical proper
     reduction. This is the canonical normal form from the source's reduction
@@ -82,13 +85,15 @@ fidelity:
     4.4.1 construction exactly after identifying q=(a,b,c) in Delta_3 and
     using phi_q=Id-M_q. The reduction predicate formalizes the paper's
     canonical normal form phi'_q(p)=p+S(phi_q(p)-p), with invertibility over
-    real three-space represented by det(S) not equal to zero. The generic
-    transport lemma is proved for an arbitrary selected comparator index set
-    on the same three-action simplex; specializing it to the skew family is
-    the concrete common-invariant obstruction used by the source. The package
-    does not prove the source's separate derivation of this form from arbitrary
-    affine maps, nor its rate-preservation/minimal-instance theory. It makes
-    no novel-result claim and does not implement an online learner.
+    real three-space represented by det(S) not equal to zero. The selected
+    transport lemma is the dimension-three affine-hyperplane implication used
+    in the proof of source Lemma 4: it assumes the canonical correction
+    directly and maps an affine normal w to S^T w. It is generic in the action
+    set P and selected comparator index set, then specializes to the cited
+    simplex family. The package does not prove the source's separate derivation
+    of this form from arbitrary affine maps, nor its rate-preservation/minimal-
+    instance theory. It makes no novel-result claim and does not implement an
+    online learner.
 review:
   status: "self-assessed"
   reviewers: []
@@ -105,8 +110,8 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_valid_improper_instance"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "General common-invariant transport lemma, specialized in Section 4.4.1"
-      lean: "Blackwell.Palomar.canonical_properizer_has_nonzero_common_invariant"
+    - source: "Affine-hyperplane invariant transport in the proof of Lemma 4"
+      lean: "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "No common invariant for the three skew comparators"

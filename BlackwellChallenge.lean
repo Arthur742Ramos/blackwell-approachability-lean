@@ -12,14 +12,14 @@ single-invertible-matrix normal form for a prospective reduction to proper
 phi-regret.
 
 The five selected theorems establish that the family is a valid improper
-phi-regret instance; that every invertible canonical properizer of any
-three-action comparator family induces a nonzero common invariant; that the
-explicit skew family has no such invariant; that every canonical properizing
-matrix is singular; and therefore that no invertible canonical proper
-reduction exists.  The result is scoped to this canonical normal form; it does
-not claim to formalize the paper's separate rate/minimality argument that
-derives that form from its most general bidirectional affine definition of
-linear equivalence.
+phi-regret instance; that every invertible canonical properizer of an action
+set in real three-space contained in an affine hyperplane induces a nonzero
+common invariant; that the explicit skew family has no such invariant;
+that every canonical properizing matrix is singular; and therefore that no
+invertible canonical proper reduction exists.  The result is scoped to this
+canonical normal form; it does not claim to formalize the paper's separate
+rate/minimality argument that derives that form from its most general
+bidirectional affine definition of linear equivalence.
 -/
 
 namespace Blackwell.Palomar
@@ -93,6 +93,22 @@ def canonicalProperFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ simplex3, correctedFor φ S q p ∈ simplex3
 
+/-- A set of three-vectors lies in an affine hyperplane with a nonzero normal. -/
+def affineHyperplaneWitness (P : Set Vec3) : Prop :=
+  ∃ w : Vec3, ∃ b : ℝ, nonzeroVec3 w ∧
+    ∀ p ∈ P, dotProduct p w = b
+
+/-- A vector annihilates all selected comparator displacements on `P`. -/
+def commonInvariantOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (v : Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, dotProduct (displacementFor φ q p) v = 0
+
+/-- The source's canonical correction maps every selected comparator back
+into the action set `P`. -/
+def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
+
 /-- Every comparator must have a simplex fixed point, while at least one must
 escape the simplex, for the family to be valid and improper. -/
 def validImproperInstance : Prop :=
@@ -105,13 +121,15 @@ comparator sends an allowed action outside the simplex. -/
 theorem skewPhi_valid_improper_instance : validImproperInstance := by
   sorry
 
-/-- An invertible canonical properizer of any three-action comparator family
-transports the simplex sum functional to a nonzero common invariant. -/
-theorem canonical_properizer_has_nonzero_common_invariant
-    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+/-- An invertible canonical properizer of an action set in an affine
+hyperplane transports its normal to a nonzero common invariant.  This is the
+dimension-three canonical-correction core of Lemma 4 in Dann et al. -/
+theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
-    (hproper : canonicalProperFor Q φ S) :
-    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantFor Q φ v := by
+    (haff : affineHyperplaneWitness P)
+    (hproper : canonicalProperOn P Q φ S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantOn P Q φ v := by
   sorry
 
 /-- The three skew comparators have no nonzero common invariant vector. -/

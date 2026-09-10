@@ -10,7 +10,7 @@ It checks:
 - exactly five Challenge proof holes and no implementation placeholders;
 - the exact five selected theorem names and permitted axiom allowlist;
 - that the Challenge/Solution each expose the valid-improper-instance,
-  generic common-invariant transport, canonical-proper, and no-reduction
+  affine-hyperplane invariant transport, canonical-proper, and no-reduction
   predicates and declarations;
 - that the documentation and metadata state the canonical normal form rather
   than overclaiming a broader reduction theorem;

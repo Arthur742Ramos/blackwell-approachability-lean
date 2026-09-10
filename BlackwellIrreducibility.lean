@@ -103,6 +103,25 @@ def canonicalProperFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ simplex3, correctedFor φ S q p ∈ simplex3
 
+/-- A set of three-vectors lies in an affine hyperplane with a specified
+normal.  This is the geometric hypothesis used in Lemma 4 of the source:
+the action set need not be the simplex. -/
+def affineHyperplaneWitness (P : Set Vec3) : Prop :=
+  ∃ w : Vec3, ∃ b : ℝ, nonzeroVec3 w ∧
+    ∀ p ∈ P, dotProduct p w = b
+
+/-- A vector annihilates all comparator displacements on an arbitrary action
+set `P`. -/
+def commonInvariantOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (v : Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, dotProduct (displacementFor φ q p) v = 0
+
+/-- A canonical correction maps every selected comparator back into an
+arbitrary action set `P`. -/
+def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
+
 /-- Every comparator has a simplex fixed point and some comparator sends a
 simplex point outside it, the defining features of this improper phi-regret
 family. -/
@@ -209,6 +228,63 @@ lemma sum_mulVec_eq_dot_columnSums (S : Matrix (Fin 3) (Fin 3) ℝ) (x : Vec3) :
   simp only [Matrix.mulVec, dotProduct, columnSums]
   rw [Finset.sum_comm]
   simp_rw [Finset.sum_mul]
+
+/-- The three-simplex has the all-ones affine hyperplane witness. -/
+lemma simplex3_affineHyperplaneWitness : affineHyperplaneWitness simplex3 := by
+  refine ⟨(fun _ => (1 : ℝ)), 1, ?_, ?_⟩
+  · exact ⟨0, by norm_num⟩
+  · intro p hp
+    simpa [dotProduct] using hp.2
+
+/-- An invertible canonical properizer on an action set contained in an
+affine hyperplane transports that hyperplane normal to a nonzero common
+invariant.  This is the dimension-three affine-hyperplane core of Lemma 4 in
+D. Dann et al., *Rate-Preserving Reductions for Blackwell Approachability*,
+COLT 2025.  The hypothesis is the source's canonical correction equation;
+the separate derivation of that equation from general linear equivalence is
+outside this development's stated scope. -/
+theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
+    (haff : affineHyperplaneWitness P)
+    (hproper : canonicalProperOn P Q φ S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantOn P Q φ v := by
+  obtain ⟨w, b, hw, hplane⟩ := haff
+  let v : Vec3 := S.transpose *ᵥ w
+  have hv : nonzeroVec3 v := by
+    by_contra hnot
+    rw [nonzeroVec3] at hnot
+    have hvzero : v = 0 := by
+      ext i
+      by_contra hvi
+      exact hnot ⟨i, hvi⟩
+    have hdet_transpose : S.transpose.det ≠ 0 := by
+      simpa using hdet
+    have hwzero : w = 0 :=
+      Matrix.eq_zero_of_mulVec_eq_zero hdet_transpose (by simpa [v] using hvzero)
+    obtain ⟨i, hi⟩ := hw
+    exact hi (by simp [hwzero])
+  refine ⟨v, hv, ?_⟩
+  rw [commonInvariantOn]
+  intro q hq p hp
+  have hcorrect_plane : dotProduct (correctedFor φ S q p) w = b :=
+    hplane _ (hproper q hq p hp)
+  have hp_plane : dotProduct p w = b := hplane p hp
+  have hsum : dotProduct p w + dotProduct (S *ᵥ displacementFor φ q p) w = b := by
+    calc
+      dotProduct p w + dotProduct (S *ᵥ displacementFor φ q p) w =
+          dotProduct (p + S *ᵥ displacementFor φ q p) w := by
+            simp [dotProduct, Pi.add_apply, add_mul, Finset.sum_add_distrib]
+      _ = b := by simpa [correctedFor] using hcorrect_plane
+  have htransport : dotProduct (S *ᵥ displacementFor φ q p) w = 0 := by
+    linarith [hsum, hp_plane]
+  calc
+    dotProduct (displacementFor φ q p) v =
+        dotProduct w (S *ᵥ displacementFor φ q p) := by
+          simpa [v] using Matrix.dotProduct_transpose_mulVec
+            (A := S) (x := displacementFor φ q p) (y := w)
+    _ = dotProduct (S *ᵥ displacementFor φ q p) w := dotProduct_comm _ _
+    _ = 0 := htransport
 
 /-- Every invertible canonical properizer of a three-action comparator family
 transports the simplex sum functional to a nonzero common invariant.  This is
@@ -317,7 +393,14 @@ that turns all its comparators into proper simplex self-maps. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
   rintro ⟨S, hdet, hproper⟩
   obtain ⟨v, hv, hinvariant⟩ :=
-    canonical_proper_has_nonzero_common_invariant S hdet hproper
-  exact skewPhi_has_no_nonzero_common_invariant ⟨v, hv, hinvariant⟩
+    affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+      simplex3 simplex3 skewPhi S hdet simplex3_affineHyperplaneWitness
+      (by
+        simpa [canonicalProperOn, canonicalProper, correctedFor, corrected,
+          displacementFor, displacement] using hproper)
+  apply skewPhi_has_no_nonzero_common_invariant
+  refine ⟨v, hv, ?_⟩
+  simpa [commonInvariantOn, commonInvariant, displacementFor, displacement]
+    using hinvariant
 
 end Blackwell.Irreducibility

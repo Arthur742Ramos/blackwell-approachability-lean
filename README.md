@@ -30,11 +30,12 @@ The checked result establishes all of the following.
 - Every `φq` has the explicit fixed point `(c,b,a) ∈ Δ₃`.
 - The family is genuinely improper: `φ(1,0,0)(0,1,0) = (-1,1,0)`, which lies
   outside `Δ₃`.
-- For any selected family of comparators on `Δ₃`, an invertible canonical
-  properizer transports the simplex's affine sum functional to a nonzero
-  vector `v` satisfying `⟨φq(p) - p, v⟩ = 0` for every selected comparator and
-  every simplex point. The skew family is a specialization of this reusable
-  transport lemma.
+- For any action set `P` in real three-space contained in an affine hyperplane
+  `⟨p,w⟩ = b`, an invertible canonical properizer transports the nonzero
+  normal `w` to `Sᵀw`, a nonzero vector `v` satisfying
+  `⟨φq(p) - p, v⟩ = 0` for every selected comparator and every `p ∈ P`.
+  This is the affine-hyperplane core of the source’s Lemma 4. The skew family
+  is a concrete simplex specialization.
 - Three concrete endpoint calculations prove that this skew family has no
   nonzero common invariant vector.
 - If a real `3 × 3` matrix `S` made every map
@@ -42,23 +43,24 @@ The checked result establishes all of the following.
   Therefore no invertible `S` can produce a proper comparator family in this
   canonical normal form.
 
-Together, the invariant-vector obstruction and determinant calculation give
-the key separation: the improper family cannot be made proper through the
-single-invertible-matrix canonical normal form used in the source’s
-linear-reduction analysis.
+Together, the affine-normal transport, invariant-vector obstruction, and
+determinant calculation give the key separation: the improper family cannot
+be made proper through the single-invertible-matrix canonical normal form used
+in the source’s linear-reduction analysis.
 
 ## Exact scope
 
 The formalization targets the explicit construction in Section 4.4.1 of the
-source and its canonical normal form. It packages the finite-dimensional
-common-invariant argument as a reusable lemma for an arbitrary selected family
-on the three-action simplex, then specializes it to the source's skew family.
-It does not formalize the paper’s wider affine-reduction machinery, its
-minimality and rate-preservation arguments, or an online regret algorithm.
-That boundary is intentional: the five selected theorems establish the
-concrete fixed-point, impropriety, general invariant transport, skew-family
-obstruction, determinant, and no-reduction claims needed for this finite
-construction.
+source and the dimension-three affine-hyperplane implication in the proof of
+its Lemma 4. It assumes the paper’s canonical correction equation directly,
+packages its affine-normal transport as a reusable lemma for arbitrary action
+sets `P : Set (Fin 3 → ℝ)`, then specializes it to the source's skew family.
+It does not formalize the paper’s wider affine-reduction machinery that derives
+this normal form, its minimality and rate-preservation arguments, or an online
+regret algorithm. That boundary is intentional: the five selected theorems
+establish the concrete fixed-point, impropriety, affine-hyperplane transport,
+skew-family obstruction, determinant, and no-reduction claims needed for this
+finite construction.
 
 The repository retains earlier Blackwell approachability, finite-game, minimax,
 and norm-conversion modules as supporting work, but they are not the Palomar
@@ -70,9 +72,9 @@ selection.
 - `BlackwellChallenge.lean` is the Mathlib-only five-theorem statement
   surface.
 - `BlackwellSolution.lean` provides checked adapters to the implementation.
-- `BlackwellIrreducibilityExamples.lean` checks the generic-lemma
-  specialization, explicit endpoint calculations, and the two headline
-  predicates.
+- `BlackwellIrreducibilityExamples.lean` checks both the affine-hyperplane
+  and simplex transport specializations, explicit endpoint calculations, and
+  the headline predicates.
 - `formalization.yaml` records the source-to-statement relationship and the
   exact scope.
 

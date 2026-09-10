@@ -62,6 +62,18 @@ def canonicalProperFor {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ simplex3, correctedFor φ S q p ∈ simplex3
 
+def affineHyperplaneWitness (P : Set Vec3) : Prop :=
+  ∃ w : Vec3, ∃ b : ℝ, nonzeroVec3 w ∧
+    ∀ p ∈ P, dotProduct p w = b
+
+def commonInvariantOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (v : Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, dotProduct (displacementFor φ q p) v = 0
+
+def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
+
 def validImproperInstance : Prop :=
   (∀ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p = p) ∧
     ∃ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p ∉ simplex3
@@ -74,21 +86,22 @@ theorem skewPhi_valid_improper_instance : validImproperInstance := by
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_valid_improper_instance
 
-theorem canonical_properizer_has_nonzero_common_invariant
-    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0)
-    (hproper : canonicalProperFor Q φ S) :
-    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantFor Q φ v := by
-  simpa [nonzeroVec3, commonInvariantFor, canonicalProperFor, simplex3,
-    correctedFor, displacementFor,
-    Blackwell.Irreducibility.canonicalProperFor,
+    (haff : affineHyperplaneWitness P)
+    (hproper : canonicalProperOn P Q φ S) :
+    ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantOn P Q φ v := by
+  simpa [nonzeroVec3, affineHyperplaneWitness, commonInvariantOn,
+    canonicalProperOn, correctedFor, displacementFor,
+    Blackwell.Irreducibility.affineHyperplaneWitness,
     Blackwell.Irreducibility.nonzeroVec3,
-    Blackwell.Irreducibility.commonInvariantFor,
-    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.commonInvariantOn,
+    Blackwell.Irreducibility.canonicalProperOn,
     Blackwell.Irreducibility.correctedFor,
     Blackwell.Irreducibility.displacementFor]
-    using Blackwell.Irreducibility.canonical_properizer_has_nonzero_common_invariant
-      Q φ S hdet hproper
+    using Blackwell.Irreducibility.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
+      P Q φ S hdet haff hproper
 
 theorem skewPhi_has_no_nonzero_common_invariant :
     ¬ ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariant v := by
