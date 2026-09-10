@@ -12,14 +12,17 @@ single-invertible-matrix normal form for a prospective reduction to proper
 phi-regret.
 
 The selected theorems establish two explicit valid improper phi-regret
-families, both canonical-correction obstructions from Section 4.4.1, and the
+families, both canonical-correction obstructions from Section 4.4.1, the
 source's finite Equation-(15)-to-(16) and normalized Equation-(16)-to-(17)
-bridges: the affine-hyperplane invariant transport of Lemma 4 and the extreme-point,
-antipodal-displacement obstruction of Lemma 5.  The result proves the
-finite full-rank-loss-basis implication for the normalized identity and its
-implication for the canonical normal form; it does not claim to formalize the
-paper's separate rate/minimality and span argument that derives Equation (15)
-from its most general bidirectional affine definition of linear equivalence.
+bridges, and concrete Equation-(18) vertex/corner membership criteria for
+the two cited families: the affine-hyperplane invariant transport of Lemma 4
+and the extreme-point, antipodal-displacement obstruction of Lemma 5. The
+result proves the finite full-rank-loss-basis implication for the normalized
+identity, its implication for the canonical normal form, and the exact
+nine- and twelve-constraint specializations of the source's finite-polytope test; it
+does not claim to formalize the paper's separate rate/minimality and span
+argument that derives Equation (15) from its most general bidirectional
+affine definition of linear equivalence, or its general randomized algorithm.
 -/
 
 namespace Blackwell.Palomar
@@ -146,6 +149,17 @@ def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
 def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
   fun i => B i j
 
+/-- The action-vertex constraints in Equation (18), for a canonical
+correction of a matrix-represented comparator family. -/
+def canonicalVertexProperOn {α : Type u} (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ j : Fin 3, correctedFor φ S q (basisVector j) ∈ simplex3
+
+/-- The nine action/comparator-vertex constraints for the skew-simplex
+family. -/
+def skewCanonicalVertexConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i j : Fin 3, corrected S (basisVector i) (basisVector j) ∈ simplex3
+
 /-- The source's Equation-(15) loss-pairing identity checked at simplex
 vertices against a chosen target-loss basis. -/
 def lossBasisPairingIntertwining
@@ -158,6 +172,11 @@ def lossBasisPairingIntertwining
 def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
     (q : α) (p : Vec3) : Vec3 :=
   p - N q *ᵥ p
+
+/-- A comparator family is represented by its displacement matrices. -/
+def matrixComparatorRepresentation {α : Type u}
+    (φ : α → Vec3 → Vec3) (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q : α, ∀ p : Vec3, φ q p = matrixComparator M q p
 
 /-- Matrix-represented target comparators preserve the action set. -/
 def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
@@ -218,6 +237,16 @@ def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
 def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
   -(q.1 • sourceA + q.2 • sourceB)
 
+/-- The four coefficient-square corners for the source A/B family. -/
+def sourceCorners : Fin 4 → ℝ × ℝ :=
+  ![(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+/-- The twelve action/comparator-corner constraints for the source A/B
+coefficient-square family. -/
+def sourceABCanonicalCornerConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i : Fin 4, ∀ j : Fin 3,
+    correctedFor sourcePhi S (sourceCorners i) (basisVector j) ∈ simplex3
+
 /-- Every comparator must have a simplex fixed point, while at least one must
 escape the simplex, for the family to be valid and improper. -/
 def validImproperInstance : Prop :=
@@ -258,6 +287,25 @@ theorem loss_basis_pairing_implies_normalized_matrix_identity
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M := by
   sorry
 
+/-- A matrix comparator maps the three-simplex into itself precisely when it
+maps the three action vertices into it.  This is the action-vertex half of
+the finite-polytope criterion in Equation (18). -/
+theorem matrixProperOn_simplex3_iff_on_vertices {α : Type u}
+    (Q : Set α) (N : α → Matrix (Fin 3) (Fin 3) ℝ) :
+    matrixProperOn simplex3 Q N ↔
+      ∀ q ∈ Q, ∀ j : Fin 3, matrixComparator N q (basisVector j) ∈ simplex3 := by
+  sorry
+
+/-- Given `M_q = Id - phi_q`, canonical properness on the three-simplex is
+equivalent to the action-vertex constraints in Equation (18). -/
+theorem canonicalProperOn_simplex3_iff_vertex_constraints
+    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : matrixComparatorRepresentation φ M)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 Q φ S ↔ canonicalVertexProperOn Q φ S := by
+  sorry
+
 /-- Canonical-correction core of Lemma 5: an extreme action with antipodal
 nonzero comparator displacements rules out every invertible properizer. -/
 theorem extreme_antipodal_no_canonical_properizer
@@ -280,6 +328,20 @@ theorem canonical_proper_matrices_are_singular (S : Matrix (Fin 3) (Fin 3) ℝ)
 /-- Consequently the explicit family has no invertible canonical reduction to
 proper phi-regret. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
+  sorry
+
+/-- For the skew-simplex family, the nine vertex constraints are equivalent
+to canonical properness on the full product of the two simplices. -/
+theorem skew_canonicalProper_iff_vertex_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProper S ↔ skewCanonicalVertexConstraints S := by
+  sorry
+
+/-- The nine finite vertex constraints for the skew family admit no
+invertible correction matrix. -/
+theorem skewPhi_no_invertible_nine_vertex_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ skewCanonicalVertexConstraints S := by
   sorry
 
 /-- The skew-simplex family has no invertible normalized proper reduction
@@ -313,6 +375,21 @@ no invertible canonical reduction to proper phi-regret. -/
 theorem sourceAB_not_canonically_proper_reducible :
     ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
       S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S := by
+  sorry
+
+/-- For the source A/B family, the twelve coefficient-corner/action-vertex
+constraints are equivalent to canonical properness on the two full polytopes. -/
+theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 sourceCoefficients sourcePhi S ↔
+      sourceABCanonicalCornerConstraints S := by
+  sorry
+
+/-- The twelve finite corner constraints for the source A/B family admit no
+invertible correction matrix. -/
+theorem sourceAB_no_invertible_twelve_corner_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ sourceABCanonicalCornerConstraints S := by
   sorry
 
 /-- The second matrix family has no invertible normalized proper reduction

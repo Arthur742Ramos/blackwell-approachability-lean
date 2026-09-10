@@ -7,9 +7,10 @@ project:
     and Sivan (COLT 2025). It proves valid-improper-family certificates for
     both constructions, the affine-hyperplane invariant-transport core of
     Lemma 4, the extreme-point antipodal-displacement core of Lemma 5, and
-    finite-dimensional Equation-(15)-to-(16) and Equation-(16)-to-(17)
-    bridges. It then instantiates those mechanisms to rule out invertible
-    canonical, normalized, and finite-loss-basis proper reductions for the
+    finite-dimensional Equation-(15)-to-(16), Equation-(16)-to-(17), and
+    concrete Equation-(18) vertex/corner bridges. It then instantiates those
+    mechanisms to rule out invertible canonical, normalized,
+    finite-loss-basis, and finite-vertex/corner proper reductions for the
     two cited finite-dimensional families.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
@@ -30,10 +31,11 @@ sources:
       the finite-dimensional canonical-correction arguments appearing in the
       proofs of Lemmas 4 and 5. The source develops a broader reduction
       theory; this package proves a finite full-rank-loss-basis form of the
-      source's Equation-(15)-to-(16) step and the normalized
-      Equation-(16)-to-(17) implication for its selected results, but does
-      not claim the source's preceding general affine-equivalence derivation
-      of the canonical normal form.
+      source's Equation-(15)-to-(16) step, normalized Equation-(16)-to-(17)
+      implication, and concrete Equation-(18) vertex/corner criteria for its
+      two explicit families, but does not claim the source's preceding
+      general affine-equivalence derivation of the canonical normal form or
+      its general randomized algorithm.
     author_endorsement: "not-contacted"
   - title: "An analog of the minimax theorem for vector payoffs"
     authors: ["David Blackwell"]
@@ -47,7 +49,7 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Fifteen selected statements formalize two source-backed finite-dimensional
+    Twenty-one selected statements formalize two source-backed finite-dimensional
     results. For the skew simplex family, every mixture has the fixed point
     (c,b,a), an explicit comparator escapes Delta_3, the affine-hyperplane
     transport lemma yields a nonzero common invariant from any invertible
@@ -55,19 +57,24 @@ status:
     canonical properizer is singular. The source's Equation (15), at a
     full-rank loss basis and simplex basis, is proved to imply
     M_psi = S M_phi in Equation (16), which in turn implies the source's
-    canonical Equation (17); the selected skew corollaries rule out every
-    invertible normalized and finite-loss-basis proper reduction. For the
-    second matrix family
+    canonical Equation (17); matrix properness on Delta_3 is also proved
+    equivalent to its three action-vertex tests, and the skew family is
+    reduced exactly to nine comparator/action vertex constraints. The
+    selected skew corollaries rule out every invertible normalized,
+    finite-loss-basis, and nine-vertex proper reduction. For the second matrix family
     phi_(a,b)=Id+aA+bB on the coefficient square, the development gives a
     deterministic normalized-kernel fixed-point certificate for every
     parameter, witnesses impropriety at (1,0), proves that the all-ones
     vector is a common invariant, and applies the generic extreme-point
     antipodal theorem at a simplex vertex to rule out an invertible
     canonical properizer and every invertible normalized or finite-loss-basis
-    proper reduction. The package does not formalize the source's complete
-    affine-reduction framework, a regret algorithm, rate preservation,
-    minimality, the derivation of Equation (15) or a loss basis from arbitrary
-    source sets, or a mathematical-priority claim.
+    proper reduction. Its explicit four-corner bilinear decomposition further
+    proves that canonical properness is equivalent to twelve corner/action
+    constraints, which have no invertible solution. The package does not
+    formalize the source's complete affine-reduction framework, a regret
+    algorithm, rate preservation, minimality, the derivation of Equation (15)
+    or a loss basis from arbitrary source sets, the general randomized
+    Section 4.4.2 algorithm, or a mathematical-priority claim.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -97,14 +104,17 @@ fidelity:
     selected lemma uses a full-rank target-loss basis and the simplex basis to
     derive M_psi = S M_phi from the source's Equation (15); a fourth proves
     Equation (16) implies p + S(phi(p)-p), and the concrete no-go results are
-    lifted to both finite normalized forms. This package intentionally does
-    not formalize the source's full affine-equivalence definition or the
+    lifted to both finite normalized forms. A fifth and sixth layer prove the
+    action-vertex half of Equation (18) and its exact nine-/twelve-constraint
+    specialization for the two source families. This package intentionally
+    does not formalize the source's full affine-equivalence definition, the
+    general polytope/linear-program/randomized cone-span algorithm, or the
     rate/minimality and set-level span arguments that produce Equation (15).
 review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The fifteen
+    No independent human or Palomar editorial approval is claimed. The twenty-one
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; the implementation and Solution contain
     no proof placeholders. Hosted Comparator verification and editorial review
@@ -128,6 +138,14 @@ alignment:
       lean: "Blackwell.Palomar.loss_basis_pairing_implies_normalized_matrix_identity"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "Equation (18) action-vertex criterion on the three-simplex"
+      lean: "Blackwell.Palomar.matrixProperOn_simplex3_iff_on_vertices"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Matrix-represented canonical properness iff Equation (18) action-vertex constraints"
+      lean: "Blackwell.Palomar.canonicalProperOn_simplex3_iff_vertex_constraints"
+      module: "BlackwellSolution.lean"
+      status: "proved"
     - source: "Affine-hyperplane invariant transport in the proof of Lemma 4"
       lean: "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant"
       module: "BlackwellSolution.lean"
@@ -148,6 +166,14 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "Nine-vertex Equation (18) characterization for the skew family"
+      lean: "Blackwell.Palomar.skew_canonicalProper_iff_vertex_constraints"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No invertible nine-vertex Equation (18) correction for the skew family"
+      lean: "Blackwell.Palomar.skewPhi_no_invertible_nine_vertex_properizer"
+      module: "BlackwellSolution.lean"
+      status: "proved"
     - source: "No invertible normalized proper reduction for the skew family"
       lean: "Blackwell.Palomar.skewPhi_not_normalized_proper_reducible"
       module: "BlackwellSolution.lean"
@@ -162,6 +188,14 @@ alignment:
       status: "proved"
     - source: "No invertible canonical reduction for the second matrix family"
       lean: "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Twelve-corner Equation (18) characterization for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_canonicalProperOn_iff_twelve_corner_constraints"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No invertible twelve-corner Equation (18) correction for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_no_invertible_twelve_corner_properizer"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "No invertible normalized proper reduction for the second matrix family"

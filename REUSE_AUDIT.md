@@ -8,7 +8,7 @@ The selected development reuses stable Mathlib infrastructure for:
 - finite coordinate sums and finite case analysis (`Fin.sum_univ_succ`,
   `fin_cases`);
 - vector/matrix multiplication and dot products (`Matrix.mulVec`,
-  `dotProduct`);
+  `Matrix.mulVec_sum`, `Matrix.mulVec_smul`, `dotProduct`);
 - transpose transport and determinant-based injectivity
   (`Matrix.dotProduct_transpose_mulVec`,
   `Matrix.eq_zero_of_mulVec_eq_zero`);
@@ -28,7 +28,9 @@ the normalized `M_psi = S M_phi` identity, keeping the source's reduction
 assumptions explicit rather than importing an unverified equivalence layer.
 It now also reuses Mathlib's transpose action and determinant-based
 injectivity to formalize the finite dual-basis step from the source's loss
-pairing identity to its normalized matrix identity.
+pairing identity to its normalized matrix identity, and finite-sum/vector
+algebra to certify the source's simplex vertex and coefficient-square-corner
+membership reductions.
 
 The construction follows Dann et al., Section 4.4.1. For the skew family, the
 fixed point and endpoint calculations were checked against the published
@@ -51,6 +53,16 @@ source Lemma 5. The local scope intentionally stops before the source's
 broader affine/rate/minimality and set-level span theory that derives Equation
 (15) and chooses such a basis from general affine reduction data, rather than
 rephrasing a narrower theorem as a broader result.
+
+The source's Section 4.4.2 membership observation is formalized concretely:
+matrix comparator properness on `Delta_3` is equivalent to its three
+action-vertex tests. For the skew family, linearity in the simplex comparator
+weights reduces canonical properness to nine tests. For the A/B family, an
+explicit four-corner bilinear decomposition of the coefficient square reduces
+it to twelve tests. These are specialized finite-polytope facts for the cited
+families; the audit found no Mathlib implementation of the paper's general
+linear-program or randomized cone-span algorithm, and this project does not
+claim one.
 
 No external formalization is imported. The Challenge source is independently
 Mathlib-only; the implementation exposes public helpers so the checked Solution

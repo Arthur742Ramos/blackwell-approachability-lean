@@ -8,9 +8,9 @@ obstructions, not a claim of new mathematics.
 
 ## Checked result
 
-The public Challenge/Solution boundary selects fifteen declarations. Together,
+The public Challenge/Solution boundary selects twenty-one declarations. Together,
 they prove two distinct canonical-correction obstructions and connect them to
-the source's normalized reduction identities.
+the source's normalized reduction identities and finite membership criterion.
 
 ### Skew-simplex family and the Lemma-4 mechanism
 
@@ -108,18 +108,44 @@ admits an invertible proper *finite-loss-basis reduction* satisfying (15).
 It formalizes the concrete dual-basis form of the paper’s full-span argument,
 not just the later Equation-(16) rearrangement.
 
+### Finite vertex/corner criterion (Equation 18)
+
+Section 4.4.2 observes that, for a linear comparator on a polytope, it is
+enough to test whether the corrected comparator maps the action vertices back
+into the action polytope. The development proves that concrete fact for
+`Δ₃`: a matrix-represented comparator preserves the entire simplex if and
+only if it preserves its three standard vertices. Combined with the
+matrix representation `Mφ = Id - φ`, this gives the action-vertex form of
+the source's Equation (18) for canonical corrections.
+
+It then closes the remaining comparator-polytope side for both cited
+families:
+
+- for the skew family, properness on `Δ₃ × Δ₃` is equivalent to nine
+  membership tests—three comparator vertices times three action vertices;
+- for the A/B family, properness on `[-1,1]² × Δ₃` is equivalent to twelve
+  tests—four coefficient-square corners times three action vertices. The
+  proof uses explicit nonnegative bilinear corner weights that sum to one.
+
+The existing Lemma-4 and Lemma-5 obstructions therefore yield finite no-go
+results: neither the nine-constraint nor the twelve-constraint system has an
+invertible correction matrix. These are checked symbolic results, not the
+output of an external LP solver.
+
 ## Exact scope
 
 The formalization proves the finite-dimensional Equation-(15)-to-(16) dual
-basis argument, the algebraic Equation-(16)-to-(17) bridge, and the
-consequences of the source's canonical normal form above. It does **not**
-formalize the paper's
-full bidirectional affine-equivalence definition, the rate/minimality and
-span arguments that produce a loss basis and Equation (15) from that
-definition, an online learner, or a priority claim. In particular, the
-repository proves the canonical-normal-form cores of Lemmas 4 and 5 plus the
-finite normalized-identity bridges, rather than silently upgrading them to the
-paper's full linear-equivalence theorems.
+basis argument, the algebraic Equation-(16)-to-(17) bridge, the `Δ₃`
+action-vertex criterion, and the exact 9-/12-constraint specializations of
+Equation (18) above. It remains a canonical normal form formalization: it
+does **not** formalize the paper's general
+bidirectional affine-equivalence definition, the rate/minimality and span
+arguments that produce a loss basis and Equation (15) from that definition,
+the general randomized cone/span algorithm of Section 4.4.2, an online
+learner, or a priority claim. In particular, the repository proves the
+canonical-normal-form cores of Lemmas 4 and 5 plus finite normalized-identity
+and vertex/corner bridges, rather than silently upgrading them to the paper's
+full linear-equivalence or algorithmic theorems.
 
 Earlier Blackwell approachability, finite-game, minimax, and norm-conversion
 modules remain in the repository as supporting work; they are not part of the
@@ -129,7 +155,7 @@ Palomar selection.
 
 - `BlackwellIrreducibility.lean` contains the complete proof and the two
   explicit source families.
-- `BlackwellChallenge.lean` is the Mathlib-only fifteen-theorem statement surface.
+- `BlackwellChallenge.lean` is the Mathlib-only twenty-one-theorem statement surface.
 - `BlackwellSolution.lean` supplies checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
   the two generic obstructions, and their concrete no-reduction corollaries.
@@ -145,10 +171,11 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, exact
-fifteen-declaration Challenge/Solution surface, implementation-placeholder ban,
-source dependency closure, named-theorem axiom allowlist, official renderer
-notation audit, metadata alignment, and executable regressions. The pinned
-Comparator/NanoDa replay is available through `scripts/verify-comparator.sh`.
+twenty-one-declaration Challenge/Solution surface, implementation-placeholder
+ban, source dependency closure, named-theorem axiom allowlist, official
+renderer notation audit, metadata alignment, and executable regressions. The
+pinned Comparator/NanoDa replay is available through
+`scripts/verify-comparator.sh`.
 macOS requires the explicit `PALOMAR_ALLOW_UNSANDBOXED_LOCAL=1` fallback because
 Landrun's kernel sandbox is Linux-only; hosted verification uses real Landrun.
 

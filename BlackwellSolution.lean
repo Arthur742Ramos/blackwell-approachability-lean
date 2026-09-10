@@ -100,6 +100,13 @@ def basisVector (j : Fin 3) : Vec3 := fun i => if i = j then 1 else 0
 def matrixColumn (B : Matrix (Fin 3) (Fin 3) ℝ) (j : Fin 3) : Vec3 :=
   fun i => B i j
 
+def canonicalVertexProperOn {α : Type u} (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ j : Fin 3, correctedFor φ S q (basisVector j) ∈ simplex3
+
+def skewCanonicalVertexConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i j : Fin 3, corrected S (basisVector i) (basisVector j) ∈ simplex3
+
 def lossBasisPairingIntertwining
     (M N S B : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ i j : Fin 3,
@@ -109,6 +116,10 @@ def lossBasisPairingIntertwining
 def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
     (q : α) (p : Vec3) : Vec3 :=
   p - N q *ᵥ p
+
+def matrixComparatorRepresentation {α : Type u}
+    (φ : α → Vec3 → Vec3) (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q : α, ∀ p : Vec3, φ q p = matrixComparator M q p
 
 def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
@@ -155,6 +166,13 @@ def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
 
 def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
   -(q.1 • sourceA + q.2 • sourceB)
+
+def sourceCorners : Fin 4 → ℝ × ℝ :=
+  ![(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+def sourceABCanonicalCornerConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i : Fin 4, ∀ j : Fin 3,
+    correctedFor sourcePhi S (sourceCorners i) (basisVector j) ∈ simplex3
 
 def validImproperInstance : Prop :=
   (∀ q ∈ simplex3, ∃ p ∈ simplex3, skewPhi q p = p) ∧
@@ -211,6 +229,30 @@ theorem loss_basis_pairing_implies_normalized_matrix_identity
     using Blackwell.Irreducibility.loss_basis_pairing_implies_normalized_matrix_identity
       M N S B hB hpair
 
+theorem matrixProperOn_simplex3_iff_on_vertices {α : Type u}
+    (Q : Set α) (N : α → Matrix (Fin 3) (Fin 3) ℝ) :
+    matrixProperOn simplex3 Q N ↔
+      ∀ q ∈ Q, ∀ j : Fin 3, matrixComparator N q (basisVector j) ∈ simplex3 := by
+  change Blackwell.Irreducibility.matrixProperOn
+      Blackwell.Irreducibility.simplex3 Q N ↔
+    ∀ q ∈ Q, ∀ j : Fin 3,
+      Blackwell.Irreducibility.matrixComparator N q
+        (Blackwell.Irreducibility.basisVector j) ∈
+          Blackwell.Irreducibility.simplex3
+  exact Blackwell.Irreducibility.matrixProperOn_simplex3_iff_on_vertices Q N
+
+theorem canonicalProperOn_simplex3_iff_vertex_constraints
+    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : matrixComparatorRepresentation φ M)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 Q φ S ↔ canonicalVertexProperOn Q φ S := by
+  change Blackwell.Irreducibility.canonicalProperOn
+      Blackwell.Irreducibility.simplex3 Q φ S ↔
+    Blackwell.Irreducibility.canonicalVertexProperOn Q φ S
+  exact Blackwell.Irreducibility.canonicalProperOn_simplex3_iff_vertex_constraints
+    Q φ M hrepresentation S
+
 theorem extreme_antipodal_no_canonical_properizer
     {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3) (x : Vec3)
     (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x) :
@@ -256,6 +298,20 @@ theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction :
     Blackwell.Irreducibility.displacement,
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_not_canonically_proper_reducible
+
+theorem skew_canonicalProper_iff_vertex_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProper S ↔ skewCanonicalVertexConstraints S := by
+  change Blackwell.Irreducibility.canonicalProper S ↔
+    Blackwell.Irreducibility.skewCanonicalVertexConstraints S
+  exact Blackwell.Irreducibility.skew_canonicalProper_iff_vertex_constraints S
+
+theorem skewPhi_no_invertible_nine_vertex_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ skewCanonicalVertexConstraints S := by
+  change ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ Blackwell.Irreducibility.skewCanonicalVertexConstraints S
+  exact Blackwell.Irreducibility.skewPhi_no_invertible_nine_vertex_properizer
 
 theorem skewPhi_not_normalized_proper_reducible :
     ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi := by
@@ -313,6 +369,24 @@ theorem sourceAB_not_canonically_proper_reducible :
     Blackwell.Irreducibility.sourcePhi, Blackwell.Irreducibility.sourceA,
     Blackwell.Irreducibility.sourceB]
     using Blackwell.Irreducibility.sourceAB_not_canonically_proper_reducible
+
+theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 sourceCoefficients sourcePhi S ↔
+      sourceABCanonicalCornerConstraints S := by
+  change Blackwell.Irreducibility.canonicalProperOn
+      Blackwell.Irreducibility.simplex3
+      Blackwell.Irreducibility.sourceCoefficients
+      Blackwell.Irreducibility.sourcePhi S ↔
+    Blackwell.Irreducibility.sourceABCanonicalCornerConstraints S
+  exact Blackwell.Irreducibility.sourceAB_canonicalProperOn_iff_twelve_corner_constraints S
+
+theorem sourceAB_no_invertible_twelve_corner_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ sourceABCanonicalCornerConstraints S := by
+  change ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ Blackwell.Irreducibility.sourceABCanonicalCornerConstraints S
+  exact Blackwell.Irreducibility.sourceAB_no_invertible_twelve_corner_properizer
 
 theorem sourceAB_not_normalized_proper_reducible :
     ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi := by

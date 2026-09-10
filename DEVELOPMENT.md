@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly fifteen proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-one proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -105,20 +105,61 @@ the matrix representations of the skew and A/B families to rule it out. This
 still does not derive Equation (15), the loss basis, or the normalized setup
 from the source's full bidirectional affine-equivalence/rate machinery.
 
+## Equation-(18) finite vertex/corner bridge
+
+Section 4.4.2 reduces a canonical-properness test over a polytope to the
+membership constraints
+
+```text
+p_j + S(phi_i(p_j) - p_j) ∈ P.  (18)
+```
+
+The selected `matrixProperOn_simplex3_iff_on_vertices` proves the complete
+action-side statement for the concrete simplex: a linear matrix comparator
+maps all of `Delta_3` into itself exactly when it maps each of its three
+standard basis vertices into `Delta_3`. The selected
+`canonicalProperOn_simplex3_iff_vertex_constraints` composes that fact with
+the checked representation `M_phi = Id - phi`, making the source's
+action-vertex constraints available for a canonical correction.
+
+The two source examples additionally have finite comparator polytopes that
+can be handled without an optimization oracle. For the skew family,
+`M_q` is linear in `q ∈ Delta_3`, so the three comparator vertices and the
+three action vertices give nine sufficient-and-necessary constraints. For the
+A/B family, the coefficient square uses the explicit four nonnegative
+bilinear weights
+
+```text
+(1-a)(1-b)/4, (1-a)(1+b)/4,
+(1+a)(1-b)/4, (1+a)(1+b)/4,
+```
+
+which sum to one. This proves that its four coefficient corners and three
+action vertices give exactly twelve constraints. The existing canonical
+obstructions are then lifted to no-invertible-solution theorems for both
+finite systems.
+
+This is deliberately a concrete source-family specialization of Equation
+(18). It does not formalize the paper's general polytope representation,
+linear-program construction, cone-span procedure, randomized invertibility
+test, or its earlier reduction hypotheses.
+
 ## Scope and regression policy
 
 The development proves a finite loss-basis form of the source's Equation
-(15)-to-(16) step and the algebraic implication from Equation (16) to its
-canonical normal form (17). It does not claim the source's preceding
-derivation of Equation (15), the required action/loss span witnesses, or its
-general bidirectional affine-equivalence and rate/minimality theory, nor an
-online algorithm. That boundary is deliberate and is checked in the
-documentation and metadata gate.
+(15)-to-(16) step, the algebraic implication from Equation (16) to its
+canonical normal form (17), and concrete Equation-(18) membership reductions
+for the two cited families. It does not claim the source's preceding
+derivation of Equation (15), the required action/loss span witnesses, its
+general bidirectional affine-equivalence and rate/minimality theory, or the
+general Section 4.4.2 randomized algorithm, nor an online algorithm. That
+boundary is deliberate and is checked in the documentation and metadata gate.
 
 The older approachability, game, minimax, and norm-conversion files remain
 independent supporting experiments and are not selected by Comparator.
 `BlackwellIrreducibilityExamples.lean` exercises both family certificates,
 both generic obstructions, the Equation-(15)-to-(16) and
-Equation-(16)-to-(17) bridges, and both classes of no-reduction corollaries.
+Equation-(16)-to-(17) bridges, the Equation-(18) vertex/corner equivalences,
+and both classes of no-reduction corollaries.
 The validation gate runs the official renderer notation audit and an axiom
-audit over exactly the fifteen selected declarations.
+audit over exactly the twenty-one selected declarations.

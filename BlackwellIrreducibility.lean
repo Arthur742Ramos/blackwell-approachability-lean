@@ -19,12 +19,14 @@ p |-> p + S (phi(p) - p)
 ```
 
 with an invertible correction matrix `S`.  The selected results prove that no
-such matrix can make every member of either cited family proper and formalize
-the source's normalized Equation-(16)-to-(17) rearrangement.  The
-formalization is intentionally scoped to this normalized/canonical layer; it
-does not formalize the paper's separate rate/minimality and span machinery
-used to obtain Equation (16) from its most general bidirectional affine
-definition of linear equivalence.
+such matrix can make every member of either cited family proper, formalize the
+source's normalized Equation-(16)-to-(17) rearrangement, and reduce canonical
+properness to the source's finite Equation-(18) vertex/corner constraints for
+these two families. The formalization is intentionally scoped to this
+normalized/canonical layer: it does not formalize the paper's separate
+rate/minimality and span machinery used to obtain Equation (16) from its most
+general bidirectional affine definition of linear equivalence, nor its generic
+randomized finite-polytope algorithm.
 -/
 
 namespace Blackwell.Irreducibility
@@ -284,10 +286,195 @@ def matrixComparator {α : Type u} (N : α → Matrix (Fin 3) (Fin 3) ℝ)
     (q : α) (p : Vec3) : Vec3 :=
   p - N q *ᵥ p
 
+/-- A comparator family is represented by its displacement matrices.  Naming
+this relation keeps the finite Equation-(18) statement surface independent of
+raw function-space subtraction notation. -/
+def matrixComparatorRepresentation {α : Type u}
+    (φ : α → Vec3 → Vec3) (M : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q : α, ∀ p : Vec3, φ q p = matrixComparator M q p
+
 /-- Matrix-represented target comparators are proper on an action set. -/
 def matrixProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (N : α → Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ P, matrixComparator N q p ∈ P
+
+/-- A finite convex combination of three-simplex points stays in the
+three-action simplex. -/
+lemma simplex3_finite_weighted_sum_mem {ι : Type u} [Fintype ι]
+    (w : ι → ℝ) (hnonneg : ∀ i, 0 ≤ w i) (hsum : ∑ i, w i = 1)
+    (x : ι → Vec3) (hx : ∀ i, x i ∈ simplex3) :
+    (∑ i, w i • x i) ∈ simplex3 := by
+  classical
+  constructor
+  · intro j
+    rw [Finset.sum_apply]
+    exact Finset.sum_nonneg fun i _ =>
+      mul_nonneg (hnonneg i) ((hx i).1 j)
+  · calc
+      ∑ j, (∑ i, w i • x i) j = ∑ i, w i * ∑ j, x i j := by
+        simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+        rw [Finset.sum_comm]
+        simp only [Finset.mul_sum]
+      _ = ∑ i, w i := by
+        apply Finset.sum_congr rfl
+        intro i _
+        rw [(hx i).2, mul_one]
+      _ = 1 := hsum
+
+/-- A simplex-weighted finite combination of simplex points stays in the
+three-action simplex.  This is the concrete convexity fact used by the
+finite-polytope reduction criterion below. -/
+lemma simplex3_weighted_sum_mem (w : Vec3) (hw : w ∈ simplex3)
+    (x : Fin 3 → Vec3) (hx : ∀ j, x j ∈ simplex3) :
+    (∑ j, w j • x j) ∈ simplex3 := by
+  exact simplex3_finite_weighted_sum_mem w hw.1 hw.2 x hx
+
+/-- Every point of the three-simplex is its coordinate-weighted combination
+of the three standard vertices. -/
+lemma simplex3_eq_weighted_basis (p : Vec3) :
+    p = ∑ j, p j • basisVector j := by
+  ext i
+  simp [basisVector]
+
+/-- A matrix-represented comparator commutes with finite linear
+combinations of actions. -/
+lemma matrixComparator_weighted_sum {α : Type u}
+    (N : α → Matrix (Fin 3) (Fin 3) ℝ) (q : α) (w : Vec3)
+    (x : Fin 3 → Vec3) :
+    matrixComparator N q (∑ j, w j • x j) =
+      ∑ j, w j • matrixComparator N q (x j) := by
+  simp only [matrixComparator]
+  rw [Matrix.mulVec_sum]
+  simp_rw [Matrix.mulVec_smul]
+  rw [← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro j _
+  rw [← smul_sub]
+
+/-- For a linear three-action comparator, mapping the full simplex into
+itself is equivalent to mapping its three vertices into it.  This is the
+action-vertex half of the finite-polytope membership criterion in Equation
+(18) of Dann et al. -/
+theorem matrixProperOn_simplex3_iff_on_vertices {α : Type u}
+    (Q : Set α) (N : α → Matrix (Fin 3) (Fin 3) ℝ) :
+    matrixProperOn simplex3 Q N ↔
+      ∀ q ∈ Q, ∀ j : Fin 3, matrixComparator N q (basisVector j) ∈ simplex3 := by
+  constructor
+  · intro h q hq j
+    exact h q hq (basisVector j) (basisVector_mem_simplex3 j)
+  · intro h q hq p hp
+    rw [simplex3_eq_weighted_basis p, matrixComparator_weighted_sum]
+    exact simplex3_weighted_sum_mem p hp
+      (fun j => matrixComparator N q (basisVector j)) (h q hq)
+
+/-- The action-vertex constraints in Equation (18), written for the
+canonical correction of an arbitrary matrix-represented comparator family. -/
+def canonicalVertexProperOn {α : Type u} (Q : Set α)
+    (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ j : Fin 3, correctedFor φ S q (basisVector j) ∈ simplex3
+
+/-- If `M_q = Id - phi_q`, the canonical correction is the matrix comparator
+with displacement matrix `S M_q`. -/
+lemma correctedFor_eq_matrixComparator_of_matrix_representation
+    {α : Type u} (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : ∀ q : α, ∀ p : Vec3, φ q p = p - M q *ᵥ p)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (q : α) (p : Vec3) :
+    correctedFor φ S q p = matrixComparator (fun r => S * M r) q p := by
+  rw [correctedFor, displacementFor, hrepresentation q p]
+  rw [show (p - M q *ᵥ p) - p = -(M q *ᵥ p) by abel]
+  rw [Matrix.mulVec_neg]
+  rw [matrixComparator, Matrix.mulVec_mulVec]
+  abel
+
+/-- For a matrix-represented comparator family on the three-simplex, the
+canonical correction is proper exactly when it satisfies the paper's
+action-vertex membership constraints (18).  This proves the finite-
+polytope action-side reduction without assuming the source's broader
+affine-equivalence derivation. -/
+theorem canonicalProperOn_simplex3_iff_vertex_constraints
+    {α : Type u} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : matrixComparatorRepresentation φ M)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 Q φ S ↔ canonicalVertexProperOn Q φ S := by
+  constructor
+  · intro h q hq j
+    exact h q hq (basisVector j) (basisVector_mem_simplex3 j)
+  · intro h
+    have hraw : ∀ q : α, ∀ p : Vec3, φ q p = p - M q *ᵥ p := by
+      intro q p
+      exact hrepresentation q p
+    have hmatrix : matrixProperOn simplex3 Q (fun r => S * M r) :=
+      (matrixProperOn_simplex3_iff_on_vertices Q (fun r => S * M r)).2
+        (fun q hq j => by
+          rw [← correctedFor_eq_matrixComparator_of_matrix_representation
+            φ M hraw S q (basisVector j)]
+          exact h q hq j)
+    intro q hq p hp
+    rw [correctedFor_eq_matrixComparator_of_matrix_representation
+      φ M hraw S q p]
+    exact hmatrix q hq p hp
+
+/-- The nine action/comparator-vertex membership tests for the skew-simplex
+family.  These are the concrete finite constraints obtained from (18). -/
+def skewCanonicalVertexConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i j : Fin 3, corrected S (basisVector i) (basisVector j) ∈ simplex3
+
+/-- The skew displacement is linear in a simplex mixture of its three
+comparator vertices. -/
+lemma skew_displacement_eq_weighted_vertices (q p : Vec3) :
+    displacement q p = ∑ i, q i • displacement (basisVector i) p := by
+  ext j
+  fin_cases j <;>
+    simp [displacement, skewPhi, basisVector, Fin.sum_univ_succ,
+      Matrix.vecHead, Matrix.vecTail, Matrix.cons_val_one,
+      Matrix.cons_val_two] <;> ring
+
+/-- Consequently, for a mixed skew comparator the canonical correction is
+the same mixture of the three corrected comparator vertices. -/
+lemma corrected_skew_eq_weighted_vertices
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (q p : Vec3) (hq : q ∈ simplex3) :
+    corrected S q p = ∑ i, q i • corrected S (basisVector i) p := by
+  rw [corrected, skew_displacement_eq_weighted_vertices]
+  rw [Matrix.mulVec_sum]
+  simp_rw [Matrix.mulVec_smul]
+  ext j
+  simp only [Pi.add_apply, Finset.sum_apply, Pi.smul_apply, corrected, smul_eq_mul]
+  simp_rw [mul_add]
+  rw [Finset.sum_add_distrib]
+  rw [← Finset.sum_mul, hq.2, one_mul]
+
+/-- For the skew-simplex construction, checking the nine action/comparator
+vertex constraints is equivalent to checking canonical properness on the
+entire two simplex polytopes. -/
+theorem skew_canonicalProper_iff_vertex_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProper S ↔ skewCanonicalVertexConstraints S := by
+  constructor
+  · intro h i j
+    exact h (basisVector i) (basisVector_mem_simplex3 i)
+      (basisVector j) (basisVector_mem_simplex3 j)
+  · intro h
+    have hrepr : matrixComparatorRepresentation skewPhi skewDisplacementMatrix := by
+      intro q p
+      ext i
+      fin_cases i <;>
+        simp [skewPhi, skewDisplacementMatrix, matrixComparator,
+          dotProduct, Fin.sum_univ_succ] <;> ring
+    have hvertex : canonicalVertexProperOn simplex3 skewPhi S := by
+      intro q hq j
+      rw [show correctedFor skewPhi S q (basisVector j) =
+          corrected S q (basisVector j) by rfl]
+      rw [corrected_skew_eq_weighted_vertices S q (basisVector j) hq]
+      exact simplex3_weighted_sum_mem q hq
+        (fun i => corrected S (basisVector i) (basisVector j))
+        (fun i => h i j)
+    have hproper : canonicalProperOn simplex3 simplex3 skewPhi S :=
+      (canonicalProperOn_simplex3_iff_vertex_constraints simplex3 skewPhi
+        skewDisplacementMatrix hrepr S).2 hvertex
+    simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
+      displacement, displacementFor] using hproper
 
 /-- A source-normalized reduction certificate at the finite-dimensional
 Equation-(15) layer.  `B` packages three linearly independent target losses;
@@ -384,6 +571,103 @@ def sourcePhi (q : ℝ × ℝ) (p : Vec3) : Vec3 :=
 explicit family. -/
 def sourceDisplacementMatrix (q : ℝ × ℝ) : Matrix (Fin 3) (Fin 3) ℝ :=
   -(q.1 • sourceA + q.2 • sourceB)
+
+/-- The four coefficient-square corners of the source's second family. -/
+def sourceCorners : Fin 4 → ℝ × ℝ :=
+  ![(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+/-- Bilinear barycentric weights of a coefficient pair in the square
+`[-1, 1]^2` with respect to `sourceCorners`. -/
+noncomputable def sourceCornerWeights (q : ℝ × ℝ) : Fin 4 → ℝ :=
+  ![(1 - q.1) * (1 - q.2) / 4,
+    (1 - q.1) * (1 + q.2) / 4,
+    (1 + q.1) * (1 - q.2) / 4,
+    (1 + q.1) * (1 + q.2) / 4]
+
+lemma sourceCorner_mem_sourceCoefficients (i : Fin 4) :
+    sourceCorners i ∈ sourceCoefficients := by
+  fin_cases i <;> norm_num [sourceCorners, sourceCoefficients]
+
+lemma sourceCornerWeights_nonnegative (q : ℝ × ℝ) (hq : q ∈ sourceCoefficients) :
+    ∀ i, 0 ≤ sourceCornerWeights q i := by
+  rcases hq with ⟨ha_lower, ha_upper, hb_lower, hb_upper⟩
+  intro i
+  fin_cases i
+  · change 0 ≤ (1 - q.1) * (1 - q.2) / 4
+    exact div_nonneg (mul_nonneg (by linarith) (by linarith)) (by norm_num)
+  · change 0 ≤ (1 - q.1) * (1 + q.2) / 4
+    exact div_nonneg (mul_nonneg (by linarith) (by linarith)) (by norm_num)
+  · change 0 ≤ (1 + q.1) * (1 - q.2) / 4
+    exact div_nonneg (mul_nonneg (by linarith) (by linarith)) (by norm_num)
+  · change 0 ≤ (1 + q.1) * (1 + q.2) / 4
+    exact div_nonneg (mul_nonneg (by linarith) (by linarith)) (by norm_num)
+
+lemma sourceCornerWeights_sum (q : ℝ × ℝ) :
+    ∑ i, sourceCornerWeights q i = 1 := by
+  norm_num [sourceCornerWeights, Fin.sum_univ_succ]
+  ring
+
+/-- The source's second comparator displacement is the barycentric mixture
+of its four coefficient-square-corner displacements. -/
+lemma source_displacement_eq_weighted_corners (q : ℝ × ℝ) (p : Vec3) :
+    displacementFor sourcePhi q p =
+      ∑ i, sourceCornerWeights q i • displacementFor sourcePhi (sourceCorners i) p := by
+  ext j
+  fin_cases j <;>
+    simp [displacementFor, sourcePhi, sourceCorners, sourceCornerWeights,
+      Fin.sum_univ_succ, Pi.smul_apply] <;> ring
+
+/-- The canonical correction for a coefficient-square mixture is the same
+convex combination of the four corrected corner comparators. -/
+lemma corrected_source_eq_weighted_corners
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (q : ℝ × ℝ) (p : Vec3) :
+    correctedFor sourcePhi S q p =
+      ∑ i, sourceCornerWeights q i •
+        correctedFor sourcePhi S (sourceCorners i) p := by
+  rw [correctedFor, source_displacement_eq_weighted_corners]
+  rw [Matrix.mulVec_sum]
+  simp_rw [Matrix.mulVec_smul]
+  ext j
+  simp only [Pi.add_apply, Finset.sum_apply, Pi.smul_apply, correctedFor, smul_eq_mul]
+  simp_rw [mul_add]
+  rw [Finset.sum_add_distrib]
+  rw [← Finset.sum_mul, sourceCornerWeights_sum, one_mul]
+
+/-- The twelve action/comparator-corner membership tests for the second
+source family: three simplex vertices times four coefficient-square corners. -/
+def sourceABCanonicalCornerConstraints (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ i : Fin 4, ∀ j : Fin 3,
+    correctedFor sourcePhi S (sourceCorners i) (basisVector j) ∈ simplex3
+
+/-- For the source A/B coefficient-square construction, properness of a
+canonical correction on the full product of the two polytopes is equivalent
+to its twelve vertex/corner constraints.  This is the concrete finite-
+polytope form of Equation (18) for the cited family. -/
+theorem sourceAB_canonicalProperOn_iff_twelve_corner_constraints
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 sourceCoefficients sourcePhi S ↔
+      sourceABCanonicalCornerConstraints S := by
+  constructor
+  · intro h i j
+    exact h (sourceCorners i) (sourceCorner_mem_sourceCoefficients i)
+      (basisVector j) (basisVector_mem_simplex3 j)
+  · intro h
+    have hrepr : matrixComparatorRepresentation sourcePhi sourceDisplacementMatrix := by
+      intro q p
+      rw [matrixComparator, sourceDisplacementMatrix, sourcePhi]
+      rw [Matrix.neg_mulVec, Matrix.add_mulVec, Matrix.smul_mulVec,
+        Matrix.smul_mulVec]
+      abel
+    have hvertex : canonicalVertexProperOn sourceCoefficients sourcePhi S := by
+      intro q hq j
+      rw [corrected_source_eq_weighted_corners S q (basisVector j)]
+      exact simplex3_finite_weighted_sum_mem (sourceCornerWeights q)
+        (sourceCornerWeights_nonnegative q hq) (sourceCornerWeights_sum q)
+        (fun i => correctedFor sourcePhi S (sourceCorners i) (basisVector j))
+        (fun i => h i j)
+    exact
+      (canonicalProperOn_simplex3_iff_vertex_constraints sourceCoefficients sourcePhi
+        sourceDisplacementMatrix hrepr S).2 hvertex
 
 lemma sourcePhi_eq_matrixComparator (q : ℝ × ℝ) (p : Vec3) :
     sourcePhi q p = matrixComparator sourceDisplacementMatrix q p := by
@@ -835,6 +1119,16 @@ theorem sourceAB_not_canonically_proper_reducible :
       sourcePhi vertex0 vertex0_extreme_simplex3 sourceAB_antipodal_at_vertex0
       S hdet hproper
 
+/-- Equivalently, the twelve finite Equation-(18) corner constraints for the
+source A/B family allow no invertible correction matrix. -/
+theorem sourceAB_no_invertible_twelve_corner_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ sourceABCanonicalCornerConstraints S := by
+  rintro ⟨S, hdet, hconstraints⟩
+  apply sourceAB_not_canonically_proper_reducible
+  refine ⟨S, hdet, ?_⟩
+  exact (sourceAB_canonicalProperOn_iff_twelve_corner_constraints S).2 hconstraints
+
 /-- The second explicit source family admits no proper target satisfying the
 source's normalized `M_ψ = S M_φ` identity with invertible `S`.  This is the
 Equation-(16) form of its canonical Lemma-5 obstruction. -/
@@ -969,6 +1263,16 @@ theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction :
   refine ⟨v, hv, ?_⟩
   simpa [commonInvariantOn, commonInvariant, displacementFor, displacement]
     using hinvariant
+
+/-- Equivalently, the nine finite Equation-(18) vertex constraints for the
+skew-simplex family allow no invertible correction matrix. -/
+theorem skewPhi_no_invertible_nine_vertex_properizer :
+    ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ skewCanonicalVertexConstraints S := by
+  rintro ⟨S, hdet, hconstraints⟩
+  apply skewPhi_not_canonically_proper_reducible
+  refine ⟨S, hdet, ?_⟩
+  exact (skew_canonicalProper_iff_vertex_constraints S).2 hconstraints
 
 /-- The first explicit source family admits no proper target satisfying the
 source's normalized `M_ψ = S M_φ` identity with invertible `S`.  The proof

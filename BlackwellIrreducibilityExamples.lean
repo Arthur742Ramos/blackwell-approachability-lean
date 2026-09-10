@@ -77,6 +77,35 @@ example (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)
     (hpair : lossBasisPairingIntertwining M N S B) : N = S * M :=
   loss_basis_pairing_implies_normalized_matrix_identity M N S B hB hpair
 
+example {α : Type} (Q : Set α) (N : α → Matrix (Fin 3) (Fin 3) ℝ) :
+    matrixProperOn simplex3 Q N ↔
+      ∀ q ∈ Q, ∀ j : Fin 3, matrixComparator N q (basisVector j) ∈ simplex3 :=
+  matrixProperOn_simplex3_iff_on_vertices Q N
+
+example {α : Type} (Q : Set α) (φ : α → Vec3 → Vec3)
+    (M : α → Matrix (Fin 3) (Fin 3) ℝ)
+    (hrepresentation : matrixComparatorRepresentation φ M)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 Q φ S ↔ canonicalVertexProperOn Q φ S :=
+  canonicalProperOn_simplex3_iff_vertex_constraints Q φ M hrepresentation S
+
+example (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProper S ↔ skewCanonicalVertexConstraints S :=
+  skew_canonicalProper_iff_vertex_constraints S
+
+example : ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ skewCanonicalVertexConstraints S :=
+  skewPhi_no_invertible_nine_vertex_properizer
+
+example (S : Matrix (Fin 3) (Fin 3) ℝ) :
+    canonicalProperOn simplex3 sourceCoefficients sourcePhi S ↔
+      sourceABCanonicalCornerConstraints S :=
+  sourceAB_canonicalProperOn_iff_twelve_corner_constraints S
+
+example : ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ sourceABCanonicalCornerConstraints S :=
+  sourceAB_no_invertible_twelve_corner_properizer
+
 example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     (x : Vec3) (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x)
     (S : Matrix (Fin 3) (Fin 3) ℝ) (hdet : S.det ≠ 0) :
