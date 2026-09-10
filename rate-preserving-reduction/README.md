@@ -1,5 +1,8 @@
 # Finite tight approachability-to-improper-regret reduction
 
+Authors: Arthur Freitas Ramos, Ruy Jose Guerra Barretto de Queiroz, and David
+Barros Hulak.
+
 This is a self-contained Lean 4.33 / Mathlib formalization of a finite-simplex,
 algorithmic specialization of Theorem 4 in Dann, Mansour, Mohri, Schneider,
 and Sivan, “Rate-Preserving Reductions for Blackwell Approachability” (COLT

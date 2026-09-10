@@ -5,11 +5,15 @@ import yaml
 
 root = Path(sys.argv[1])
 data = yaml.safe_load((root / "formalization.yaml").read_text(encoding="utf-8"))
-authors = ["Arthur Freitas Ramos"]
+authors = [
+    "Arthur Freitas Ramos",
+    "Ruy Jose Guerra Barretto de Queiroz",
+    "David Barros Hulak",
+]
 assert data["version"] == "v0.4"
 project = data["project"]
 assert project["authors"] == authors
-assert project["responsible_maintainers"] == authors
+assert project["responsible_maintainers"] == ["Arthur Freitas Ramos"]
 assert project["license"] == "BSD-3-Clause"
 
 citation = yaml.safe_load((root / "CITATION.cff").read_text(encoding="utf-8"))
@@ -28,6 +32,16 @@ for key in ("question", "selected_result", "audience", "boundary"):
     assert isinstance(data["research_context"][key], str) and data["research_context"][key].strip()
 assert data["sources"]
 assert any(source["relationship"] == "formalizes" for source in data["sources"])
+assert data["related_formalizations"] == [{
+    "id": "PALOMAR-2026-09-10-000003",
+    "relationship": "builds-on",
+    "note": (
+        "A separate approved Palomar entry at the repository root formalizes "
+        "finite irreducibility obstructions. This nested project has an "
+        "independent Challenge, Solution, Comparator configuration, and intended "
+        "blank existing-id field; it is not a version update of that entry."
+    ),
+}]
 assert data["automation"]["methods"]
 assert isinstance(data["review"]["status"], str)
 assert "Nine selected statements" in data["status"]["scope"]

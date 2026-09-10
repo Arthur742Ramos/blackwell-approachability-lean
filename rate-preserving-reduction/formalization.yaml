@@ -9,7 +9,10 @@ project:
     marginal, proves that comparator escapes the action set, and proves exact
     finite-horizon equality between approachability loss and improper
     phi-regret under explicit causal strategy translations in both directions.
-  authors: ["Arthur Freitas Ramos"]
+  authors:
+    - "Arthur Freitas Ramos"
+    - "Ruy Jose Guerra Barretto de Queiroz"
+    - "David Barros Hulak"
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
 classification:
@@ -61,7 +64,7 @@ sources:
     note: "Historical background for Blackwell approachability."
     author_endorsement: "not-contacted"
 related_formalizations:
-  - name: "Irreducible improper phi-regret in Lean"
+  - id: "PALOMAR-2026-09-10-000003"
     relationship: "builds-on"
     note: >-
       A separate approved Palomar entry at the repository root formalizes

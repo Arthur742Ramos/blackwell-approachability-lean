@@ -7,6 +7,10 @@ license: BSD-3-Clause
 authors:
   - family-names: Ramos
     given-names: Arthur Freitas
+  - family-names: Queiroz
+    given-names: Ruy Jose Guerra Barretto de
+  - family-names: Hulak
+    given-names: David Barros
 references:
   - type: conference-paper
     title: "Rate-Preserving Reductions for Blackwell Approachability"
