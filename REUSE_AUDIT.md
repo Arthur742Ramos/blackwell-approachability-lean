@@ -24,10 +24,11 @@ project therefore defines the small domain-specific predicates
 `canonicalProperReduction`, `affineHyperplaneWitness`, `extremePoint`, and
 `antipodalDisplacements` locally, while reusing Mathlib's general algebra.
 It additionally defines the source's pointwise `M_phi = Id - phi` notation,
-the normalized `M_psi = S M_phi` identity, and a finite direct action/loss
-transfer witness with explicit inverse matrices. It reuses Mathlib's transpose
-action and determinant-based injectivity both to derive a canonical correction
-from that witness and to formalize the finite dual-basis step from the
+the normalized `M_psi = S M_phi` identity, and finite homogeneous and affine
+action/loss-transfer witnesses with explicit inverse matrices. It reuses
+Mathlib's transpose action and determinant-based injectivity both to derive a
+canonical correction from those witnesses and to formalize the finite
+dual-basis step from the
 source's loss-pairing identity to its normalized matrix identity. Finite-sum
 and vector algebra certify the source's simplex vertex and coefficient-square
 corner membership reductions.
@@ -42,11 +43,12 @@ discovery as a proof oracle. The middle coordinate of the kernel is
 `2(36a² - 41ab + 71b²)`, as determined by direct multiplication against the
 transcribed matrices.
 
-For the source's finite three-action setting, an exact one-way action/loss
-transfer with invertible coordinate maps, proper target image, and per-round
-identity on `Delta_3 × [0,1]^3` is formalized directly. Its inverse equations
-and the three cube basis losses produce the canonical correction without
-assuming Equation (16). The source's Equation (15) loss pairing is separately
+For the source's finite three-action setting, an exact one-way affine
+action/loss transfer with invertible linear parts, translated target image,
+and per-round identity on `Delta_3 × [0,1]^3` is formalized directly. Its
+inverse equations, the zero loss, and the three cube basis losses produce the
+canonical correction without assuming Equation (16). The source's Equation
+(15) loss pairing is separately
 formalized at the three simplex vertices and an arbitrary full-rank target-loss
 basis; a determinant/injective transpose argument proves the normalized
 Equation (16), `M_psi = S M_phi`. Equation (16) is then proved to imply the

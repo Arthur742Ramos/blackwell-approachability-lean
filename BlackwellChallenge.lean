@@ -14,11 +14,12 @@ phi-regret.
 The selected theorems establish two explicit valid improper phi-regret
 families, both canonical-correction obstructions from Section 4.4.1, the
 source's finite Equation-(15)-to-(16) and normalized Equation-(16)-to-(17)
-bridges, and concrete Equation-(18) vertex/corner membership criteria for
+bridges, direct homogeneous and affine action/loss-transfer bridges, and
+concrete Equation-(18) vertex/corner membership criteria for
 the two cited families: the affine-hyperplane invariant transport of Lemma 4
 and the extreme-point, antipodal-displacement obstruction of Lemma 5. The
-result proves a direct finite action/loss-transfer implication for the
-canonical normal form, the finite full-rank-loss-basis implication for the
+result proves direct homogeneous and affine action/loss-transfer implications
+for the canonical normal form, the finite full-rank-loss-basis implication for the
 normalized identity, its implication for the canonical normal form, and the
 exact nine- and twelve-constraint specializations of the source's
 finite-polytope test. It does not claim to formalize the paper's separate
@@ -153,6 +154,27 @@ def unitCube3 : Set Vec3 :=
 /-- The image of an action set under an action-coordinate map. -/
 def actionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (P : Set Vec3) : Set Vec3 :=
   {p' | ∃ p ∈ P, p' = A *ᵥ p}
+
+/-- The affine image of an action set under a source-to-target coordinate
+change. -/
+def affineActionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (a : Vec3)
+    (P : Set Vec3) : Set Vec3 :=
+  {p' | ∃ p ∈ P, p' = A *ᵥ p + a}
+
+/-- An exact invertible affine action/loss-transfer certificate to a proper
+target family.  It retains the action translation `a` and loss translation
+`t`, with the regret equality required on the source action set and the
+cube loss set. -/
+def invertibleAffineTransferProperReductionOn {α : Type u} (P : Set Vec3)
+    (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ) (a t : Vec3),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      (∀ q ∈ Q, ∀ p ∈ P,
+        θ q (A *ᵥ p + a) ∈ affineActionImage A a P) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q p) l =
+          dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) (T *ᵥ l + t)
 
 /-- A finite, exact action/loss-transfer reduction to a proper target.  The
 four matrices carry two-sided inverse witnesses, and the regret identity is
@@ -310,6 +332,16 @@ theorem invertible_transfer_proper_reduction_implies_canonical_properization
       S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
   sorry
 
+/-- Allowing affine translations in both action and loss coordinates still
+forces the canonical correction form: the zero loss removes the loss
+translation and the cube basis recovers the linear displacement identity. -/
+theorem invertible_affine_transfer_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleAffineTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  sorry
+
 /-- Equation (15), evaluated at three simplex vertices and a linearly
 independent target-loss basis, implies the source's matrix identity
 `N = S M` in Equation (16). -/
@@ -367,6 +399,12 @@ theorem skewPhi_not_invertible_transfer_proper_reducible :
     ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi := by
   sorry
 
+/-- The skew family has no exact invertible affine action/loss-transfer
+reduction to a proper target. -/
+theorem skewPhi_not_invertible_affine_transfer_proper_reducible :
+    ¬ invertibleAffineTransferProperReductionOn simplex3 simplex3 skewPhi := by
+  sorry
+
 /-- For the skew-simplex family, the nine vertex constraints are equivalent
 to canonical properness on the full product of the two simplices. -/
 theorem skew_canonicalProper_iff_vertex_constraints
@@ -418,6 +456,12 @@ theorem sourceAB_not_canonically_proper_reducible :
 reduction to a proper target, even before requiring a reverse transfer. -/
 theorem sourceAB_not_invertible_transfer_proper_reducible :
     ¬ invertibleTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  sorry
+
+/-- The source A/B family has no exact invertible affine action/loss-transfer
+reduction to a proper target. -/
+theorem sourceAB_not_invertible_affine_transfer_proper_reducible :
+    ¬ invertibleAffineTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
   sorry
 
 /-- For the source A/B family, the twelve coefficient-corner/action-vertex

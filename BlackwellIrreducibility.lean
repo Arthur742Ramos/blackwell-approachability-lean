@@ -20,7 +20,8 @@ p |-> p + S (phi(p) - p)
 
 with an invertible correction matrix `S`.  The selected results prove that no
 such matrix can make every member of either cited family proper, derive this
-canonical normal form from a finite one-way action/loss transfer witness,
+canonical normal form from finite one-way homogeneous and affine action/loss
+transfer witnesses,
 formalize the source's normalized Equation-(16)-to-(17) rearrangement, and
 reduce canonical properness to the source's finite Equation-(18)
 vertex/corner constraints for these two families. The formalization is
@@ -238,6 +239,32 @@ lemma basisVector_mem_unitCube3 (i : Fin 3) : basisVector i ∈ unitCube3 := by
 def actionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (P : Set Vec3) : Set Vec3 :=
   {p' | ∃ p ∈ P, p' = A *ᵥ p}
 
+/-- The affine image of an action set under a coordinate change.  The
+translation is retained because the paper's original reduction definition
+allows affine, rather than only homogeneous linear, action maps. -/
+def affineActionImage (A : Matrix (Fin 3) (Fin 3) ℝ) (a : Vec3)
+    (P : Set Vec3) : Set Vec3 :=
+  {p' | ∃ p ∈ P, p' = A *ᵥ p + a}
+
+/-- A finite, exact affine action/loss-transfer reduction to a proper target
+family.  `A p + a` is the source-to-target action map and `T l + t` is the
+source-to-target loss map.  Both linear parts carry explicit two-sided
+inverses; target properness is required on the affine image of the source
+action set, and the regret identity is checked on the source action set and
+the cube loss basis.  This directly captures the affine coordinate changes
+that precede the source paper's normalized single-matrix form, while leaving
+its separate minimality/span argument explicit rather than assumed. -/
+def invertibleAffineTransferProperReductionOn {α : Type u} (P : Set Vec3)
+    (Q : Set α) (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ (θ : α → Vec3 → Vec3)
+    (A Ainv T Tinv : Matrix (Fin 3) (Fin 3) ℝ) (a t : Vec3),
+    Ainv * A = 1 ∧ A * Ainv = 1 ∧ Tinv * T = 1 ∧ T * Tinv = 1 ∧
+      (∀ q ∈ Q, ∀ p ∈ P,
+        θ q (A *ᵥ p + a) ∈ affineActionImage A a P) ∧
+      ∀ q ∈ Q, ∀ p ∈ P, ∀ l ∈ unitCube3,
+        dotProduct (sourceMFor φ q p) l =
+          dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) (T *ᵥ l + t)
+
 /-- A finite, directly operational action/loss-transfer reduction to a proper
 target family. The four matrices carry explicit two-sided inverse witnesses;
 the regret equality is required on the source action set and its cube loss
@@ -360,6 +387,108 @@ theorem invertible_transfer_proper_reduction_implies_canonical_properization
           hregret q hq p hp (basisVector i) (basisVector_mem_unitCube3 i)
         _ = dotProduct (A *ᵥ sourceMFor ψ q p) (T *ᵥ basisVector i) := by
           rw [hApsi]
+        _ = dotProduct (basisVector i)
+            (T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p)) := by
+          exact (Matrix.dotProduct_transpose_mulVec T (basisVector i)
+            (A *ᵥ sourceMFor ψ q p)).symm
+        _ = dotProduct (T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p)) (basisVector i) :=
+          dotProduct_comm _ _
+        _ = (T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p)) i :=
+          dotProduct_basisVector _ _
+    have hMmatrix : sourceMFor φ q p =
+        (T.transpose * A) *ᵥ sourceMFor ψ q p := by
+      calc
+        sourceMFor φ q p = T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p) := hM
+        _ = (T.transpose * A) *ᵥ sourceMFor ψ q p :=
+          Matrix.mulVec_mulVec _ _ _
+    calc
+      sourceMFor ψ q p = 1 *ᵥ sourceMFor ψ q p := by simp
+      _ = (S * (T.transpose * A)) *ᵥ sourceMFor ψ q p := by
+        rw [hSright]
+      _ = S *ᵥ ((T.transpose * A) *ᵥ sourceMFor ψ q p) := by
+        exact (Matrix.mulVec_mulVec _ _ _).symm
+      _ = S *ᵥ sourceMFor φ q p := by rw [hMmatrix]
+  refine ⟨S, hSdet, ?_⟩
+  intro q hq p hp
+  have hcanonical : correctedFor φ S q p = ψ q p := by
+    have hM := hidentity q hq p hp
+    calc
+      correctedFor φ S q p = p + S *ᵥ (φ q p - p) := rfl
+      _ = p - S *ᵥ (p - φ q p) := by
+        rw [show φ q p - p = -(p - φ q p) by abel, Matrix.mulVec_neg]
+        abel
+      _ = p - sourceMFor ψ q p := by
+        simpa [sourceMFor] using congrArg (fun x : Vec3 => p - x) hM.symm
+      _ = ψ q p := by simp [sourceMFor]
+  rw [hcanonical]
+  exact hψproper q hq p hp
+
+/-- An exact invertible affine action/loss transfer also forces the canonical
+correction form.  The proof uses the zero loss to cancel the affine loss
+translation and the three cube basis losses to recover the linear
+displacement identity.  Thus no homogeneous assumption is silently imposed
+on the affine maps. -/
+theorem invertible_affine_transfer_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleAffineTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S := by
+  obtain ⟨θ, A, Ainv, T, Tinv, a, t, hAinvA, hAAinv, _hTinvT, hTTinv,
+    htarget, hregret⟩ := hred
+  let ψ : α → Vec3 → Vec3 :=
+    fun q p => Ainv *ᵥ (θ q (A *ᵥ p + a) - a)
+  let S : Matrix (Fin 3) (Fin 3) ℝ := Ainv * Tinv.transpose
+  have hTtranspose : Tinv.transpose * T.transpose = 1 := by
+    rw [← Matrix.transpose_mul]
+    simpa using congrArg Matrix.transpose hTTinv
+  have hSright : S * (T.transpose * A) = 1 := by
+    dsimp [S]
+    calc
+      (Ainv * Tinv.transpose) * (T.transpose * A) =
+          Ainv * (Tinv.transpose * (T.transpose * A)) := by
+        exact Matrix.mul_assoc _ _ _
+      _ = Ainv * ((Tinv.transpose * T.transpose) * A) := by
+        congr 1
+        exact (Matrix.mul_assoc _ _ _).symm
+      _ = Ainv * (1 * A) := by rw [hTtranspose]
+      _ = Ainv * A := by simp
+      _ = 1 := hAinvA
+  have hSdet : S.det ≠ 0 := Matrix.det_ne_zero_of_right_inverse hSright
+  have hψproper : ∀ q ∈ Q, ∀ p ∈ P, ψ q p ∈ P := by
+    intro q hq p hp
+    obtain ⟨p', hp', hθ⟩ := htarget q hq p hp
+    change Ainv *ᵥ (θ q (A *ᵥ p + a) - a) ∈ P
+    rw [hθ]
+    have hcancel : A *ᵥ p' + a - a = A *ᵥ p' := by abel
+    rw [hcancel, Matrix.mulVec_mulVec, hAinvA]
+    simpa using hp'
+  have hidentity : ∀ q ∈ Q, ∀ p ∈ P,
+      sourceMFor ψ q p = S *ᵥ sourceMFor φ q p := by
+    intro q hq p hp
+    have hAψ : A *ᵥ sourceMFor ψ q p =
+        A *ᵥ p + a - θ q (A *ᵥ p + a) := by
+      simp only [sourceMFor, ψ, Matrix.mulVec_sub, Matrix.mulVec_mulVec,
+        hAAinv, Matrix.one_mulVec]
+      abel
+    have hzero : dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a)) t = 0 := by
+      have h0 : (0 : Vec3) ∈ unitCube3 := by
+        intro i
+        simp
+      have h := hregret q hq p hp (0 : Vec3) h0
+      simpa using h.symm
+    have hM : sourceMFor φ q p =
+        T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p) := by
+      ext i
+      calc
+        sourceMFor φ q p i = dotProduct (sourceMFor φ q p) (basisVector i) :=
+          (dotProduct_basisVector _ _).symm
+        _ = dotProduct (A *ᵥ p + a - θ q (A *ᵥ p + a))
+            (T *ᵥ basisVector i) := by
+          have h := hregret q hq p hp (basisVector i) (basisVector_mem_unitCube3 i)
+          rw [dotProduct_add] at h
+          linarith
+        _ = dotProduct (A *ᵥ sourceMFor ψ q p) (T *ᵥ basisVector i) := by
+          rw [hAψ]
         _ = dotProduct (basisVector i)
             (T.transpose *ᵥ (A *ᵥ sourceMFor ψ q p)) := by
           exact (Matrix.dotProduct_transpose_mulVec T (basisVector i)
@@ -1245,6 +1374,18 @@ theorem sourceAB_not_invertible_transfer_proper_reducible :
       simplex3 sourceCoefficients sourcePhi hred
   exact sourceAB_not_canonically_proper_reducible ⟨S, hdet, hproper⟩
 
+/-- The second explicit source family also admits no exact invertible affine
+action/loss-transfer reduction to a proper target.  This rules out the
+affine-coordinate version of the finite transfer certificate, not merely its
+homogeneous special case. -/
+theorem sourceAB_not_invertible_affine_transfer_proper_reducible :
+    ¬ invertibleAffineTransferProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  intro hred
+  obtain ⟨S, hdet, hproper⟩ :=
+    invertible_affine_transfer_proper_reduction_implies_canonical_properization
+      simplex3 sourceCoefficients sourcePhi hred
+  exact sourceAB_not_canonically_proper_reducible ⟨S, hdet, hproper⟩
+
 /-- Equivalently, the twelve finite Equation-(18) corner constraints for the
 source A/B family allow no invertible correction matrix. -/
 theorem sourceAB_no_invertible_twelve_corner_properizer :
@@ -1397,6 +1538,21 @@ theorem skewPhi_not_invertible_transfer_proper_reducible :
   intro hred
   obtain ⟨S, hdet, hproper⟩ :=
     invertible_transfer_proper_reduction_implies_canonical_properization
+      simplex3 simplex3 skewPhi hred
+  apply skewPhi_not_canonically_proper_reducible
+  refine ⟨S, hdet, ?_⟩
+  simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
+    displacement, displacementFor] using hproper
+
+/-- The skew-simplex family also rules out an exact invertible affine
+action/loss-transfer reduction to a proper target.  The affine translations
+are genuinely permitted by the certificate and are eliminated only through
+the zero-loss identity in the preceding bridge theorem. -/
+theorem skewPhi_not_invertible_affine_transfer_proper_reducible :
+    ¬ invertibleAffineTransferProperReductionOn simplex3 simplex3 skewPhi := by
+  intro hred
+  obtain ⟨S, hdet, hproper⟩ :=
+    invertible_affine_transfer_proper_reduction_implies_canonical_properization
       simplex3 simplex3 skewPhi hred
   apply skewPhi_not_canonically_proper_reducible
   refine ⟨S, hdet, ?_⟩

@@ -8,10 +8,10 @@ project:
     paper's rate-preserving linear-reduction program. It proves valid-improper
     certificates, the affine-hyperplane invariant-transport core of Lemma 4,
     the extreme-point antipodal-displacement core of Lemma 5, a direct finite
-    one-way action/loss-transfer-to-canonical bridge, finite-dimensional
+    one-way affine action/loss-transfer-to-canonical bridge, finite-dimensional
     Equation-(15)-to-(16) and Equation-(16)-to-(17) bridges, and concrete
     Equation-(18) vertex/corner criteria. These mechanisms rule out the
-    selected canonical, normalized, finite-loss-basis, finite-transfer, and
+    selected canonical, normalized, finite-loss-basis, homogeneous/affine-transfer, and
     finite-vertex/corner proper reductions for the two cited families.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
@@ -27,7 +27,7 @@ research_context:
   selected_result: >-
     The two Section 4.4.1 counterexample families exhibit distinct obstructions
     to the source reduction program. The selected Lean surface verifies their
-    fixed-point/impropriety certificates, the finite one-way action/loss
+    fixed-point/impropriety certificates, the finite one-way affine action/loss
     transfer implication to canonical properization, canonical and normalized
     obstructions, the finite loss-pairing bridge, and exact finite
     vertex/corner criteria for canonical properness.
@@ -51,8 +51,8 @@ sources:
     note: >-
       Formalizes both explicit Section 4.4.1 three-action constructions and
       finite-dimensional arguments from the proofs of Lemmas 4 and 5. The
-      package proves a direct one-way finite action/loss-transfer implication
-      to the canonical normal form, a full-rank-loss-basis form of the
+      package proves a direct one-way finite affine action/loss-transfer
+      implication to the canonical normal form, a full-rank-loss-basis form of the
       source's Equation-(15)-to-(16) step, the Equation-(16)-to-(17)
       implication, and concrete Equation-(18) vertex/corner criteria. It does
       not claim the source's derivation from its complete affine-reduction
@@ -70,16 +70,17 @@ sources:
 related_formalizations: []
 status:
   scope: >-
-    Twenty-four selected statements formalize source-backed finite-dimensional
+    Twenty-seven selected statements formalize source-backed finite-dimensional
     results. Both cited families receive fixed-point/impropriety certificates.
-    A generic theorem proves that an exact one-way action/loss transfer with
-    invertible action and loss maps, properness on the transformed action image,
-    and equality on Delta_3 times the unit loss cube yields an invertible
-    canonical properizer; it does not assume Equation (16). For the skew
+    A generic theorem proves that an exact one-way affine action/loss transfer
+    with invertible linear parts, translated action and loss coordinates,
+    properness on the transformed action image, and equality on Delta_3 times
+    the unit loss cube yields an invertible canonical properizer; it cancels
+    the loss translation at zero and does not assume Equation (16). For the skew
     simplex family, affine-hyperplane transport yields a nonzero common
     invariant from any canonical properizer, the family has no such invariant,
     and every canonical properizer is singular. It follows that the family has
-    no invertible finite transfer of the stated form. The source's Equation
+    no invertible finite affine transfer of the stated form. The source's Equation
     (15), at a full-rank loss basis and simplex basis, is proved to imply
     M_psi = S M_phi in Equation (16), which implies the canonical Equation
     (17). Matrix properness on Delta_3 is equivalent to three action-vertex
@@ -89,8 +90,8 @@ status:
     a deterministic normalized-kernel fixed-point certificate, witnesses
     impropriety at (1,0), proves an all-ones common invariant, and applies the
     generic extreme-point antipodal theorem at a simplex vertex to rule out a
-    canonical properizer. The same direct finite-transfer implication rules
-    out transfer witnesses for this family; its four-corner bilinear
+    canonical properizer. The same direct finite-affine-transfer implication
+    rules out transfer witnesses for this family; its four-corner bilinear
     decomposition reduces canonical properness exactly to twelve corner/action
     constraints, which have no invertible solution. The package does not
     formalize the source's complete affine-reduction framework, a regret
@@ -121,10 +122,11 @@ fidelity:
     fixed point is proved from an explicit homogeneous kernel vector and
     square-completion positivity certificates, including the zero-parameter
     case. The generic selected lemmas formalize affine-normal transport
-    (Lemma 4), the extreme-antipodal obstruction (Lemma 5), and a finite
-    one-way action/loss transfer with explicit inverse matrices. The transfer
-    theorem reconstructs the canonical correction from the cube basis losses,
-    rather than assuming Equation (16). A separate full-rank target-loss basis
+    (Lemma 4), the extreme-antipodal obstruction (Lemma 5), and finite
+    homogeneous and affine one-way action/loss transfers with explicit inverse
+    matrices. The affine transfer theorem reconstructs the canonical correction
+    from the zero loss and cube basis losses, rather than assuming Equation
+    (16). A separate full-rank target-loss basis
     lemma derives M_psi = S M_phi from the source's Equation (15), and another
     derives Equation (17). The remaining selected layers prove the
     action-vertex half of Equation (18) and its exact nine-/twelve-constraint
@@ -137,7 +139,7 @@ review:
   reviewers: []
   notes: >-
     No independent human or Palomar editorial approval is claimed. The
-    twenty-four Challenge holes occur only in the independent statement surface
+    twenty-seven Challenge holes occur only in the independent statement surface
     and are excluded from status.sorry_count; the implementation and Solution
     contain no proof placeholders. Hosted Comparator verification and editorial
     review remain separate states.
@@ -158,6 +160,10 @@ alignment:
       status: "proved"
     - source: "Finite one-way action/loss transfer implies canonical properization"
       lean: "Blackwell.Palomar.invertible_transfer_proper_reduction_implies_canonical_properization"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "Finite one-way affine action/loss transfer implies canonical properization"
+      lean: "Blackwell.Palomar.invertible_affine_transfer_proper_reduction_implies_canonical_properization"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Finite loss-basis Equation (15) implies normalized Equation (16)"
@@ -196,6 +202,10 @@ alignment:
       lean: "Blackwell.Palomar.skewPhi_not_invertible_transfer_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
+    - source: "No finite one-way affine action/loss transfer for the skew family"
+      lean: "Blackwell.Palomar.skewPhi_not_invertible_affine_transfer_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
     - source: "Nine-vertex Equation (18) characterization for the skew family"
       lean: "Blackwell.Palomar.skew_canonicalProper_iff_vertex_constraints"
       module: "BlackwellSolution.lean"
@@ -222,6 +232,10 @@ alignment:
       status: "proved"
     - source: "No finite one-way action/loss transfer for the second matrix family"
       lean: "Blackwell.Palomar.sourceAB_not_invertible_transfer_proper_reducible"
+      module: "BlackwellSolution.lean"
+      status: "proved"
+    - source: "No finite one-way affine action/loss transfer for the second matrix family"
+      lean: "Blackwell.Palomar.sourceAB_not_invertible_affine_transfer_proper_reducible"
       module: "BlackwellSolution.lean"
       status: "proved"
     - source: "Twelve-corner Equation (18) characterization for the second matrix family"

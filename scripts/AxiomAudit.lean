@@ -4,6 +4,7 @@ import BlackwellSolution
 #print axioms Blackwell.Palomar.sourceAB_valid_improper_family
 #print axioms Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization
 #print axioms Blackwell.Palomar.invertible_transfer_proper_reduction_implies_canonical_properization
+#print axioms Blackwell.Palomar.invertible_affine_transfer_proper_reduction_implies_canonical_properization
 #print axioms Blackwell.Palomar.loss_basis_pairing_implies_normalized_matrix_identity
 #print axioms Blackwell.Palomar.matrixProperOn_simplex3_iff_on_vertices
 #print axioms Blackwell.Palomar.canonicalProperOn_simplex3_iff_vertex_constraints
@@ -13,6 +14,7 @@ import BlackwellSolution
 #print axioms Blackwell.Palomar.canonical_proper_matrices_are_singular
 #print axioms Blackwell.Palomar.skewPhi_not_canonically_proper_reducible
 #print axioms Blackwell.Palomar.skewPhi_not_invertible_transfer_proper_reducible
+#print axioms Blackwell.Palomar.skewPhi_not_invertible_affine_transfer_proper_reducible
 #print axioms Blackwell.Palomar.skew_canonicalProper_iff_vertex_constraints
 #print axioms Blackwell.Palomar.skewPhi_no_invertible_nine_vertex_properizer
 #print axioms Blackwell.Palomar.skewPhi_not_normalized_proper_reducible
@@ -20,6 +22,7 @@ import BlackwellSolution
 #print axioms Blackwell.Palomar.sourceAB_has_nonzero_common_invariant
 #print axioms Blackwell.Palomar.sourceAB_not_canonically_proper_reducible
 #print axioms Blackwell.Palomar.sourceAB_not_invertible_transfer_proper_reducible
+#print axioms Blackwell.Palomar.sourceAB_not_invertible_affine_transfer_proper_reducible
 #print axioms Blackwell.Palomar.sourceAB_canonicalProperOn_iff_twelve_corner_constraints
 #print axioms Blackwell.Palomar.sourceAB_no_invertible_twelve_corner_properizer
 #print axioms Blackwell.Palomar.sourceAB_not_normalized_proper_reducible

@@ -40,6 +40,9 @@ example : ¬ canonicalProperReduction :=
 example : ¬ invertibleTransferProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_invertible_transfer_proper_reducible
 
+example : ¬ invertibleAffineTransferProperReductionOn simplex3 simplex3 skewPhi :=
+  skewPhi_not_invertible_affine_transfer_proper_reducible
+
 example : ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi :=
   skewPhi_not_normalized_proper_reducible
 
@@ -66,6 +69,10 @@ example :
     ¬ invertibleTransferProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_invertible_transfer_proper_reducible
 
+example :
+    ¬ invertibleAffineTransferProperReductionOn simplex3 sourceCoefficients sourcePhi :=
+  sourceAB_not_invertible_affine_transfer_proper_reducible
+
 example : ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi :=
   sourceAB_not_normalized_proper_reducible
 
@@ -85,6 +92,13 @@ example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
       S.det ≠ 0 ∧ canonicalProperOn P Q φ S :=
   invertible_transfer_proper_reduction_implies_canonical_properization
+    P Q φ hred
+
+example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hred : invertibleAffineTransferProperReductionOn P Q φ) :
+    ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S :=
+  invertible_affine_transfer_proper_reduction_implies_canonical_properization
     P Q φ hred
 
 example (M N S B : Matrix (Fin 3) (Fin 3) ℝ) (hB : B.det ≠ 0)

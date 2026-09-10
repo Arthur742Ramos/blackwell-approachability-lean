@@ -27,7 +27,7 @@ novelty, priority, or a formalization of the paper's entire rate theory.
 
 ## Checked result
 
-The public Challenge/Solution boundary selects twenty-four declarations.
+The public Challenge/Solution boundary selects twenty-seven declarations.
 Together, they prove two distinct canonical-correction obstructions and
 connect them to the source's direct action/loss transfer, normalized reduction
 identities, and finite membership criterion.
@@ -109,25 +109,26 @@ proper reduction*—an invertible `S`, a proper target family on the same
 indexed comparators, and `Mψ = S Mφ`—not merely a separately postulated
 canonical correction.
 
-### Direct finite action/loss-transfer bridge
+### Direct finite affine action/loss-transfer bridge
 
 The source's irreducibility discussion begins with an exact per-round regret
-identity under invertible action and loss coordinate changes. The development
-now formalizes a finite homogeneous transfer witness with matrices `A`,
-`Ainv`, `T`, and `Tinv`, all supplied with two-sided inverse equations. Its
-target comparator must map the transformed action image `A(Δ₃)` back into
-that image, and its identity is checked for every `p ∈ Δ₃` and every source
-loss in `[0,1]³`.
+identity under invertible affine action and loss coordinate changes. The
+development formalizes both its homogeneous special case and a finite affine
+transfer witness with matrices `A`, `Ainv`, `T`, and `Tinv`, translations `a`
+and `t`, and explicit two-sided inverse equations for the linear parts. Its
+target comparator must map the transformed action image `A(P) + a` back into
+that image, and its identity is checked for every source action and every
+source loss in `[0,1]³`.
 
 From only that one-way witness, Lean reconstructs the canonical correction
 matrix `S = Ainv * Tinvᵀ` and proves that it properizes the original family.
-The proof uses the three cube basis losses to recover the vector identity; it
-does not assume Equation (16). Thus both cited families have no exact
-invertible finite action/loss transfer to a proper target even before a
-reverse transfer is required. This rules out the homogeneous finite transfer
-shape underlying the source's reduction argument, while keeping the stronger
-general two-way affine and rate/minimality framework outside the claimed
-scope.
+For the affine form, the zero loss first cancels `t`; the three cube basis
+losses then recover the vector identity. It therefore does not assume either
+homogeneity or Equation (16). Thus both cited families have no exact
+invertible finite affine action/loss transfer to a proper target, even before
+a reverse transfer is required. This rules out a broader coordinate-change
+shape than the homogeneous special case, while keeping the source's general
+bidirectional affine and rate/minimality framework outside the claimed scope.
 
 ### Loss-pairing / dual-basis bridge
 
@@ -174,7 +175,7 @@ output of an external LP solver.
 
 ## Exact scope
 
-The formalization proves the direct finite action/loss-transfer-to-canonical
+The formalization proves the direct finite affine action/loss-transfer-to-canonical
 bridge, the finite-dimensional Equation-(15)-to-(16) dual-basis argument, the
 algebraic Equation-(16)-to-(17) bridge, the `Δ₃` action-vertex criterion, and
 the exact 9-/12-constraint specializations of Equation (18) above. It remains
@@ -194,7 +195,7 @@ Palomar selection.
 
 - `BlackwellIrreducibility.lean` contains the complete proof and the two
   explicit source families.
-- `BlackwellChallenge.lean` is the Mathlib-only twenty-four-theorem statement surface.
+- `BlackwellChallenge.lean` is the Mathlib-only twenty-seven-theorem statement surface.
 - `BlackwellSolution.lean` supplies checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
   the two generic obstructions, and their concrete no-reduction corollaries.
@@ -210,7 +211,7 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, exact
-twenty-four-declaration Challenge/Solution surface, implementation-placeholder
+twenty-seven-declaration Challenge/Solution surface, implementation-placeholder
 ban, source dependency closure, named-theorem axiom allowlist, official
 renderer notation audit, metadata alignment, and executable regressions. The
 pinned Comparator/NanoDa replay is available through

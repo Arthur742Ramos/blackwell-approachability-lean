@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-four proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly twenty-seven proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -82,23 +82,27 @@ Equation-(17) equality and converts properness of `psi` into
 invertible `normalizedProperReductionOn`, not just a correction equation
 introduced as an unexplained assumption.
 
-## Direct finite action/loss-transfer bridge
+## Direct finite affine action/loss-transfer bridge
 
-`invertibleTransferProperReductionOn` makes the finite coordinate-change part
-of the source reduction explicit. It records a target comparator `theta`,
-action matrices `A`, `Ainv`, loss matrices `T`, `Tinv`, their two-sided inverse
-equations, properness on the transformed image `A(P)`, and the exact
-per-round regret identity on `P` and the source loss cube `[0,1]^3`.
+`invertibleTransferProperReductionOn` records the homogeneous finite
+coordinate-change part of the source reduction. Its affine extension,
+`invertibleAffineTransferProperReductionOn`, additionally records action and
+loss translations `a` and `t`. Both certificates contain a target comparator
+`theta`, action matrices `A`, `Ainv`, loss matrices `T`, `Tinv`, their
+two-sided inverse equations, properness on the transformed action image, and
+the exact per-round regret identity on `P` and the source loss cube `[0,1]^3`.
 
 The proof of
-`invertible_transfer_proper_reduction_implies_canonical_properization` does
-not assume Equation (16). It conjugates the target comparator back to `P`,
-uses the three standard cube losses to recover the vector equality, and
-constructs `S = Ainv * Tinv.transpose`. The inverse identities prove that
-`S` is nonsingular and that the resulting correction is proper. The concrete
-skew and A/B corollaries rule out this one-way finite transfer, hence also any
-stronger reduction which supplies such a transfer. This does not package the
-source's general two-way affine/rate framework or prove its minimality facts.
+`invertible_affine_transfer_proper_reduction_implies_canonical_properization`
+does not assume Equation (16). It conjugates the target comparator back to
+`P`, evaluates the transfer equality at the zero loss to cancel `t`, uses the
+three standard cube losses to recover the vector equality, and constructs
+`S = Ainv * Tinv.transpose`. The inverse identities prove that `S` is
+nonsingular and that the resulting correction is proper. The concrete skew
+and A/B corollaries rule out this one-way finite affine transfer, hence also
+any stronger reduction which supplies such a transfer. This does not package
+the source's general bidirectional affine/rate framework or prove its
+minimality facts.
 
 ## Equation-(15) loss-basis bridge
 
@@ -164,8 +168,9 @@ test, or its earlier reduction hypotheses.
 
 ## Scope and regression policy
 
-The development proves a direct finite action/loss-transfer implication for
-the canonical normal form, a finite loss-basis form of the source's Equation
+The development proves a direct finite affine action/loss-transfer implication
+for the canonical normal form, a finite loss-basis form of the source's
+Equation
 (15)-to-(16) step, the algebraic implication from Equation (16) to (17), and
 concrete Equation-(18) membership reductions for the two cited families. It
 does not claim the source's general affine reduction definition, its
@@ -180,4 +185,4 @@ both generic obstructions, the direct-transfer bridge, the Equation-(15)-to-
 (16) and Equation-(16)-to-(17) bridges, the Equation-(18) vertex/corner
 equivalences, and all classes of no-reduction corollaries.
 The validation gate runs the official renderer notation audit and an axiom
-audit over exactly the twenty-four selected declarations.
+audit over exactly the twenty-seven selected declarations.
