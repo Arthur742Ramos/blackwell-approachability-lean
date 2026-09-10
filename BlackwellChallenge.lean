@@ -152,9 +152,11 @@ theorem exists_pure_pointwise_strategy
   sorry
 
 /-- Finite-action Blackwell approachability with explicit strategy existence.
-    The conclusion holds against every opponent action sequence. -/
+    For a nonempty finite opponent action type, the conclusion holds against
+    every opponent action sequence. -/
 theorem pure_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)
@@ -170,9 +172,11 @@ theorem pure_game_approachability_of_response
   sorry
 
 /-- The finite-game statement with mixed actions, matching the usual
-    vector-payoff formulation of Blackwell approachability. -/
+    vector-payoff formulation of Blackwell approachability for a nonempty
+    finite opponent action type. -/
 theorem mixed_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)
@@ -227,8 +231,10 @@ theorem l2_bound_of_coordinate_bound {A : Type*} [Fintype A]
     l2Norm v ≤ Real.sqrt (Fintype.card A) * rho := by
   sorry
 
-/-- The reverse ℓ2-to-coordinate conversion necessarily carries a finite
-    action-set factor; the factor is attained by a constant regret vector. -/
+/-- The general coordinate-to-Euclidean norm inequality necessarily carries a
+    finite action-set factor; the factor is attained by a constant vector.
+    This sharpness result does not assert that the vector is an
+    `averageRegret` instance. -/
 theorem dimension_factor_is_attained {A : Type*} [Fintype A] (rho : ℝ)
     (hrho : 0 ≤ rho) :
     l2Norm (fun _ : A => rho) = Real.sqrt (Fintype.card A) * rho := by

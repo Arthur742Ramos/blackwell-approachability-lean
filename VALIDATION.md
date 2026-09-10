@@ -10,6 +10,8 @@ It checks:
 - exact selected theorem names and permitted axioms;
 - the official pinned Palomar renderer's isolated core-notation audit;
 - metadata and citation alignment;
+- the nonvacuity contract requiring `[Nonempty B]` on both selected repeated-game
+  guarantees and the qualified scope of the dimension-factor sharpness claim;
 - the running-average regression certificate, a nonzero cancellation
   certificate that starts outside its singleton target, the response-oracle
   certificate, a finite mixed-action game certificate, a pure-action game

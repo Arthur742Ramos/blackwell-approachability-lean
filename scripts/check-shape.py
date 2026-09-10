@@ -50,6 +50,46 @@ expected = {
 if config != expected:
     raise SystemExit("error: Comparator surface does not match the standalone theorem surface")
 
+
+def theorem_header(source: str, name: str) -> str:
+    match = re.search(
+        rf"theorem {re.escape(name)}\b(?P<header>.*?):= by",
+        source,
+        re.DOTALL,
+    )
+    if match is None:
+        raise SystemExit(f"error: missing theorem header for {name}")
+    return match.group("header")
+
+
+for source_path in (root / "BlackwellChallenge.lean", root / "BlackwellSolution.lean"):
+    source = source_path.read_text(encoding="utf-8")
+    for theorem_name in (
+        "pure_game_approachability_of_response",
+        "mixed_game_approachability_of_response",
+    ):
+        if "[Nonempty B]" not in theorem_header(source, theorem_name):
+            raise SystemExit(
+                f"error: {source_path.name} {theorem_name} must require [Nonempty B]"
+            )
+
+scope_marker = "general coordinate-to-Euclidean norm inequality"
+for source_path in (
+    root / "BlackwellChallenge.lean",
+    root / "README.md",
+    root / "DEVELOPMENT.md",
+    root / "formalization.yaml",
+):
+    source = source_path.read_text(encoding="utf-8")
+    if scope_marker not in source:
+        raise SystemExit(
+            f"error: {source_path.name} must qualify dimension-factor sharpness"
+        )
+    if "constant regret vector" in source:
+        raise SystemExit(
+            f"error: {source_path.name} overstates constant-vector sharpness as regret"
+        )
+
 implementation_sources = [
     path for path in root.rglob("*.lean")
     if ".lake" not in path.parts and ".cache" not in path.parts

@@ -24,10 +24,11 @@ redundant separate `B >= 0` premise.
 
 `BlackwellGame.lean` makes the sequential structure explicit. A finite mixed
 action is a nonnegative probability vector, the opponent supplies a pure
-action at each round, and the player's strategy is a function of the current
-average. Pointwise choice turns a response relation into a strategy, after
-which the geometric certificate is applied to every opponent sequence. Both
-pure and mixed response versions are included.
+action at each round from a nonempty finite action type, and the player's
+strategy is a function of the current average. Pointwise choice turns a
+response relation into a strategy, after which the geometric certificate is
+applied to every opponent sequence. Both pure and mixed response versions are
+included.
 
 `BlackwellMinimax.lean` isolates the compact-convex Sion argument. It is
 deliberately stated with its continuity, quasiconvexity, compactness, and
@@ -39,8 +40,9 @@ to real inner-product spaces; the underlying implementation remains general.
 `BlackwellReduction.lean` isolates the finite-dimensional part of the
 approachability/no-regret connection. Coordinate control follows directly
 from `l2` control, while coordinatewise control implies an `l2` bound with a
-`sqrt (card A)` factor. The constant-vector theorem records sharpness rather
-than hiding this dimension dependence.
+`sqrt (card A)` factor. The constant-vector theorem records sharpness of the
+general coordinate-to-Euclidean norm inequality; it deliberately does not
+claim that this constant vector is realized by `averageRegret`.
 
 The projection theorem reuses Mathlib's Hilbert projection result and its
 inner-product characterization of minimizers. The examples include a nonzero

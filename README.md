@@ -20,18 +20,21 @@ supporting-half-space error, yielding
 dist (avg T) C <= sqrt (B^2 / T + epsilon).
 ```
 
-The strategic layer adds finite pure and mixed player actions, a pure opponent
-sequence, and a response depending on the current average. Under the explicit
-pointwise Blackwell response condition, it constructs a strategy and proves the
-bound against every opponent sequence. A separate Sion theorem proves the
+The strategic layer adds finite pure and mixed player actions, a nonempty finite
+opponent action type, a pure opponent sequence, and a response depending on the
+current average. Under the explicit pointwise Blackwell response condition, it
+constructs a strategy and proves the bound against every opponent sequence. A
+separate Sion theorem proves the
 Euclidean compact-convex bridge from pointwise feasibility to one uniform
 response under stated continuity and quasiconvexity assumptions. Its underlying
 implementation is reusable at the more general topological-vector-space level.
 
 The reduction layer represents finite-action average regrets as a Euclidean
 vector. An `l2` certificate implies every coordinate regret bound, while the
-reverse estimate costs `sqrt (card A)`; a constant vector proves that this
-factor is attained.
+general coordinate-to-Euclidean norm inequality in the reverse direction costs
+`sqrt (card A)`; a constant vector proves that this factor is attained. That
+sharpness statement concerns the general norm inequality, not realizability of
+the constant vector as `averageRegret`.
 
 ## Proof architecture
 
@@ -52,9 +55,10 @@ factor is attained.
 
 ## Exact scope
 
-The finite-game theorems quantify over every pure opponent action sequence and
-construct a Markov response, but the pointwise supporting-half-space response
-condition is an explicit hypothesis. The selected Sion theorem has a Euclidean
+The finite-game theorems require a nonempty finite opponent action type,
+quantify over every pure opponent action sequence, and construct a Markov
+response, but the pointwise supporting-half-space response condition is an
+explicit hypothesis. The selected Sion theorem has a Euclidean
 Palomar surface, while its underlying implementation is more general. It does
 not instantiate every finite simplex or prove a game-specific minimax condition
 automatically. The development does not model stochastic sampling,

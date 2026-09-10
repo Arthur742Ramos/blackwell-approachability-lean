@@ -1,4 +1,4 @@
-version: "v0.4"
+version: "v0.5"
 project:
   name: "Blackwell approachability in Lean"
   description: >-
@@ -6,9 +6,10 @@ project:
     approachability certificate and its finite-action strategic layer. It proves
     the B/sqrt(T) bound, an additive-error extension, closest-point geometry,
     explicit pure and mixed response strategies against every opponent
-    sequence, a Euclidean compact-convex Sion minimax bridge, and the Euclidean
-    approachability-to-coordinate-regret reduction with its sharp finite-action
-    dimension factor.
+    sequence for a nonempty finite opponent action type, a Euclidean
+    compact-convex Sion minimax bridge, and the Euclidean
+    approachability-to-coordinate-regret reduction with the sharp finite-action
+    factor for the general coordinate-to-Euclidean norm inequality.
   authors: ["Arthur Freitas Ramos"]
   responsible_maintainers: ["Arthur Freitas Ramos"]
   license: "BSD-3-Clause"
@@ -61,13 +62,16 @@ status:
     Eleven selected statements cover closest-point/normal-cone geometry, the
     exact and additive-error quantitative bounds, a Euclidean Sion minimax
     bridge, explicit finite pure and mixed game strategy existence and
-    convergence against every opponent sequence, and the approachability to
-    regret-coordinate conversion. The response premise remains explicit: the
-    game theorems do not instantiate the full simplex-valued minimax hypotheses
+    convergence against every opponent sequence for a nonempty opponent action
+    type, and the approachability to regret-coordinate conversion. The response
+    premise remains explicit: the game theorems do not instantiate the full
+    simplex-valued minimax hypotheses
     for a particular payoff game, model sampled stochastic payoffs, or claim a
-    computational algorithm. The examples exercise nonzero cancellation, a
-    mixed finite game, a pure finite game, and the dimension-sensitive regret
-    conversion.
+    computational algorithm. The sharpness theorem is only for the general
+    coordinate-to-Euclidean norm inequality; it does not assert that its
+    constant vector arises from `averageRegret`. The examples exercise nonzero
+    cancellation, a mixed finite game, a pure finite game, and the
+    dimension-sensitive regret conversion.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: ["propext", "Quot.sound", "Classical.choice"]
@@ -85,8 +89,9 @@ automation:
 fidelity:
   divergences: >-
     The geometric and game results are deterministic and use real inner-product
-    spaces. The finite-game theorems quantify over every pure opponent action
-    sequence and construct a Markov response, but retain the pointwise
+    spaces. The finite-game theorems require a nonempty finite opponent action
+    type, quantify over every pure opponent action sequence, and construct a
+    Markov response, but retain the pointwise
     supporting-half-space hypothesis as an input. The Palomar-facing Sion
     statement is a Euclidean compact-convex bridge rather than a full
     finite-simplex instantiation; its underlying implementation is more
@@ -145,7 +150,7 @@ alignment:
       lean: "Blackwell.Palomar.l2_bound_of_coordinate_bound"
       module: "BlackwellSolution.lean"
       status: "proved"
-    - source: "Sharp finite-action dimension factor"
+    - source: "Sharp general coordinate-to-Euclidean dimension factor"
       lean: "Blackwell.Palomar.dimension_factor_is_attained"
       module: "BlackwellSolution.lean"
       status: "proved"

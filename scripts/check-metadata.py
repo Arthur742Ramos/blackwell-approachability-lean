@@ -6,7 +6,7 @@ import yaml
 root = Path(sys.argv[1])
 data = yaml.safe_load((root / "formalization.yaml").read_text(encoding="utf-8"))
 authors = ["Arthur Freitas Ramos"]
-assert data["version"] == "v0.4"
+assert data["version"] == "v0.5"
 project = data["project"]
 assert project["authors"] == authors
 assert project["responsible_maintainers"] == authors
@@ -40,4 +40,3 @@ for related in data.get("related_formalizations", []):
     assert related["relationship"] in allowed_relationships
 
 print("formalization metadata shape passed.")
-

@@ -151,6 +151,7 @@ theorem exists_pure_pointwise_strategy
 
 theorem pure_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)
@@ -195,6 +196,7 @@ theorem pure_game_approachability_of_response
 
 theorem mixed_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : real_convex C)

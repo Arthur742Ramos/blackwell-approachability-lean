@@ -10,7 +10,7 @@ mixed action is a finite probability vector, the opponent supplies one pure
 action at each round, and the player's response depends only on the current
 running average.  The pointwise Blackwell condition is a premise of the game
 theorem; the theorem itself constructs the response strategy and quantifies
-over every opponent sequence.
+over every opponent sequence for a nonempty opponent action type.
 -/
 
 namespace Blackwell
@@ -88,6 +88,7 @@ theorem exists_pointwise_strategy {A B E : Type*} [Fintype A] [Fintype B]
 
 theorem finite_game_approachability_bound
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) (strategy : E → Mixed A) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
@@ -136,6 +137,7 @@ theorem finite_game_approachability_bound
 
 theorem finite_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
@@ -178,6 +180,7 @@ theorem exists_pure_pointwise_strategy {A B E : Type*} [Fintype A] [Fintype B]
 
 theorem pure_game_approachability_of_response
     {A B E : Type*} [Fintype A] [Fintype B]
+    [Nonempty B]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
     (g : A → B → E) {C : Set E}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
