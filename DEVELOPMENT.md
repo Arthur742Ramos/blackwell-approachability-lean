@@ -1,6 +1,6 @@
 # Development notes
 
-`BlackwellChallenge.lean` imports only Mathlib and contains exactly nine proof
+`BlackwellChallenge.lean` imports only Mathlib and contains exactly twelve proof
 placeholders, one per selected source-backed declaration.
 `BlackwellSolution.lean` imports `BlackwellIrreducibility.lean`, contains no
 placeholders, and mirrors the public declarations definitionally. The
@@ -64,17 +64,37 @@ the required antipodal pair. The all-ones vector is also proved to be a common
 invariant of this family, which distinguishes the Lemma-5 route from the
 affine-normal route.
 
+## Equation-(16) normalized-reduction bridge
+
+The source introduces `M_phi = Id - phi` and, after its minimality,
+full-span, and affine-normalization steps, obtains
+
+```text
+M_psi = S M_phi,              (16)
+psi(p) = p + S(phi(p) - p).  (17)
+```
+
+The development represents the first identity by
+`normalizedMIntertwining` for a fixed comparator correspondence, a candidate
+proper target family `psi`, and one matrix `S`. It proves the pointwise
+Equation-(17) equality and converts properness of `psi` into
+`canonicalProperOn`. Thus the two concrete no-go corollaries exclude every
+invertible `normalizedProperReductionOn`, not just a correction equation
+introduced as an unexplained assumption.
+
 ## Scope and regression policy
 
-Both mechanisms assume the source's **canonical normal form** directly. The
-development does not claim the source's derivation of that equation from its
-general affine-equivalence machinery, its rate/minimality theory, or an online
-algorithm. That boundary is deliberate and is checked in the documentation
-and metadata gate.
+The development proves the algebraic implication from the source's normalized
+Equation (16) to its canonical normal form (17). It does not claim the
+source's preceding derivation of Equation (16) from its general bidirectional
+affine-equivalence machinery, its rate/minimality and span theory, or an
+online algorithm. That boundary is deliberate and is checked in the
+documentation and metadata gate.
 
 The older approachability, game, minimax, and norm-conversion files remain
 independent supporting experiments and are not selected by Comparator.
 `BlackwellIrreducibilityExamples.lean` exercises both family certificates,
-both generic obstructions, and both no-reduction corollaries. The validation
-gate runs the official renderer notation audit and an axiom audit over exactly
-the nine selected declarations.
+both generic obstructions, the Equation-(16) bridge, and both normalized
+no-reduction corollaries. The validation gate runs the official renderer
+notation audit and an axiom audit over exactly the twelve selected
+declarations.

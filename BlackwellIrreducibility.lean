@@ -18,11 +18,13 @@ phi-regret has the shape
 p |-> p + S (phi(p) - p)
 ```
 
-with an invertible correction matrix `S`.  The selected result proves that no
-such matrix can make every member of this family proper.  The formalization is
-intentionally scoped to that canonical normal form; it does not formalize the
-paper's separate rate/minimality machinery used to obtain the normal form from
-its most general bidirectional affine definition of linear equivalence.
+with an invertible correction matrix `S`.  The selected results prove that no
+such matrix can make every member of either cited family proper and formalize
+the source's normalized Equation-(16)-to-(17) rearrangement.  The
+formalization is intentionally scoped to this normalized/canonical layer; it
+does not formalize the paper's separate rate/minimality and span machinery
+used to obtain Equation (16) from its most general bidirectional affine
+definition of linear equivalence.
 -/
 
 namespace Blackwell.Irreducibility
@@ -121,6 +123,80 @@ arbitrary action set `P`. -/
 def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
+
+/-- The source's `M_φ = Id - φ` notation, written pointwise so it can also
+be used for the concrete comparator families below. -/
+def sourceMFor {α : Type u} (φ : α → Vec3 → Vec3) (q : α) (p : Vec3) : Vec3 :=
+  p - φ q p
+
+/-- The normalized identity `M_ψ = S M_φ` from Equation (16) of the source,
+after the comparator correspondence has been fixed and restricted to the
+selected family.  The source obtains this identity from its broader
+minimality and span assumptions; this development makes that implication an
+explicit hypothesis rather than silently assuming it. -/
+def normalizedMIntertwining {α : Type u} (Q : Set α)
+    (φ ψ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p : Vec3, sourceMFor ψ q p = S *ᵥ sourceMFor φ q p
+
+/-- A selected target comparator family is proper when it maps every allowed
+action back into the same action set. -/
+def properOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (ψ : α → Vec3 → Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, ψ q p ∈ P
+
+/-- The normalized part of the source's linear-equivalence normal form: an
+invertible `S`, a proper target family on the same indexed comparators, and
+the Equation-(16) displacement identity.  It intentionally omits the
+source's preceding bidirectional affine maps, rate/minimality hypotheses,
+and derivation of that identity. -/
+def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
+
+/-- Rearranging the source's normalized Equation (16) gives its displayed
+canonical correction Equation (17). -/
+theorem normalizedMIntertwining_eq_correctedFor
+    {α : Type u} (Q : Set α) (φ ψ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ)
+    (hintertwine : normalizedMIntertwining Q φ ψ S) :
+    ∀ q ∈ Q, ∀ p : Vec3, ψ q p = correctedFor φ S q p := by
+  intro q hq p
+  have hM : p - ψ q p = S *ᵥ (p - φ q p) := by
+    simpa [sourceMFor] using hintertwine q hq p
+  have hneg : φ q p - p = -(p - φ q p) := by abel
+  calc
+    ψ q p = p - (p - ψ q p) := by abel
+    _ = p - S *ᵥ (p - φ q p) := by rw [hM]
+    _ = p + S *ᵥ (φ q p - p) := by
+      rw [hneg, Matrix.mulVec_neg]
+      abel
+    _ = correctedFor φ S q p := rfl
+
+/-- A proper target family satisfying the normalized Equation-(16) identity
+therefore supplies exactly the canonical properizer used by the two
+finite-dimensional obstructions. -/
+theorem normalized_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hproper : properOn P Q ψ)
+    (hintertwine : normalizedMIntertwining Q φ ψ S) :
+    canonicalProperOn P Q φ S := by
+  intro q hq p hp
+  rw [← normalizedMIntertwining_eq_correctedFor Q φ ψ S hintertwine q hq p]
+  exact hproper q hq p hp
+
+/-- Any obstruction to invertible canonical properization also obstructs a
+normalized proper reduction satisfying the source's Equation-(16) identity. -/
+theorem no_normalized_proper_reduction_of_no_canonical_properizer
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
+    (hno : ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+      S.det ≠ 0 ∧ canonicalProperOn P Q φ S) :
+    ¬ normalizedProperReductionOn P Q φ := by
+  rintro ⟨ψ, S, hdet, hproper, hintertwine⟩
+  apply hno
+  refine ⟨S, hdet, ?_⟩
+  exact normalized_proper_reduction_implies_canonical_properization
+    P Q φ ψ S hproper hintertwine
 
 /-- The standard convex-combination characterization of an extreme point of
 an action set.  It is stated locally so the public obstruction theorem has a
@@ -614,6 +690,14 @@ theorem sourceAB_not_canonically_proper_reducible :
       sourcePhi vertex0 vertex0_extreme_simplex3 sourceAB_antipodal_at_vertex0
       S hdet hproper
 
+/-- The second explicit source family admits no proper target satisfying the
+source's normalized `M_ψ = S M_φ` identity with invertible `S`.  This is the
+Equation-(16) form of its canonical Lemma-5 obstruction. -/
+theorem sourceAB_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  exact no_normalized_proper_reduction_of_no_canonical_properizer
+    simplex3 sourceCoefficients sourcePhi sourceAB_not_canonically_proper_reducible
+
 /-- Every invertible canonical properizer of a three-action comparator family
 transports the simplex sum functional to a nonzero common invariant.  This is
 the reusable finite-dimensional lemma behind the source's first
@@ -730,5 +814,19 @@ theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction :
   refine ⟨v, hv, ?_⟩
   simpa [commonInvariantOn, commonInvariant, displacementFor, displacement]
     using hinvariant
+
+/-- The first explicit source family admits no proper target satisfying the
+source's normalized `M_ψ = S M_φ` identity with invertible `S`.  The proof
+passes through the same Equation-(16)-to-(17) bridge used for the second
+family. -/
+theorem skewPhi_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi := by
+  rintro ⟨ψ, S, hdet, hproper, hintertwine⟩
+  apply skewPhi_not_canonically_proper_reducible
+  refine ⟨S, hdet, ?_⟩
+  have hcanonical := normalized_proper_reduction_implies_canonical_properization
+    simplex3 simplex3 skewPhi ψ S hproper hintertwine
+  simpa [canonicalProper, canonicalProperOn, corrected, correctedFor,
+    displacement, displacementFor] using hcanonical
 
 end Blackwell.Irreducibility

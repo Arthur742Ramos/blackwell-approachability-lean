@@ -37,6 +37,9 @@ example :
 example : ¬ canonicalProperReduction :=
   skewPhi_not_canonically_proper_reducible
 
+example : ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi :=
+  skewPhi_not_normalized_proper_reducible
+
 example (q : ℝ × ℝ) : ∃ p ∈ simplex3, sourcePhi q p = p :=
   sourcePhi_has_fixed_point q
 
@@ -52,6 +55,16 @@ example :
     ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
       S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S :=
   sourceAB_not_canonically_proper_reducible
+
+example : ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi :=
+  sourceAB_not_normalized_proper_reducible
+
+example {α : Type} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hproper : properOn P Q ψ)
+    (hintertwine : normalizedMIntertwining Q φ ψ S) :
+    canonicalProperOn P Q φ S :=
+  normalized_proper_reduction_implies_canonical_properization
+    P Q φ ψ S hproper hintertwine
 
 example {α : Type} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3)
     (x : Vec3) (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x)

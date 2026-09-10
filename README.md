@@ -8,8 +8,9 @@ obstructions, not a claim of new mathematics.
 
 ## Checked result
 
-The public Challenge/Solution boundary selects nine declarations. Together,
-they prove two distinct canonical-correction obstructions.
+The public Challenge/Solution boundary selects twelve declarations. Together,
+they prove two distinct canonical-correction obstructions and connect them to
+the source's normalized reduction identity.
 
 ### Skew-simplex family and the Lemma-4 mechanism
 
@@ -71,20 +72,33 @@ the matrix family. The all-ones vector is separately certified as a common
 invariant of that family, explaining why the Lemma-4 mechanism alone does not
 exclude it.
 
-## Exact scope
+### Normalized reduction bridge
 
-The formalization assumes the paper's displayed **canonical normal form**
+The paper's normalized reduction analysis writes `Mφ = Id - φ` and derives
 
 ```text
-p ↦ p + S (φq(p) - p)
+Mψ = S Mφ                                                    (16)
+ψ(p) = p + S (φ(p) - p).                                     (17)
 ```
 
-with `det S ≠ 0`, and proves the finite-dimensional consequences above. It
-does not formalize the paper's full bidirectional affine-equivalence
-definition, the derivation of this canonical equation from that definition,
-its rate-preservation/minimality machinery, an online learner, or a priority
-claim. In particular, the repository proves the canonical-normal-form cores
-of Lemmas 4 and 5 rather than silently upgrading them to the paper's full
+after fixing the comparator correspondence. This development now formalizes
+that rearrangement: any proper target family `ψ` satisfying the global
+Equation-(16) identity has the canonical properizer in Equation (17).
+Consequently, both explicit families rule out an invertible *normalized
+proper reduction*—an invertible `S`, a proper target family on the same
+indexed comparators, and `Mψ = S Mφ`—not merely a separately postulated
+canonical correction.
+
+## Exact scope
+
+The formalization proves the algebraic Equation-(16)-to-(17) bridge and the
+finite-dimensional consequences of the source's canonical normal form above.
+It does **not** formalize the paper's
+full bidirectional affine-equivalence definition, the rate/minimality and
+span arguments that derive Equation (16) from that definition, an online
+learner, or a priority claim. In particular, the repository proves the
+canonical-normal-form cores of Lemmas 4 and 5 plus the normalized-identity
+bridge, rather than silently upgrading them to the paper's full
 linear-equivalence theorems.
 
 Earlier Blackwell approachability, finite-game, minimax, and norm-conversion
@@ -95,7 +109,7 @@ Palomar selection.
 
 - `BlackwellIrreducibility.lean` contains the complete proof and the two
   explicit source families.
-- `BlackwellChallenge.lean` is the Mathlib-only nine-theorem statement surface.
+- `BlackwellChallenge.lean` is the Mathlib-only twelve-theorem statement surface.
 - `BlackwellSolution.lean` supplies checked adapters to the implementation.
 - `BlackwellIrreducibilityExamples.lean` exercises both fixed-point families,
   the two generic obstructions, and their concrete no-reduction corollaries.
@@ -111,7 +125,7 @@ bash scripts/verify-palomar.sh
 ```
 
 The preparation gate checks the independent Challenge import closure, exact
-nine-declaration Challenge/Solution surface, implementation-placeholder ban,
+twelve-declaration Challenge/Solution surface, implementation-placeholder ban,
 source dependency closure, named-theorem axiom allowlist, official renderer
 notation audit, metadata alignment, and executable regressions. The pinned
 Comparator/NanoDa replay is available through `scripts/verify-comparator.sh`.

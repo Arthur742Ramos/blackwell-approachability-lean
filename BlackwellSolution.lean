@@ -74,6 +74,22 @@ def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
 
+def sourceMFor {α : Type u} (φ : α → Vec3 → Vec3) (q : α) (p : Vec3) : Vec3 :=
+  p - φ q p
+
+def normalizedMIntertwining {α : Type u} (Q : Set α)
+    (φ ψ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p : Vec3, sourceMFor ψ q p = S *ᵥ sourceMFor φ q p
+
+def properOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (ψ : α → Vec3 → Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, ψ q p ∈ P
+
+def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
+
 def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
   x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
     0 < a → 0 < b → a + b = 1 →
@@ -135,6 +151,22 @@ theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
     using Blackwell.Irreducibility.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
       P Q φ S hdet haff hproper
 
+theorem normalized_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hproper : properOn P Q ψ)
+    (hintertwine : normalizedMIntertwining Q φ ψ S) :
+    canonicalProperOn P Q φ S := by
+  simpa [sourceMFor, normalizedMIntertwining, properOn, canonicalProperOn,
+    correctedFor, displacementFor,
+    Blackwell.Irreducibility.sourceMFor,
+    Blackwell.Irreducibility.normalizedMIntertwining,
+    Blackwell.Irreducibility.properOn,
+    Blackwell.Irreducibility.canonicalProperOn,
+    Blackwell.Irreducibility.correctedFor,
+    Blackwell.Irreducibility.displacementFor]
+    using Blackwell.Irreducibility.normalized_proper_reduction_implies_canonical_properization
+      P Q φ ψ S hproper hintertwine
+
 theorem extreme_antipodal_no_canonical_properizer
     {α : Type u} (P : Set Vec3) (Q : Set α) (φ : α → Vec3 → Vec3) (x : Vec3)
     (hx : extremePoint P x) (hanti : antipodalDisplacements Q φ x) :
@@ -181,6 +213,18 @@ theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction :
     Blackwell.Irreducibility.skewPhi]
     using Blackwell.Irreducibility.skewPhi_not_canonically_proper_reducible
 
+theorem skewPhi_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi := by
+  simpa [normalizedProperReductionOn, normalizedMIntertwining, properOn,
+    sourceMFor, simplex3, skewPhi,
+    Blackwell.Irreducibility.normalizedProperReductionOn,
+    Blackwell.Irreducibility.normalizedMIntertwining,
+    Blackwell.Irreducibility.properOn,
+    Blackwell.Irreducibility.sourceMFor,
+    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.skewPhi]
+    using Blackwell.Irreducibility.skewPhi_not_normalized_proper_reducible
+
 theorem sourceAB_valid_improper_family :
     validImproperFamily simplex3 sourceCoefficients sourcePhi := by
   simpa [validImproperFamily, simplex3, sourceCoefficients, sourcePhi, sourceA,
@@ -218,5 +262,19 @@ theorem sourceAB_not_canonically_proper_reducible :
     Blackwell.Irreducibility.sourcePhi, Blackwell.Irreducibility.sourceA,
     Blackwell.Irreducibility.sourceB]
     using Blackwell.Irreducibility.sourceAB_not_canonically_proper_reducible
+
+theorem sourceAB_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi := by
+  simpa [normalizedProperReductionOn, normalizedMIntertwining, properOn,
+    sourceMFor, simplex3, sourceCoefficients, sourcePhi, sourceA, sourceB,
+    Blackwell.Irreducibility.normalizedProperReductionOn,
+    Blackwell.Irreducibility.normalizedMIntertwining,
+    Blackwell.Irreducibility.properOn,
+    Blackwell.Irreducibility.sourceMFor,
+    Blackwell.Irreducibility.simplex3,
+    Blackwell.Irreducibility.sourceCoefficients,
+    Blackwell.Irreducibility.sourcePhi, Blackwell.Irreducibility.sourceA,
+    Blackwell.Irreducibility.sourceB]
+    using Blackwell.Irreducibility.sourceAB_not_normalized_proper_reducible
 
 end Blackwell.Palomar

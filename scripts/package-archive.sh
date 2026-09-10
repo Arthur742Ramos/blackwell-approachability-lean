@@ -4,7 +4,7 @@ set -euo pipefail
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$root"
 
-output=${1:-.cache/blackwell-approachability-lean-0.6.0.zip}
+output=${1:-.cache/blackwell-approachability-lean-0.7.0.zip}
 force=0
 if [ "${2:-}" = "--force" ]; then
   force=1

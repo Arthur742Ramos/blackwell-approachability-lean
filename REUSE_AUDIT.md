@@ -23,6 +23,9 @@ project therefore defines the small domain-specific predicates
 `validImproperInstance`, `validImproperFamily`, `canonicalProper`,
 `canonicalProperReduction`, `affineHyperplaneWitness`, `extremePoint`, and
 `antipodalDisplacements` locally, while reusing Mathlib's general algebra.
+It additionally defines the source's pointwise `M_phi = Id - phi` notation and
+the normalized `M_psi = S M_phi` identity, keeping the source's reduction
+assumptions explicit rather than importing an unverified equivalence layer.
 
 The construction follows Dann et al., Section 4.4.1. For the skew family, the
 fixed point and endpoint calculations were checked against the published
@@ -34,14 +37,15 @@ discovery as a proof oracle. The middle coordinate of the kernel is
 `2(36a² - 41ab + 71b²)`, as determined by direct multiplication against the
 transcribed matrices.
 
-The canonical normal form is stated exactly as `p + S (phi(p) - p)`. The
-development formalizes the dimension-three affine-hyperplane transport in the
-proof of source Lemma 4 and the extreme-point antipodal mechanism in the proof
-of source Lemma 5. Both are generic in the action set and selected comparator
-index set. The local scope intentionally stops before the source's broader
-affine/rate/minimality theory and its derivation of the canonical equation from
-general affine reduction data, rather than rephrasing a narrower theorem as a
-broader result.
+The source's normalized Equation (16), `M_psi = S M_phi`, is formalized for a
+fixed comparator correspondence and is proved to imply the displayed canonical
+Equation (17), `psi(p) = p + S (phi(p) - p)`. The development then formalizes
+the dimension-three affine-hyperplane transport in the proof of source Lemma 4
+and the extreme-point antipodal mechanism in the proof of source Lemma 5. Both
+are generic in the action set and selected comparator index set. The local
+scope intentionally stops before the source's broader affine/rate/minimality
+and span theory that derives Equation (16) from general affine reduction data,
+rather than rephrasing a narrower theorem as a broader result.
 
 No external formalization is imported. The Challenge source is independently
 Mathlib-only; the implementation exposes public helpers so the checked Solution

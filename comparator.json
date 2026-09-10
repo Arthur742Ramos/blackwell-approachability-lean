@@ -4,13 +4,16 @@
   "theorem_names": [
     "Blackwell.Palomar.skewPhi_valid_improper_instance",
     "Blackwell.Palomar.sourceAB_valid_improper_family",
+    "Blackwell.Palomar.normalized_proper_reduction_implies_canonical_properization",
     "Blackwell.Palomar.affine_hyperplane_canonical_properizer_has_nonzero_common_invariant",
     "Blackwell.Palomar.extreme_antipodal_no_canonical_properizer",
     "Blackwell.Palomar.skewPhi_has_no_nonzero_common_invariant",
     "Blackwell.Palomar.canonical_proper_matrices_are_singular",
     "Blackwell.Palomar.skewPhi_not_canonically_proper_reducible",
+    "Blackwell.Palomar.skewPhi_not_normalized_proper_reducible",
     "Blackwell.Palomar.sourceAB_has_nonzero_common_invariant",
-    "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible"
+    "Blackwell.Palomar.sourceAB_not_canonically_proper_reducible",
+    "Blackwell.Palomar.sourceAB_not_normalized_proper_reducible"
   ],
   "permitted_axioms": [
     "propext",

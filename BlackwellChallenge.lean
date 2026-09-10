@@ -12,12 +12,14 @@ single-invertible-matrix normal form for a prospective reduction to proper
 phi-regret.
 
 The selected theorems establish two explicit valid improper phi-regret
-families and both canonical-correction obstructions from Section 4.4.1: the
-affine-hyperplane invariant transport of Lemma 4 and the extreme-point,
-antipodal-displacement obstruction of Lemma 5.  The result is scoped to this
-canonical normal form; it does not claim to formalize the paper's separate
-rate/minimality argument that derives that form from its most general
-bidirectional affine definition of linear equivalence.
+families, both canonical-correction obstructions from Section 4.4.1, and the
+source's normalized Equation-(16)-to-(17) bridge: the affine-hyperplane
+invariant transport of Lemma 4 and the extreme-point,
+antipodal-displacement obstruction of Lemma 5.  The result proves the
+normalized identity's implication for the canonical normal form; it does not
+claim to formalize the paper's separate rate/minimality and span argument that
+derives Equation (16) from its most general bidirectional affine definition of
+linear equivalence.
 -/
 
 namespace Blackwell.Palomar
@@ -107,6 +109,30 @@ def canonicalProperOn {α : Type u} (P : Set Vec3) (Q : Set α)
     (φ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
   ∀ q ∈ Q, ∀ p ∈ P, correctedFor φ S q p ∈ P
 
+/-- Pointwise source notation `M_φ = Id - φ`. -/
+def sourceMFor {α : Type u} (φ : α → Vec3 → Vec3) (q : α) (p : Vec3) : Vec3 :=
+  p - φ q p
+
+/-- The source's normalized Equation-(16) identity `M_ψ = S M_φ`, after the
+comparator correspondence has been fixed. -/
+def normalizedMIntertwining {α : Type u} (Q : Set α)
+    (φ ψ : α → Vec3 → Vec3) (S : Matrix (Fin 3) (Fin 3) ℝ) : Prop :=
+  ∀ q ∈ Q, ∀ p : Vec3, sourceMFor ψ q p = S *ᵥ sourceMFor φ q p
+
+/-- A target comparator family maps every selected action back into its
+action set. -/
+def properOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (ψ : α → Vec3 → Vec3) : Prop :=
+  ∀ q ∈ Q, ∀ p ∈ P, ψ q p ∈ P
+
+/-- The source's normalized proper-reduction form: an invertible `S`, a
+proper target family, and the Equation-(16) identity.  This deliberately
+does not state the source's full preceding affine-equivalence machinery. -/
+def normalizedProperReductionOn {α : Type u} (P : Set Vec3) (Q : Set α)
+    (φ : α → Vec3 → Vec3) : Prop :=
+  ∃ ψ : α → Vec3 → Vec3, ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
+    S.det ≠ 0 ∧ properOn P Q ψ ∧ normalizedMIntertwining Q φ ψ S
+
 /-- The standard convex-combination characterization of an extreme action. -/
 def extremePoint (P : Set Vec3) (x : Vec3) : Prop :=
   x ∈ P ∧ ∀ y ∈ P, ∀ z ∈ P, ∀ a b : ℝ,
@@ -170,6 +196,15 @@ theorem affine_hyperplane_canonical_properizer_has_nonzero_common_invariant
     ∃ v : Vec3, nonzeroVec3 v ∧ commonInvariantOn P Q φ v := by
   sorry
 
+/-- A proper target satisfying the source's normalized Equation-(16) identity
+supplies the canonical properizer in Equation (17). -/
+theorem normalized_proper_reduction_implies_canonical_properization
+    {α : Type u} (P : Set Vec3) (Q : Set α) (φ ψ : α → Vec3 → Vec3)
+    (S : Matrix (Fin 3) (Fin 3) ℝ) (hproper : properOn P Q ψ)
+    (hintertwine : normalizedMIntertwining Q φ ψ S) :
+    canonicalProperOn P Q φ S := by
+  sorry
+
 /-- Canonical-correction core of Lemma 5: an extreme action with antipodal
 nonzero comparator displacements rules out every invertible properizer. -/
 theorem extreme_antipodal_no_canonical_properizer
@@ -194,6 +229,12 @@ proper phi-regret. -/
 theorem skewPhi_not_canonically_proper_reducible : ¬ canonicalProperReduction := by
   sorry
 
+/-- The skew-simplex family has no invertible normalized proper reduction
+satisfying the source's Equation-(16) identity. -/
+theorem skewPhi_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 simplex3 skewPhi := by
+  sorry
+
 /-- The second explicit Section 4.4.1 family is a valid improper phi-regret
 family, with a certified simplex fixed point for every square-bounded pair of
 coefficients. -/
@@ -213,6 +254,12 @@ no invertible canonical reduction to proper phi-regret. -/
 theorem sourceAB_not_canonically_proper_reducible :
     ¬ ∃ S : Matrix (Fin 3) (Fin 3) ℝ,
       S.det ≠ 0 ∧ canonicalProperOn simplex3 sourceCoefficients sourcePhi S := by
+  sorry
+
+/-- The second matrix family has no invertible normalized proper reduction
+satisfying the source's Equation-(16) identity. -/
+theorem sourceAB_not_normalized_proper_reducible :
+    ¬ normalizedProperReductionOn simplex3 sourceCoefficients sourcePhi := by
   sorry
 
 end Blackwell.Palomar
