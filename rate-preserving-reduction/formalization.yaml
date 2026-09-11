@@ -2,7 +2,7 @@ version: "v0.4"
 project:
   name: "Finite tight Blackwell approachability-to-improper phi-regret reduction in Lean"
   description: >-
-    A Mathlib-only finite-simplex, algorithmic specialization of Theorem 4 in
+    A Mathlib-only nonempty finite-simplex, algorithmic specialization of Theorem 4 in
     Dann, Mansour, Mohri, Schneider, and Sivan (COLT 2025). It realizes the
     tensor action space as a joint simplex, defines the source improper
     comparator by adding a mixed-constraint tensor the canonical action
@@ -24,7 +24,7 @@ research_context:
     formalized with an unambiguous tensor action representation and explicit
     causal strategy translations?
   selected_result: >-
-    For finite simplex actions and a finite convex hull of bilinear
+    For nonempty finite simplex actions and a nonempty finite convex hull of bilinear
     constraints, the joint-simplex realization has a canonical marginal
     decoder. The formally selected construction proves proper typing of lift
     and decode, pointwise and finite-horizon exact loss identities, genuine
@@ -35,7 +35,7 @@ research_context:
     regret transformations, and rate-preserving reductions, as well as Lean
     users who need audited finite-dimensional online-learning reductions.
   boundary: >-
-    This is a source-faithful finite convex-hull/simplex specialization of an
+    This is a source-faithful nonempty finite convex-hull/simplex specialization of an
     existing COLT 2025 theorem. It does not claim independent mathematical
     novelty, the paper's arbitrary bounded-convex or abstract-tensor setting,
     randomized strategies, complexity bounds, asymptotic rate infima, or its
@@ -74,7 +74,8 @@ related_formalizations:
 status:
   scope: >-
     Nine selected statements formalize the finite-simplex reduction. The
-    action and constraint spaces are probability simplexes; joint tensor
+    action and constraint index types are explicitly nonempty and their spaces
+    are probability simplexes; joint tensor
     actions are nonnegative tables of mass one; the action marginal and
     anchored rank-one lift are shown to preserve the required action spaces.
     The shift comparator adds a rank-one table with the same marginal, so its
@@ -85,6 +86,9 @@ status:
     explicit functions from loss histories to actions. Both headline
     declarations preserve the supplied anchor in their conclusions, and both
     causal strategy translations preserve every finite loss sequence exactly.
+    The objective, improperness, and reduction APIs require `[Nonempty m]` and
+    `[Nonempty n]`, excluding vacuous comparator and strategy claims over empty
+    simplexes.
     The package does not prove arbitrary-convex-set, randomized, complexity,
     or asymptotic rate claims.
   sorry_count: 0
@@ -123,8 +127,11 @@ review:
     No independent human or Palomar editorial approval is claimed. The nine
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; implementation, Solution, and examples
-    have no proof placeholders. Hosted Comparator verification and editorial
-    review remain separate states.
+    have no proof placeholders. The prior automated review's empty-index
+    finding is addressed by explicit nonemptiness assumptions on every central
+    objective, improperness, trajectory-reduction, and strategy-reduction
+    declaration. Hosted Comparator verification and editorial review remain
+    separate states.
 alignment:
   namespace: "Blackwell.RateReduction.Palomar"
   statements:

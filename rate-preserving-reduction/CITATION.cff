@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this formalization, please cite it and its source paper."
 title: "A finite tight reduction from Blackwell approachability to improper phi-regret in Lean"
-version: "0.1.0"
+version: "0.2.0"
 date-released: 2026-09-10
 license: BSD-3-Clause
 authors:

@@ -22,7 +22,8 @@ every finite-horizon objective in both directions.
 The result deliberately formalizes the finite convex-hull/simplex regime and
 finite trajectory equality.  It does not claim the paper's general
 infinite-dimensional setting, randomized algorithms, or asymptotic minimax
-rate theory.
+rate theory.  Its central objective, improperness, and reduction statements
+require nonempty finite constraint and action index types.
 -/
 
 namespace Blackwell.RateReduction
@@ -166,20 +167,23 @@ theorem pairing_shift_sub_pairing_eq_score
   abel
 
 /-- The finite-horizon approachability objective. -/
-def approachSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+def approachSum {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (w : Mixed m)
     (p : Fin T → Mixed n) (l : Fin T → Dist d) : ℝ :=
   ∑ t, score u w.1 (p t).1 (l t)
 
 /-- The finite-horizon improper phi-regret objective. -/
-def regretSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+def regretSum {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (w : Mixed m)
     (x : Fin T → JointMixed m n) (l : Fin T → Dist d) : ℝ :=
   ∑ t, (pairing (x t).1 (reducedLoss u (l t)) -
     pairing (shift w.1 (x t).1) (reducedLoss u (l t)))
 
 /-- Summing the one-step identity preserves the objective exactly. -/
-theorem regretSum_eq_approachSum {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+theorem regretSum_eq_approachSum {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (w : Mixed m)
     (x : Fin T → JointMixed m n) (l : Fin T → Dist d) :
     regretSum u w x l = approachSum u w (fun t => decode (x t)) l := by
@@ -188,30 +192,36 @@ theorem regretSum_eq_approachSum {m n d : Type} [Fintype m] [Fintype n] [Fintype
   intro t _
   exact pairing_shift_sub_pairing_eq_score u w.1 (x t).1 (l t)
 
-/-- Supremum form of the approachability loss. -/
+/-- Supremum form of the approachability loss.  Nonempty constraint and action
+index types keep the optimization and trajectory domains inhabited. -/
 def approachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (p : Fin T → Mixed n)
     (l : Fin T → Dist d) : ℝ :=
   sSup (Set.range fun w : Mixed m => approachSum u w p l)
 
 /-- Supremum form of improper phi-regret. -/
 def regretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
     (l : Fin T → Dist d) : ℝ :=
   sSup (Set.range fun w : Mixed m => regretSum u w x l)
 
 /-- Lift every action of a finite trajectory. -/
 def liftTrajectory {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     (anchor : Mixed m) {T : ℕ} (p : Fin T → Mixed n) : Fin T → JointMixed m n :=
   fun t => lift anchor (p t)
 
 /-- Decode every joint action of a finite trajectory. -/
 def decodeTrajectory {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     {T : ℕ} (x : Fin T → JointMixed m n) : Fin T → Mixed n :=
   fun t => decode (x t)
 
 /-- Exact equality for arbitrary transformed trajectories. -/
-theorem regretLoss_eq_approachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+theorem regretLoss_eq_approachLoss {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
     (l : Fin T → Dist d) :
     regretLoss u x l = approachLoss u (decodeTrajectory x) l := by
@@ -224,7 +234,8 @@ theorem regretLoss_eq_approachLoss {m n d : Type} [Fintype m] [Fintype n] [Finty
   · exact ⟨w, regretSum_eq_approachSum u w x l⟩
 
 /-- Exact forward trajectory translation. -/
-theorem approach_to_regret_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+theorem approach_to_regret_exact {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (anchor : Mixed m)
     (p : Fin T → Mixed n) (l : Fin T → Dist d) :
     regretLoss u (liftTrajectory anchor p) l = approachLoss u p l := by
@@ -234,7 +245,8 @@ theorem approach_to_regret_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype
   exact decode_lift anchor (p t)
 
 /-- Exact reverse trajectory translation. -/
-theorem regret_to_approach_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+theorem regret_to_approach_exact {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
     (l : Fin T → Dist d) :
     approachLoss u (decodeTrajectory x) l = regretLoss u x l :=
@@ -242,7 +254,8 @@ theorem regret_to_approach_exact {m n d : Type} [Fintype m] [Fintype n] [Fintype
 
 /-- The two explicit trajectory translations that witness tightness for a
 supplied anchor. -/
-def FiniteTensorTightReduction {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+def FiniteTensorTightReduction {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : Prop :=
   (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
     regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
@@ -252,6 +265,7 @@ def FiniteTensorTightReduction {m n d : Type} [Fintype m] [Fintype n] [Fintype d
 /-- The finite simplex construction is a tight reduction for each anchor. -/
 theorem finiteTensorTightReduction_of_anchor
     {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+    [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u anchor := by
   refine ⟨?_, ?_⟩
   · intro T p l
@@ -259,11 +273,15 @@ theorem finiteTensorTightReduction_of_anchor
   · intro T x l
     exact regret_to_approach_exact u x l
 
-/-- The source comparator is genuinely improper on the joint simplex. -/
-def shiftImproper {m n : Type} [Fintype m] [Fintype n] : Prop :=
+/-- The source comparator is genuinely improper on the joint simplex.  The
+nonemptiness assumptions exclude vacuous universal quantification over empty
+mixed-action spaces. -/
+def shiftImproper {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n] : Prop :=
   ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
 
-theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n] :
+theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n] :
     shiftImproper (m := m) (n := n) := by
   intro w x
   exact shift_not_jointSimplex w.2 x.2
@@ -281,16 +299,19 @@ def lossTrajectory {L : Type} (losses : List L) : Fin losses.length → L :=
   fun t => losses.get t
 
 def liftStrategy {m n d : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     (anchor : Mixed m) (alg : OnlineStrategy (Mixed n) (Dist d)) :
     OnlineStrategy (JointMixed m n) (Dist d) :=
   fun history => lift anchor (alg history)
 
 def decodeStrategy {m n d : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     (alg : OnlineStrategy (JointMixed m n) (Dist d)) :
     OnlineStrategy (Mixed n) (Dist d) :=
   fun history => decode (alg history)
 
 theorem runTrajectory_liftStrategy {m n d : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     (anchor : Mixed m) (alg : OnlineStrategy (Mixed n) (Dist d))
     (losses : List (Dist d)) :
     runTrajectory (liftStrategy anchor alg) losses =
@@ -298,24 +319,27 @@ theorem runTrajectory_liftStrategy {m n d : Type} [Fintype m] [Fintype n]
   rfl
 
 theorem runTrajectory_decodeStrategy {m n d : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n]
     (alg : OnlineStrategy (JointMixed m n) (Dist d))
     (losses : List (Dist d)) :
     runTrajectory (decodeStrategy alg) losses =
       decodeTrajectory (runTrajectory alg losses) := by
   rfl
 
-def onlineApproachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+def onlineApproachLoss {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (alg : OnlineStrategy (Mixed n) (Dist d))
     (losses : List (Dist d)) : ℝ :=
   approachLoss u (runTrajectory alg losses) (lossTrajectory losses)
 
-def onlineRegretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
+def onlineRegretLoss {m n d : Type}
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (alg : OnlineStrategy (JointMixed m n) (Dist d))
     (losses : List (Dist d)) : ℝ :=
   regretLoss u (runTrajectory alg losses) (lossTrajectory losses)
 
 theorem online_approach_to_regret_exact {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d]
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m)
     (alg : OnlineStrategy (Mixed n) (Dist d)) (losses : List (Dist d)) :
     onlineRegretLoss u (liftStrategy anchor alg) losses =
@@ -325,7 +349,7 @@ theorem online_approach_to_regret_exact {m n d : Type}
   exact approach_to_regret_exact u anchor (runTrajectory alg losses) (lossTrajectory losses)
 
 theorem online_regret_to_approach_exact {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d]
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (alg : OnlineStrategy (JointMixed m n) (Dist d))
     (losses : List (Dist d)) :
     onlineApproachLoss u (decodeStrategy alg) losses =
@@ -337,7 +361,8 @@ theorem online_regret_to_approach_exact {m n d : Type}
 /-- Algorithm-level tightness: both maps consume precisely the same prior-loss
 history and preserve every finite sequence's loss. -/
 def AlgorithmicFiniteTensorTightReduction {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d] (u : Payoff m n d)
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
+    (u : Payoff m n d)
     (anchor : Mixed m) : Prop :=
   (∀ alg losses,
     onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
@@ -347,7 +372,7 @@ def AlgorithmicFiniteTensorTightReduction {m n d : Type}
 /-- The finite simplex construction is tight at the level of causal online
 strategies, not only preselected trajectories. -/
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
-    [Fintype m] [Fintype n] [Fintype d]
+    [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u anchor := by
   refine ⟨?_, ?_⟩
   · intro alg losses

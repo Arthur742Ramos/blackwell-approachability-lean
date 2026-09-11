@@ -65,6 +65,44 @@ for source_path in (challenge, solution):
     if "AlgorithmicFiniteTensorTightReduction u anchor" not in source:
         raise SystemExit(f"error: {source_path.name} does not retain the supplied algorithmic anchor")
 
+nonempty_declarations = (
+    "def approachSum",
+    "def regretSum",
+    "theorem regretSum_eq_approachSum",
+    "def approachLoss",
+    "def regretLoss",
+    "theorem regretLoss_eq_approachLoss",
+    "theorem approach_to_regret_exact",
+    "theorem regret_to_approach_exact",
+    "def liftTrajectory",
+    "def decodeTrajectory",
+    "def FiniteTensorTightReduction",
+    "def shiftImproper",
+    "theorem shift_is_improper",
+    "theorem finiteTensorTightReduction_of_anchor",
+    "def onlineApproachLoss",
+    "def onlineRegretLoss",
+    "def liftStrategy",
+    "def decodeStrategy",
+    "def AlgorithmicFiniteTensorTightReduction",
+    "theorem algorithmicFiniteTensorTightReduction_of_anchor",
+)
+for source_path in (implementation, challenge, solution):
+    source = source_path.read_text(encoding="utf-8")
+    for declaration in nonempty_declarations:
+        start = source.find(declaration)
+        if start < 0:
+            raise SystemExit(f"error: {source_path.name} is missing {declaration}")
+        signature_end = source.find(":=", start)
+        if signature_end < 0:
+            raise SystemExit(f"error: cannot parse signature for {declaration} in {source_path.name}")
+        signature = source[start:signature_end]
+        for assumption in ("[Nonempty m]", "[Nonempty n]"):
+            if assumption not in signature:
+                raise SystemExit(
+                    f"error: {declaration} in {source_path.name} is missing {assumption}"
+                )
+
 for path in (implementation, solution, root / "RateReductionExamples.lean"):
     source = path.read_text(encoding="utf-8")
     if re.search(r"(^|[^A-Za-z0-9_])(sorry|admit|oops)([^A-Za-z0-9_]|$)", source):

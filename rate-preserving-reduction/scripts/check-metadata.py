@@ -19,8 +19,8 @@ assert project["license"] == "BSD-3-Clause"
 citation = yaml.safe_load((root / "CITATION.cff").read_text(encoding="utf-8"))
 got = [f'{a["given-names"]} {a["family-names"]}' for a in citation["authors"]]
 assert got == authors
-assert citation["version"] == "0.1.0"
-assert 'version := v!"0.1.0"' in (root / "lakefile.lean").read_text(encoding="utf-8")
+assert citation["version"] == "0.2.0"
+assert 'version := v!"0.2.0"' in (root / "lakefile.lean").read_text(encoding="utf-8")
 
 selected = json.loads((root / "comparator.json").read_text(encoding="utf-8"))["theorem_names"]
 aligned = [item["lean"] for item in data["alignment"]["statements"]]
@@ -45,7 +45,11 @@ assert data["related_formalizations"] == [{
 assert data["automation"]["methods"]
 assert isinstance(data["review"]["status"], str)
 assert "Nine selected statements" in data["status"]["scope"]
-assert "finite convex-hull/simplex specialization" in data["research_context"]["boundary"]
+assert "nonempty finite convex-hull/simplex specialization" in data["research_context"]["boundary"]
 assert "existing COLT 2025 theorem" in data["research_context"]["boundary"]
+scope = data["status"]["scope"]
+for assumption in ("[Nonempty m]", "[Nonempty n]"):
+    assert assumption in scope
+assert "empty-index" in data["review"]["notes"]
 
 print("formalization metadata shape passed.")

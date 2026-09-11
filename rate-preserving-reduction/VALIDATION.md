@@ -6,6 +6,8 @@ The main local gate is `scripts/verify-palomar.sh`. It checks:
 - exactly nine intentional Challenge holes and no placeholder, `axiom`, or
   `unsafe` declaration in implementation, Solution, or examples;
 - the exact Comparator declaration list and permitted-axiom allowlist;
+- explicit `[Nonempty m]` and `[Nonempty n]` assumptions on the objective,
+  improperness, finite-trajectory, and causal-strategy reduction surfaces;
 - a complete Lake build plus the concrete two-by-two example;
 - the pinned official Palomar renderer's isolated core-notation audit for all
   nine selected declarations;

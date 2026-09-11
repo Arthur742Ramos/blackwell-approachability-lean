@@ -12,6 +12,9 @@ The project was designed against Mathlib pinned at
   project or supporting Blackwell experiments. The Challenge has a
   Mathlib-only dependency closure, and the nested project can be checked as a
   separate Palomar candidate.
+- The central API uses Mathlib's standard `Nonempty` typeclass for both finite
+  constraint and action index types. This rules out empty simplex and online
+  strategy codomains without introducing a project-specific existence notion.
 
 The source result is Theorem 4 of Dann et al. (COLT 2025), cited in
 `formalization.yaml` and `CITATION.cff`. This project claims a finite

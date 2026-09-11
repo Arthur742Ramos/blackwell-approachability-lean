@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «rate_preserving_reduction» where
-  version := v!"0.1.0"
+  version := v!"0.2.0"
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @

@@ -7,7 +7,11 @@ tensor action space `U tensor P`. This project fixes the finite setting in
 which `U = Delta_m` is the convex hull of `m` coordinate constraints and
 `P = Delta_n`. Its tensor realization is the joint simplex `Delta_(m x n)`.
 That representation is exactly the convex hull of rank-one product tables and
-has a canonical action marginal.
+has a canonical action marginal. The central objective, improperness, and
+reduction APIs require `[Nonempty m]` and `[Nonempty n]`. These assumptions
+make both simplexes and both online-strategy codomains genuinely inhabited;
+an explicit anchor witnesses the same fact for `m`, but the typeclass remains
+in the public signature so the scope is visible and uniform.
 
 `Payoff m n d` stores the finite coordinates of the bilinear functions. For a
 loss `l`, `reducedLoss` is the vector representation of `M_B l` for
@@ -36,7 +40,8 @@ than a fragile expansion of nested finite sums.
 The public Challenge contains exactly nine intentional holes: the action-set
 lemmas, improperness, one-step and horizon identities, trajectory equality,
 and both trajectory- and strategy-level tightness results. The Solution
-contains no proof placeholder.
+contains no proof placeholder. The shape gate also inspects every central
+declaration and fails if either nonemptiness assumption is removed.
 
 ## Boundary
 

@@ -15,9 +15,10 @@ record rather than a version update of that earlier entry.
 
 ## Result
 
-Let the original action space be the finite simplex `Delta_n`, and let the
-constraint family be the convex hull `Delta_m` of `m` bilinear coordinate
-constraints. The construction uses the joint simplex
+Let `m` and `n` be nonempty finite index types. Let the original action space
+be the finite simplex `Delta_n`, and let the constraint family be the convex
+hull `Delta_m` of `m` bilinear coordinate constraints. The construction uses
+the joint simplex
 
 ```text
 X = Delta_(m x n) = conv { w tensor p | w in Delta_m, p in Delta_n }.
@@ -50,7 +51,10 @@ The headline theorem is
 `Blackwell.RateReduction.Palomar.algorithmicFiniteTensorTightReduction_of_anchor`.
 Its conclusion retains the supplied anchor, and gives both causal strategy maps
 for that exact chosen anchor in `Delta_m`. The finite-trajectory headline has
-the same anchor-preserving type.
+the same anchor-preserving type. Both declarations explicitly require
+`[Nonempty m]` and `[Nonempty n]`; the objective and improperness definitions
+carry the same assumptions. Thus neither the strategy quantifiers nor the
+comparator-escape claim can be discharged through an empty mixed-action space.
 
 ## Why use the joint simplex?
 
@@ -78,7 +82,9 @@ finite deterministic strategy model.
 
 The loss objective is represented with a real supremum over mixed constraints.
 The central pointwise and finite-horizon equalities are unconditional; no
-unproved maximizer-selection principle is used by the reduction proof.
+unproved maximizer-selection principle is used by the reduction proof. The
+constraint and action index types are explicitly nonempty, so this supremum
+and the translated strategy spaces do not rely on empty-type totalization.
 
 ## Files
 
