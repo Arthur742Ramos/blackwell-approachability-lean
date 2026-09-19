@@ -2,12 +2,12 @@ version: "v0.4"
 project:
   name: "Finite tight Blackwell approachability-to-improper phi-regret reduction in Lean"
   description: >-
-    A Mathlib-only nonempty finite-simplex, algorithmic specialization of Theorem 4 in
-    Dann, Mansour, Mohri, Schneider, and Sivan (COLT 2025). It realizes the
-    tensor action space as a joint simplex, defines the source improper
-    comparator by adding a mixed-constraint tensor the canonical action
-    marginal, proves that comparator escapes the action set, and proves exact
-    finite-horizon equality between approachability loss and improper
+    A Mathlib-only nonempty finite-simplex, algorithmic specialization of
+    Theorem 4 in Dann, Mansour, Mohri, Schneider, and Sivan (COLT 2025). It
+    realizes the tensor action space as a joint simplex, defines the source
+    improper comparator by adding a mixed-constraint tensor of the canonical
+    action marginal, proves that comparator escapes the action set, and proves
+    exact finite-horizon equality between approachability loss and improper
     phi-regret under explicit causal strategy translations in both directions.
   authors:
     - "Arthur Freitas Ramos"
@@ -24,14 +24,16 @@ research_context:
     formalized with an unambiguous tensor action representation and explicit
     causal strategy translations?
   selected_result: >-
-    For nonempty finite simplex actions and a nonempty finite convex hull of bilinear
-    constraints, the joint-simplex realization has a canonical marginal
-    decoder. The formally selected construction proves proper typing of lift
-    and decode, pointwise and finite-horizon exact loss identities, genuine
-    improperness of the comparator, and exact preservation for both online
-    strategy translations using the same prior-loss histories. The reduction
-    and improperness predicates explicitly return witnesses that both index
-    types are nonempty, in addition to requiring those typeclass assumptions.
+    For nonempty finite simplex actions and a nonempty finite convex hull of
+    bilinear constraints, coordinate vertices are identified with rank-one
+    tensors of point masses, and every joint-simplex table is characterized as
+    a finite convex combination of those vertices. The canonical marginal
+    decoder and anchored lift are then used to formalize the source comparator,
+    its escape from the action space, pointwise and finite-horizon exact loss
+    identities, and exact preservation under both causal online strategy
+    translations. The reduction and improperness predicates explicitly return
+    witnesses that both index types are nonempty, in addition to requiring
+    those typeclass assumptions.
   audience: >-
     Learning theorists and game theorists studying Blackwell approachability,
     regret transformations, and rate-preserving reductions, as well as Lean
@@ -77,7 +79,7 @@ related_formalizations:
       configuration and is not a version update of that entry.
 status:
   scope: >-
-    Nine selected statements formalize the finite-simplex reduction. The
+    Eleven selected statements formalize the finite-simplex reduction. The
     action and constraint index types are explicitly nonempty in both the
     declaration assumptions and the reduction/improperness result predicates;
     their spaces are probability simplexes; joint tensor
@@ -130,7 +132,7 @@ review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The nine
+    No independent human or Palomar editorial approval is claimed. The eleven
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; implementation, Solution, and examples
     have no proof placeholders. The prior automated review's empty-index
@@ -148,6 +150,14 @@ alignment:
       status: "proved"
     - source: "Elementary tensor lies in the joint simplex"
       lean: "Blackwell.RateReduction.Palomar.outer_jointSimplex"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Coordinate vertex is a rank-one tensor of point masses"
+      lean: "Blackwell.RateReduction.Palomar.elementaryTensor_eq_outer_pointMass"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Joint tables are exactly finite convex combinations of elementary tensors"
+      lean: "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteTensorCombination"
       module: "RateReductionSolution.lean"
       status: "proved"
     - source: "Marginal is a left inverse of the anchored tensor lift"

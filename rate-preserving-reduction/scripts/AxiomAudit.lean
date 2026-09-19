@@ -2,6 +2,8 @@ import RateReductionSolution
 
 #print axioms Blackwell.RateReduction.Palomar.marginal_simplex
 #print axioms Blackwell.RateReduction.Palomar.outer_jointSimplex
+#print axioms Blackwell.RateReduction.Palomar.elementaryTensor_eq_outer_pointMass
+#print axioms Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteTensorCombination
 #print axioms Blackwell.RateReduction.Palomar.marginal_outer
 #print axioms Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score
 #print axioms Blackwell.RateReduction.Palomar.regretSum_eq_approachSum

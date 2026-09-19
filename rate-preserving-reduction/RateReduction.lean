@@ -64,6 +64,11 @@ def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
 def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
   fun i j => w i * p j
 
+/-- The point-mass distribution at one index. -/
+def pointMass {α : Type} (a : α) : Dist α := by
+  classical
+  exact fun b => if b = a then 1 else 0
+
 /-- The source comparator `phi_w(x) = x + w ⊗ marginal(x)`. -/
 def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
   fun i j => x i j + outer w (marginal x) i j
@@ -91,6 +96,58 @@ lemma outer_jointSimplex {m n : Type} [Fintype m] [Fintype n]
   · simp only [outer]
     rw [← Fintype.sum_mul_sum, hw.2, hp.2]
     norm_num
+
+/-- The coordinate elementary tensor at a pair of constraint and action indices. -/
+def elementaryTensor {m n : Type} (ij : m × n) : Joint m n := by
+  classical
+  exact fun i j => if (i, j) = ij then 1 else 0
+
+/-- Each coordinate vertex is a rank-one tensor of two point masses. -/
+theorem elementaryTensor_eq_outer_pointMass {m n : Type} (ij : m × n) :
+    elementaryTensor ij = outer (pointMass ij.1) (pointMass ij.2) := by
+  cases ij with
+  | mk i₀ j₀ =>
+    ext i j
+    by_cases hi : i = i₀ <;> by_cases hj : j = j₀ <;>
+      simp [elementaryTensor, outer, pointMass, hi, hj]
+
+/-- A finite convex combination of coordinate elementary tensors. -/
+def FiniteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  ∃ weights : m × n → ℝ,
+    (∀ ij, 0 ≤ weights ij) ∧
+    (∑ ij, weights ij) = 1 ∧
+    x = ∑ ij, weights ij • elementaryTensor ij
+
+/-- Every joint-simplex table is a finite convex combination of elementary tensors, and conversely. -/
+theorem jointSimplex_eq_finiteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n] :
+    {x : Joint m n | jointSimplex x} = {x | FiniteTensorCombination x} := by
+  classical
+  ext x
+  constructor
+  · intro hx
+    refine ⟨fun ij => x ij.1 ij.2, ?_, ?_, ?_⟩
+    · rintro ⟨i, j⟩
+      exact hx.1 i j
+    · simpa [Fintype.sum_prod_type] using hx.2
+    · ext i j
+      simp [elementaryTensor]
+  · rintro ⟨weights, hweights, hsum, rfl⟩
+    constructor
+    · intro i j
+      simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+      exact Finset.sum_nonneg fun ij _ =>
+        mul_nonneg (hweights ij) (by
+          by_cases h : (i, j) = ij <;> simp [elementaryTensor, h])
+    · simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+      calc
+        (∑ i, ∑ j, ∑ ij, weights ij * elementaryTensor ij i j) =
+            ∑ ij, weights ij := by
+          rw [Finset.sum_comm, Finset.sum_comm]
+          simp [elementaryTensor]
+          rw [← Fintype.sum_prod_type']
+        _ = 1 := hsum
 
 lemma marginal_outer {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) :

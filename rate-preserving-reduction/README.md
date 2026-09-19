@@ -24,6 +24,14 @@ the joint simplex
 X = Delta_(m x n) = conv { w tensor p | w in Delta_m, p in Delta_n }.
 ```
 
+The selected Lean statements make this tensor-hull model explicit. Each
+coordinate vertex is proved to be the outer product of two point masses, and
+`jointSimplex_eq_finiteTensorCombination` proves that a table is in the joint
+simplex exactly when it is a finite convex combination of those vertices.
+`outer_jointSimplex` proves that every outer product of mixed actions is also
+in the joint simplex. Together, these statements identify the joint simplex
+with the convex hull of the rank-one tensors in this finite model.
+
 For a joint action `x`, its action marginal is
 
 ```text
@@ -59,6 +67,36 @@ so the exported claims carry explicit existence witnesses as well as the
 typeclass guards. Neither the strategy quantifiers nor the comparator-escape
 claim can be discharged through an empty mixed-action space.
 
+## Selected statement map
+
+The Comparator checks eleven declarations. The first group establishes the
+finite tensor model; the remaining declarations formalize the exact reduction:
+
+| Lean declaration | Mathematical content |
+|---|---|
+| `marginal_simplex` | Marginalizing any joint distribution gives a legal action distribution. |
+| `outer_jointSimplex` | The outer product of two distributions is a legal joint action. |
+| `elementaryTensor_eq_outer_pointMass` | Every coordinate vertex is a rank-one tensor of point masses. |
+| `jointSimplex_eq_finiteTensorCombination` | Joint distributions are exactly finite convex combinations of coordinate vertices. |
+| `marginal_outer` | Decoding the anchored lift recovers the original action. |
+| `pairing_shift_sub_pairing_eq_score` | The one-step comparator-pairing difference equals the approachability score. |
+| `regretSum_eq_approachSum` | Summing that identity gives equality over every finite horizon. |
+| `regretLoss_eq_approachLoss` | The corresponding supremum objectives agree for each fixed trajectory and loss sequence. |
+| `shift_is_improper` | The shifted comparator is outside the joint simplex, with nonempty index witnesses. |
+| `finiteTensorTightReduction_of_anchor` | Explicit trajectory maps give exact loss preservation for each supplied anchor. |
+| `algorithmicFiniteTensorTightReduction_of_anchor` | Causal history-dependent strategy maps give the same exact preservation. |
+
+For the hull identity, the forward decomposition uses each table entry
+`x(i,j)` as its coefficient; conversely, nonnegative coefficients summing to
+one produce a nonnegative table of mass one. The vertex lemma identifies each
+coordinate table with the outer product of the corresponding point masses.
+For the reduction, marginalization supplies the decoder; bilinearity gives the
+one-step pairing identity; finite summation and the pointwise identity give
+objective equality; and the two strategy translations reuse the same loss
+histories, so their trajectory equalities yield the headline reductions. The
+improperness proof is separate and uses total mass: the shift adds a mass-one
+outer product to a mass-one joint action.
+
 ## Why use the joint simplex?
 
 The paper writes `X = U tensor P`. A point in a convex hull of elementary
@@ -92,7 +130,7 @@ and the translated strategy spaces do not rely on empty-type totalization.
 ## Files
 
 - `RateReduction.lean` — implementation and proofs.
-- `RateReductionChallenge.lean` — Mathlib-only statement surface with nine
+- `RateReductionChallenge.lean` — Mathlib-only statement surface with eleven
   intentional theorem holes.
 - `RateReductionSolution.lean` — checked adapters to the implementation.
 - `RateReductionExamples.lean` — a concrete two-constraint, two-action,

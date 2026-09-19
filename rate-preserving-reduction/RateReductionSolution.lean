@@ -38,6 +38,10 @@ def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
 def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
   fun i j => w i * p j
 
+def pointMass {α : Type} (a : α) : Dist α := by
+  classical
+  exact fun b => if b = a then 1 else 0
+
 def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
   fun i j => x i j + outer w (marginal x) i j
 
@@ -49,6 +53,28 @@ theorem outer_jointSimplex {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) (hp : simplex p) :
     jointSimplex (outer w p) := by
   exact Blackwell.RateReduction.outer_jointSimplex hw hp
+
+/-- The coordinate elementary tensor at a pair of constraint and action indices. -/
+def elementaryTensor {m n : Type} (ij : m × n) : Joint m n := by
+  classical
+  exact fun i j => if (i, j) = ij then 1 else 0
+
+theorem elementaryTensor_eq_outer_pointMass {m n : Type} (ij : m × n) :
+    elementaryTensor ij = outer (pointMass ij.1) (pointMass ij.2) := by
+  exact Blackwell.RateReduction.elementaryTensor_eq_outer_pointMass ij
+
+/-- A finite convex combination of coordinate elementary tensors. -/
+def FiniteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  ∃ weights : m × n → ℝ,
+    (∀ ij, 0 ≤ weights ij) ∧
+    (∑ ij, weights ij) = 1 ∧
+    x = ∑ ij, weights ij • elementaryTensor ij
+
+theorem jointSimplex_eq_finiteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n] :
+    {x : Joint m n | jointSimplex x} = {x | FiniteTensorCombination x} := by
+  exact Blackwell.RateReduction.jointSimplex_eq_finiteTensorCombination
 
 theorem marginal_outer {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) :

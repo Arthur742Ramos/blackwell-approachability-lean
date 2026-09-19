@@ -5,21 +5,14 @@ set_option autoImplicit false
 /-!
 # Challenge: finite tight approachability-to-improper-regret reduction
 
-This Mathlib-only statement surface isolates a finite-simplex version of
-Theorem 4 from Dann, Mansour, Mohri, Schneider, and Sivan (COLT 2025).
-The constraint set is a finite convex hull, the original action set is a
-finite simplex, and `JointMixed m n` is the convex hull of the elementary
-tensors.  The action marginal is the canonical decoder.
-
-The selected claims prove that the lift and decoder stay in their action
-sets, that the comparator `shift w x = x + w tensor marginal(x)` is improper,
-and that its regret equals the original approachability loss exactly at every
-finite horizon in both translation directions.  This is a finite
-convex-hull realization of the source construction; it makes no claim about
-the source's general infinite-dimensional or randomized framework.  The
-central statements explicitly require nonempty finite constraint and action
-index types, and the reduction/improperness predicates return those existence
-witnesses as part of their propositions.
+This Mathlib-only Challenge specializes Theorem 4 of Dann et al. (COLT 2025)
+to nonempty finite simplex actions and constraints. Joint actions are
+nonnegative mass-one tables; coordinate vertices are rank-one point-mass
+tensors, and every table is characterized by its finite convex decomposition
+into those vertices. The selected claims then state the canonical marginal
+decoder, the source improper comparator, exact finite-horizon loss equality,
+and both trajectory-level and causal strategy translations. This is not a
+formalization of the paper's arbitrary bounded-convex or asymptotic setting.
 -/
 
 namespace Blackwell.RateReduction.Palomar
@@ -57,6 +50,11 @@ def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
 def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
   fun i j => w i * p j
 
+/-- The point-mass distribution at one index. -/
+def pointMass {α : Type} (a : α) : Dist α := by
+  classical
+  exact fun b => if b = a then 1 else 0
+
 /-- The source comparator: add the mixed-constraint tensor of the action marginal. -/
 def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
   fun i j => x i j + outer w (marginal x) i j
@@ -70,6 +68,30 @@ theorem marginal_simplex {m n : Type} [Fintype m] [Fintype n]
 theorem outer_jointSimplex {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) (hp : simplex p) :
     jointSimplex (outer w p) := by
+  sorry
+
+/-- The coordinate elementary tensor at a pair of constraint and action indices. -/
+def elementaryTensor {m n : Type} (ij : m × n) : Joint m n := by
+  classical
+  exact fun i j => if (i, j) = ij then 1 else 0
+
+/-- Each coordinate vertex is a rank-one tensor of two point masses. -/
+theorem elementaryTensor_eq_outer_pointMass {m n : Type} (ij : m × n) :
+    elementaryTensor ij = outer (pointMass ij.1) (pointMass ij.2) := by
+  sorry
+
+/-- A finite convex combination of coordinate elementary tensors. -/
+def FiniteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  ∃ weights : m × n → ℝ,
+    (∀ ij, 0 ≤ weights ij) ∧
+    (∑ ij, weights ij) = 1 ∧
+    x = ∑ ij, weights ij • elementaryTensor ij
+
+/-- Joint tables are exactly finite convex combinations of elementary tensors. -/
+theorem jointSimplex_eq_finiteTensorCombination {m n : Type} [Fintype m] [Fintype n]
+    [Nonempty m] [Nonempty n] :
+    {x : Joint m n | jointSimplex x} = {x | FiniteTensorCombination x} := by
   sorry
 
 /-- Marginalization is a left inverse of the anchored tensor lift. -/
