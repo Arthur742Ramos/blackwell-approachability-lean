@@ -11,6 +11,19 @@ text = challenge.read_text(encoding="utf-8")
 
 if challenge.stat().st_size > 100 * 1024 or len(text.splitlines()) > 1000:
     raise SystemExit("error: RateReductionChallenge.lean exceeds the Palomar size cap")
+challenge_lines = text.splitlines()
+undocumented = []
+for index, line in enumerate(challenge_lines):
+    if re.match(r"^(?:def|abbrev)\s", line):
+        previous = index - 1
+        while previous >= 0 and not challenge_lines[previous].strip():
+            previous -= 1
+        if previous < 0 or not challenge_lines[previous].rstrip().endswith("-/"):
+            undocumented.append(line.strip())
+if undocumented:
+    raise SystemExit(
+        "error: Challenge definitions lack precise docstrings: " + ", ".join(undocumented)
+    )
 if not implementation.is_file() or not solution.is_file():
     raise SystemExit("error: missing implementation or Solution module")
 
@@ -160,7 +173,8 @@ for path in (implementation, solution, root / "RateReductionExamples.lean"):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "nine holes, nine selected targets, and nonemptiness guards on public "
+    "nine holes, nine selected targets, documented Challenge definitions, "
+    "and nonemptiness guards on public "
     "definitions and reduction theorems, explicit witnesses in the reduction "
     "and improperness predicates, and guards on all causal strategy translations."
 )

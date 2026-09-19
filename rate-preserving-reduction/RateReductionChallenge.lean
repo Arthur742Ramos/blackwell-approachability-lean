@@ -28,27 +28,36 @@ open scoped BigOperators
 
 noncomputable section
 
+/-- A real coordinate vector on an index type; the simplex predicate gives it probability mass. -/
 abbrev Dist (n : Type) := n → ℝ
+/-- A real table indexed by a constraint coordinate and an action coordinate. -/
 abbrev Joint (m n : Type) := m → n → ℝ
 
+/-- The finite probability simplex: nonnegative coordinates with total mass one. -/
 def simplex {n : Type} [Fintype n] (p : Dist n) : Prop :=
   (∀ i, 0 ≤ p i) ∧ (∑ i, p i) = 1
 
+/-- A probability distribution on a finite index type. -/
 abbrev Mixed (n : Type) [Fintype n] := {p : Dist n // simplex p}
 
+/-- A nonnegative joint table whose total mass is one. -/
 def jointSimplex {m n : Type} [Fintype m] [Fintype n]
     (x : Joint m n) : Prop :=
   (∀ i j, 0 ≤ x i j) ∧ (∑ i, ∑ j, x i j) = 1
 
+/-- The finite simplex of joint constraint-action distributions. -/
 abbrev JointMixed (m n : Type) [Fintype m] [Fintype n] :=
   {x : Joint m n // jointSimplex x}
 
+/-- The action marginal, summing a joint table over its constraint coordinate. -/
 def marginal {m n : Type} [Fintype m] (x : Joint m n) : Dist n :=
   fun j => ∑ i, x i j
 
+/-- The rank-one tensor (outer product) of two coordinate vectors. -/
 def outer {m n : Type} (w : Dist m) (p : Dist n) : Joint m n :=
   fun i j => w i * p j
 
+/-- The source comparator: add the mixed-constraint tensor of the action marginal. -/
 def shift {m n : Type} [Fintype m] (w : Dist m) (x : Joint m n) : Joint m n :=
   fun i j => x i j + outer w (marginal x) i j
 
@@ -69,10 +78,12 @@ theorem marginal_outer {m n : Type} [Fintype m] [Fintype n]
     marginal (outer w p) = p := by
   sorry
 
+/-- Embed an action distribution as its rank-one joint table with the supplied anchor. -/
 def lift {m n : Type} [Fintype m] [Fintype n]
     (anchor : Mixed m) (p : Mixed n) : JointMixed m n :=
   ⟨outer anchor.1 p.1, outer_jointSimplex anchor.2 p.2⟩
 
+/-- Decode a joint action by taking its canonical action marginal. -/
 def decode {m n : Type} [Fintype m] [Fintype n]
     (x : JointMixed m n) : Mixed n :=
   ⟨marginal x.1, marginal_simplex x.2⟩
@@ -82,19 +93,24 @@ lemma decode_lift {m n : Type} [Fintype m] [Fintype n]
   apply Subtype.ext
   exact marginal_outer anchor.2
 
+/-- A real payoff tensor indexed by constraints, actions, and loss coordinates. -/
 abbrev Payoff (m n d : Type) := m → n → d → ℝ
 
+/-- The negative expected payoff at each constraint-action pair for a loss vector. -/
 def reducedLoss {m n d : Type} [Fintype d]
     (u : Payoff m n d) (l : Dist d) : Joint m n :=
   fun i j => -(∑ k, u i j k * l k)
 
+/-- Re-index a joint table as a vector on the product index type. -/
 def flatten {m n : Type} (x : Joint m n) : m × n → ℝ :=
   fun ij => x ij.1 ij.2
 
+/-- The Euclidean pairing of two joint tables after flattening. -/
 def pairing {m n : Type} [Fintype m] [Fintype n]
     (x y : Joint m n) : ℝ :=
   dotProduct (flatten x) (flatten y)
 
+/-- The mixed-constraint score of an action distribution against a loss vector. -/
 def score {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     (u : Payoff m n d) (w : Dist m) (p : Dist n) (l : Dist d) : ℝ :=
   pairing (outer w p) (-reducedLoss u l)
@@ -107,12 +123,14 @@ theorem pairing_shift_sub_pairing_eq_score
       score u w (marginal x) l := by
   sorry
 
+/-- Sum the approachability score over a finite action trajectory. -/
 def approachSum {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (w : Mixed m)
     (p : Fin T → Mixed n) (l : Fin T → Dist d) : ℝ :=
   ∑ t, score u w.1 (p t).1 (l t)
 
+/-- Sum the comparator-pairing differences over a finite joint trajectory. -/
 def regretSum {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (w : Mixed m)
@@ -128,23 +146,27 @@ theorem regretSum_eq_approachSum {m n d : Type}
     regretSum u w x l = approachSum u w (fun t => decode (x t)) l := by
   sorry
 
+/-- The supremal approachability objective over all mixed constraints. -/
 def approachLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (p : Fin T → Mixed n)
     (l : Fin T → Dist d) : ℝ :=
   sSup (Set.range fun w : Mixed m => approachSum u w p l)
 
+/-- The supremal regret objective against the translated improper comparator. -/
 def regretLoss {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     [Nonempty m] [Nonempty n]
     {T : ℕ} (u : Payoff m n d) (x : Fin T → JointMixed m n)
     (l : Fin T → Dist d) : ℝ :=
   sSup (Set.range fun w : Mixed m => regretSum u w x l)
 
+/-- Apply the anchored tensor lift at every round of a finite trajectory. -/
 def liftTrajectory {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n]
     (anchor : Mixed m) {T : ℕ} (p : Fin T → Mixed n) : Fin T → JointMixed m n :=
   fun t => lift anchor (p t)
 
+/-- Decode every round of a joint trajectory by its action marginal. -/
 def decodeTrajectory {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n]
     {T : ℕ} (x : Fin T → JointMixed m n) : Fin T → Mixed n :=
@@ -175,6 +197,8 @@ theorem regret_to_approach_exact {m n d : Type}
     approachLoss u (decodeTrajectory x) l = regretLoss u x l :=
   (regretLoss_eq_approachLoss u x l).symm
 
+/-- The two exact finite-horizon reductions for a supplied anchor, with explicit
+nonemptiness witnesses for both finite index types. -/
 def FiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : Prop :=
@@ -191,6 +215,7 @@ def shiftImproper {m n : Type} [Fintype m] [Fintype n]
   (Nonempty m ∧ Nonempty n) ∧
     ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
 
+/-- Every mixed constraint and joint action is sent outside the joint simplex. -/
 theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n] :
     shiftImproper (m := m) (n := n) := by
@@ -207,38 +232,45 @@ theorem finiteTensorTightReduction_of_anchor
 /-- A deterministic online strategy receives exactly its prior loss history. -/
 abbrev OnlineStrategy (A L : Type) := List L → A
 
+/-- Run a deterministic loss-history strategy on each prefix of a loss list. -/
 def runTrajectory {A L : Type} (alg : OnlineStrategy A L)
     (losses : List L) : Fin losses.length → A :=
   fun t => alg (losses.take t.1)
 
+/-- Regard a finite loss list as a function on its round indices. -/
 def lossTrajectory {L : Type} (losses : List L) : Fin losses.length → L :=
   fun t => losses.get t
 
+/-- Lift a loss-history strategy pointwise using the fixed constraint anchor. -/
 def liftStrategy {m n d : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n]
     (anchor : Mixed m) (alg : OnlineStrategy (Mixed n) (Dist d)) :
     OnlineStrategy (JointMixed m n) (Dist d) :=
   fun history => lift anchor (alg history)
 
+/-- Decode each joint action of a loss-history strategy by its marginal. -/
 def decodeStrategy {m n d : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n]
     (alg : OnlineStrategy (JointMixed m n) (Dist d)) :
     OnlineStrategy (Mixed n) (Dist d) :=
   fun history => decode (alg history)
 
+/-- The finite-horizon approachability objective induced by a causal strategy. -/
 def onlineApproachLoss {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (alg : OnlineStrategy (Mixed n) (Dist d))
     (losses : List (Dist d)) : ℝ :=
   approachLoss u (runTrajectory alg losses) (lossTrajectory losses)
 
+/-- The finite-horizon regret objective induced by a causal joint-action strategy. -/
 def onlineRegretLoss {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (alg : OnlineStrategy (JointMixed m n) (Dist d))
     (losses : List (Dist d)) : ℝ :=
   regretLoss u (runTrajectory alg losses) (lossTrajectory losses)
 
-/-- Tightness at the level of causal online strategies for the supplied anchor. -/
+/-- Exact causal-strategy loss preservation in both directions for the supplied
+anchor, with explicit witnesses that both finite index types are nonempty. -/
 def AlgorithmicFiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d)
@@ -249,6 +281,7 @@ def AlgorithmicFiniteTensorTightReduction {m n d : Type}
     ∀ alg losses,
       onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses)
 
+/-- Both causal strategy translations preserve every finite loss history for this anchor. -/
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u anchor := by

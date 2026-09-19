@@ -32,14 +32,19 @@ for key in ("question", "selected_result", "audience", "boundary"):
     assert isinstance(data["research_context"][key], str) and data["research_context"][key].strip()
 assert data["sources"]
 assert any(source["relationship"] == "formalizes" for source in data["sources"])
+assert any(
+    source["relationship"] == "formalizes" and source.get("location") == "Theorem 4"
+    for source in data["sources"]
+)
 assert data["related_formalizations"] == [{
     "id": "PALOMAR-2026-09-10-000003",
-    "relationship": "builds-on",
+    "relationship": "independent",
     "note": (
-        "A separate approved Palomar entry at the repository root formalizes "
-        "finite irreducibility obstructions. This nested project has an "
-        "independent Challenge, Solution, Comparator configuration, and intended "
-        "blank existing-id field; it is not a version update of that entry."
+        "A separate approved Palomar entry by the same maintainer in this "
+        "repository formalizes finite irreducibility obstructions. This project "
+        "has no proof dependency on it and is linked only as an independent "
+        "registry entry; it has a separate Challenge, Solution, and Comparator "
+        "configuration and is not a version update of that entry."
     ),
 }]
 assert data["automation"]["methods"]
@@ -50,6 +55,8 @@ assert "existing COLT 2025 theorem" in data["research_context"]["boundary"]
 scope = data["status"]["scope"]
 for assumption in ("[Nonempty m]", "[Nonempty n]"):
     assert assumption in scope
+assert "return" in scope and "witnesses" in scope
 assert "empty-index" in data["review"]["notes"]
+assert "output witnesses" in data["review"]["notes"]
 
 print("formalization metadata shape passed.")

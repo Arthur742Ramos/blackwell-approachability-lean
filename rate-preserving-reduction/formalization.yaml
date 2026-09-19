@@ -48,6 +48,7 @@ sources:
       ["Christoph Dann", "Yishay Mansour", "Mehryar Mohri", "Jon Schneider",
        "Balasubramanian Sivan"]
     id: "https://proceedings.mlr.press/v291/dann25a.html"
+    location: "Theorem 4"
     type: "paper"
     relationship: "formalizes"
     note: >-
@@ -67,12 +68,13 @@ sources:
     author_endorsement: "not-contacted"
 related_formalizations:
   - id: "PALOMAR-2026-09-10-000003"
-    relationship: "builds-on"
+    relationship: "independent"
     note: >-
-      A separate approved Palomar entry at the repository root formalizes
-      finite irreducibility obstructions. This nested project has an
-      independent Challenge, Solution, Comparator configuration, and intended
-      blank existing-id field; it is not a version update of that entry.
+      A separate approved Palomar entry by the same maintainer in this
+      repository formalizes finite irreducibility obstructions. This project
+      has no proof dependency on it and is linked only as an independent
+      registry entry; it has a separate Challenge, Solution, and Comparator
+      configuration and is not a version update of that entry.
 status:
   scope: >-
     Nine selected statements formalize the finite-simplex reduction. The
@@ -90,8 +92,9 @@ status:
     declarations preserve the supplied anchor in their conclusions, and both
     causal strategy translations preserve every finite loss sequence exactly.
     The objective, improperness, and reduction APIs require `[Nonempty m]` and
-    `[Nonempty n]`, excluding vacuous comparator and strategy claims over empty
-    simplexes.
+    `[Nonempty n]`; the reduction and improperness predicates also return
+    these nonemptiness witnesses in their propositions, excluding vacuous
+    comparator and strategy claims over empty simplexes.
     The package does not prove arbitrary-convex-set, randomized, complexity,
     or asymptotic rate claims.
   sorry_count: 0
@@ -133,8 +136,9 @@ review:
     have no proof placeholders. The prior automated review's empty-index
     finding is addressed by explicit nonemptiness assumptions on every central
     objective, improperness, trajectory-reduction, and strategy-reduction
-    declaration. Hosted Comparator verification and editorial review remain
-    separate states.
+    declaration, plus output witnesses in the headline reduction and
+    improperness predicates. Hosted Comparator verification and editorial
+    review remain separate states.
 alignment:
   namespace: "Blackwell.RateReduction.Palomar"
   statements:
