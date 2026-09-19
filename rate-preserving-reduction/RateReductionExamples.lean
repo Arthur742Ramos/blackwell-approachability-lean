@@ -38,7 +38,7 @@ example : AlgorithmicFiniteTensorTightReduction toyPayoff uniformTwo :=
 
 example (w : Mixed Two) (x : JointMixed Two Two) :
     ¬ jointSimplex (shift w.1 x.1) :=
-  shift_is_improper w x
+  shift_is_improper.2 w x
 
 example {T : ℕ} (p : Fin T → Mixed Two) (l : Fin T → Dist One) :
     regretLoss toyPayoff (liftTrajectory uniformTwo p) l = approachLoss toyPayoff p l := by

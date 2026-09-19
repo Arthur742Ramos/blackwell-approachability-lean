@@ -29,7 +29,9 @@ research_context:
     decoder. The formally selected construction proves proper typing of lift
     and decode, pointwise and finite-horizon exact loss identities, genuine
     improperness of the comparator, and exact preservation for both online
-    strategy translations using the same prior-loss histories.
+    strategy translations using the same prior-loss histories. The reduction
+    and improperness predicates explicitly return witnesses that both index
+    types are nonempty, in addition to requiring those typeclass assumptions.
   audience: >-
     Learning theorists and game theorists studying Blackwell approachability,
     regret transformations, and rate-preserving reductions, as well as Lean
@@ -74,8 +76,9 @@ related_formalizations:
 status:
   scope: >-
     Nine selected statements formalize the finite-simplex reduction. The
-    action and constraint index types are explicitly nonempty and their spaces
-    are probability simplexes; joint tensor
+    action and constraint index types are explicitly nonempty in both the
+    declaration assumptions and the reduction/improperness result predicates;
+    their spaces are probability simplexes; joint tensor
     actions are nonnegative tables of mass one; the action marginal and
     anchored rank-one lift are shown to preserve the required action spaces.
     The shift comparator adds a rank-one table with the same marginal, so its

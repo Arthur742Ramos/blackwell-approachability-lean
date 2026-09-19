@@ -157,14 +157,16 @@ theorem regret_to_approach_exact {m n d : Type}
 def FiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : Prop :=
-  (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
-    regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
-  ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
-    approachLoss u (decodeTrajectory x) l = regretLoss u x l
+  (Nonempty m ∧ Nonempty n) ∧
+    ((∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
+      regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
+    ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
+      approachLoss u (decodeTrajectory x) l = regretLoss u x l)
 
 def shiftImproper {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n] : Prop :=
-  ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
+  (Nonempty m ∧ Nonempty n) ∧
+    ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
 
 theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n] :
@@ -214,10 +216,11 @@ def AlgorithmicFiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d)
     (anchor : Mixed m) : Prop :=
-  (∀ alg losses,
-    onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
-  ∀ alg losses,
-    onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
+  (Nonempty m ∧ Nonempty n) ∧
+    ((∀ alg losses,
+      onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
+    ∀ alg losses,
+      onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses)
 
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]

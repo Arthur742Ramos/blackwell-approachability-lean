@@ -103,6 +103,54 @@ for source_path in (implementation, challenge, solution):
                     f"error: {declaration} in {source_path.name} is missing {assumption}"
                 )
 
+# These source-level helper theorems are the bridge from history-dependent
+# strategy maps to the trajectory-level reduction. Keep the same guards on
+# their signatures so the causal translation cannot silently become a
+# totalized construction over an empty action type.
+strategy_translation_declarations = (
+    "theorem runTrajectory_liftStrategy",
+    "theorem runTrajectory_decodeStrategy",
+    "theorem online_approach_to_regret_exact",
+    "theorem online_regret_to_approach_exact",
+)
+source = implementation.read_text(encoding="utf-8")
+for declaration in strategy_translation_declarations:
+    start = source.find(declaration)
+    if start < 0:
+        raise SystemExit(f"error: {implementation.name} is missing {declaration}")
+    signature_end = source.find(":=", start)
+    if signature_end < 0:
+        raise SystemExit(f"error: cannot parse signature for {declaration} in {implementation.name}")
+    signature = source[start:signature_end]
+    for assumption in ("[Nonempty m]", "[Nonempty n]"):
+        if assumption not in signature:
+            raise SystemExit(
+                f"error: {declaration} in {implementation.name} is missing {assumption}"
+            )
+
+# Keep nonemptiness in the proposition itself, not only as an implicit
+# typeclass parameter, so the headline claims are visibly non-vacuous.
+explicit_existence_declarations = (
+    "def FiniteTensorTightReduction",
+    "def AlgorithmicFiniteTensorTightReduction",
+    "def shiftImproper",
+)
+for source_path in (implementation, challenge, solution):
+    source = source_path.read_text(encoding="utf-8")
+    for declaration in explicit_existence_declarations:
+        start = source.find(declaration)
+        if start < 0:
+            raise SystemExit(f"error: {source_path.name} is missing {declaration}")
+        definition_end = source.find("\n\n", start)
+        if definition_end < 0:
+            definition_end = len(source)
+        definition = source[start:definition_end]
+        if "Nonempty m ∧ Nonempty n" not in definition:
+            raise SystemExit(
+                f"error: {declaration} in {source_path.name} does not return explicit "
+                "nonemptiness witnesses"
+            )
+
 for path in (implementation, solution, root / "RateReductionExamples.lean"):
     source = path.read_text(encoding="utf-8")
     if re.search(r"(^|[^A-Za-z0-9_])(sorry|admit|oops)([^A-Za-z0-9_]|$)", source):
@@ -110,4 +158,9 @@ for path in (implementation, solution, root / "RateReductionExamples.lean"):
     if re.search(r"^\s*(axiom|unsafe)\b", source, re.MULTILINE):
         raise SystemExit(f"error: axiom or unsafe declaration found in {path.relative_to(root)}")
 
-print(f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, nine holes, nine selected targets.")
+print(
+    f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
+    "nine holes, nine selected targets, and nonemptiness guards on public "
+    "definitions and reduction theorems, explicit witnesses in the reduction "
+    "and improperness predicates, and guards on all causal strategy translations."
+)

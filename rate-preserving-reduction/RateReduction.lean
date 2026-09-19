@@ -17,7 +17,9 @@ For each mixed constraint `w`, the comparator adds `w ⊗ marginal x`.  It is
 improper because it doubles the total mass of every joint-simplex action.  The
 central one-step identity proves that its regret increment is exactly the
 original constraint score.  Explicit lift and decode maps therefore preserve
-every finite-horizon objective in both directions.
+every finite-horizon objective in both directions.  The headline reduction
+and improperness predicates also return explicit witnesses that both finite
+index types are nonempty.
 
 The result deliberately formalizes the finite convex-hull/simplex regime and
 finite trajectory equality.  It does not claim the paper's general
@@ -253,36 +255,40 @@ theorem regret_to_approach_exact {m n d : Type}
   (regretLoss_eq_approachLoss u x l).symm
 
 /-- The two explicit trajectory translations that witness tightness for a
-supplied anchor. -/
+supplied anchor, together with explicit nonemptiness witnesses. -/
 def FiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : Prop :=
-  (∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
-    regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
-  ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
-    approachLoss u (decodeTrajectory x) l = regretLoss u x l
+  (Nonempty m ∧ Nonempty n) ∧
+    ((∀ {T : ℕ} (p : Fin T → Mixed n) (l : Fin T → Dist d),
+      regretLoss u (liftTrajectory anchor p) l = approachLoss u p l) ∧
+    ∀ {T : ℕ} (x : Fin T → JointMixed m n) (l : Fin T → Dist d),
+      approachLoss u (decodeTrajectory x) l = regretLoss u x l)
 
 /-- The finite simplex construction is a tight reduction for each anchor. -/
 theorem finiteTensorTightReduction_of_anchor
     {m n d : Type} [Fintype m] [Fintype n] [Fintype d]
     [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : FiniteTensorTightReduction u anchor := by
+  refine ⟨⟨inferInstance, inferInstance⟩, ?_⟩
   refine ⟨?_, ?_⟩
   · intro T p l
     exact approach_to_regret_exact u anchor p l
   · intro T x l
     exact regret_to_approach_exact u x l
 
-/-- The source comparator is genuinely improper on the joint simplex.  The
-nonemptiness assumptions exclude vacuous universal quantification over empty
-mixed-action spaces. -/
+/-- The source comparator is genuinely improper on the joint simplex.  Its
+predicate returns explicit nonemptiness witnesses, excluding vacuous universal
+quantification over empty mixed-action spaces. -/
 def shiftImproper {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n] : Prop :=
-  ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
+  (Nonempty m ∧ Nonempty n) ∧
+    ∀ w : Mixed m, ∀ x : JointMixed m n, ¬ jointSimplex (shift w.1 x.1)
 
 theorem shift_is_improper {m n : Type} [Fintype m] [Fintype n]
     [Nonempty m] [Nonempty n] :
     shiftImproper (m := m) (n := n) := by
+  refine ⟨⟨inferInstance, inferInstance⟩, ?_⟩
   intro w x
   exact shift_not_jointSimplex w.2 x.2
 
@@ -364,16 +370,18 @@ def AlgorithmicFiniteTensorTightReduction {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d)
     (anchor : Mixed m) : Prop :=
-  (∀ alg losses,
-    onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
-  ∀ alg losses,
-    onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses
+  (Nonempty m ∧ Nonempty n) ∧
+    ((∀ alg losses,
+      onlineRegretLoss u (liftStrategy anchor alg) losses = onlineApproachLoss u alg losses) ∧
+    ∀ alg losses,
+      onlineApproachLoss u (decodeStrategy alg) losses = onlineRegretLoss u alg losses)
 
 /-- The finite simplex construction is tight at the level of causal online
 strategies, not only preselected trajectories. -/
 theorem algorithmicFiniteTensorTightReduction_of_anchor {m n d : Type}
     [Fintype m] [Fintype n] [Fintype d] [Nonempty m] [Nonempty n]
     (u : Payoff m n d) (anchor : Mixed m) : AlgorithmicFiniteTensorTightReduction u anchor := by
+  refine ⟨⟨inferInstance, inferInstance⟩, ?_⟩
   refine ⟨?_, ?_⟩
   · intro alg losses
     exact online_approach_to_regret_exact u anchor alg losses

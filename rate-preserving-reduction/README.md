@@ -53,8 +53,11 @@ Its conclusion retains the supplied anchor, and gives both causal strategy maps
 for that exact chosen anchor in `Delta_m`. The finite-trajectory headline has
 the same anchor-preserving type. Both declarations explicitly require
 `[Nonempty m]` and `[Nonempty n]`; the objective and improperness definitions
-carry the same assumptions. Thus neither the strategy quantifiers nor the
-comparator-escape claim can be discharged through an empty mixed-action space.
+carry the same assumptions. In addition, both reduction predicates and the
+improperness predicate include `Nonempty m ∧ Nonempty n` in their propositions,
+so the exported claims carry explicit existence witnesses as well as the
+typeclass guards. Neither the strategy quantifiers nor the comparator-escape
+claim can be discharged through an empty mixed-action space.
 
 ## Why use the joint simplex?
 
