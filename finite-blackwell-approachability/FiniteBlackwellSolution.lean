@@ -160,7 +160,7 @@ theorem exists_projection {I : Type*} [Fintype I]
     exact h
 
 /-- A chosen nearest point in a nonempty closed convex target. -/
-noncomputable def closestPoint {I : Type*} [Fintype I]
+noncomputable abbrev closestPoint {I : Type*} [Fintype I]
     {C : Set (I → ℝ)}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C) :
     (I → ℝ) → (I → ℝ) :=
