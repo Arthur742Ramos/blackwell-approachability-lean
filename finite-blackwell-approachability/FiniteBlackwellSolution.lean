@@ -66,11 +66,27 @@ private theorem coordinateInner_eq_coreInner {I : Type*} [Fintype I]
   intro i hi
   simp only [Real.inner_apply]
 
+private theorem coordinateInner_sub_right {I : Type*} [Fintype I]
+    (x y z : I → ℝ) :
+    coordinateInner x (y - z) = coordinateInner x y - coordinateInner x z := by
+  rw [coordinateInner_eq_coreInner, coordinateInner_eq_coreInner,
+    coordinateInner_eq_coreInner, map_sub, inner_sub_right]
+
 private theorem coordinateNorm_eq_coreNorm {I : Type*} [Fintype I]
     (x : (I → ℝ)) :
     coordinateNorm x = ‖euclideanEquiv.symm x‖ := by
   simp [coordinateNorm, euclideanEquiv, PiLp.norm_eq_of_L2,
     Real.norm_eq_abs, sq_abs]
+
+private theorem coordinateNorm_sub_le {I : Type*} [Fintype I]
+    (x y : I → ℝ) :
+    coordinateNorm (x - y) ≤ coordinateNorm x + coordinateNorm y := by
+  calc
+    coordinateNorm (x - y) = ‖euclideanEquiv.symm x - euclideanEquiv.symm y‖ := by
+      rw [coordinateNorm_eq_coreNorm, map_sub]
+    _ ≤ ‖euclideanEquiv.symm x‖ + ‖euclideanEquiv.symm y‖ := norm_sub_le _ _
+    _ = coordinateNorm x + coordinateNorm y := by
+      rw [← coordinateNorm_eq_coreNorm, ← coordinateNorm_eq_coreNorm]
 
 private theorem coordinateDistance_eq_coreDist {I : Type*} [Fintype I]
     (x y : (I → ℝ)) :
@@ -164,38 +180,25 @@ noncomputable abbrev closestPoint {I : Type*} [Fintype I]
     {C : Set (I → ℝ)}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C) :
     (I → ℝ) → (I → ℝ) :=
-  fun y => euclideanEquiv
-    (Blackwell.FiniteApproachability.closestPoint
-      (coreTarget_nonempty hne) (coreTarget_isClosed hclosed) (coreTarget_convex hconvex)
-      (euclideanEquiv.symm y))
+  fun y => Classical.choose (exists_projection hne hclosed hconvex y)
 
-private theorem closestPoint_toCore {I : Type*} [Fintype I]
+lemma closestPoint_spec {I : Type*} [Fintype I]
     {C : Set (I → ℝ)}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
-    (y : EuclideanSpace ℝ I) :
-    closestPoint hne hclosed hconvex (euclideanEquiv y) =
-      euclideanEquiv (Blackwell.FiniteApproachability.closestPoint
-        (coreTarget_nonempty hne) (coreTarget_isClosed hclosed)
-        (coreTarget_convex hconvex) y) := by
-  change euclideanEquiv
-      (Blackwell.FiniteApproachability.closestPoint
-        (coreTarget_nonempty hne) (coreTarget_isClosed hclosed)
-        (coreTarget_convex hconvex)
-        (euclideanEquiv.symm (euclideanEquiv y))) = _
-  rw [euclideanEquiv.symm_apply_apply]
+    (y : (I → ℝ)) :
+    closestPoint hne hclosed hconvex y ∈ C ∧
+      coordinateDistance y (closestPoint hne hclosed hconvex y) = coordinateInfDist y C ∧
+      ∀ z ∈ C, coordinateInner (y - closestPoint hne hclosed hconvex y)
+        (z - closestPoint hne hclosed hconvex y) ≤ 0 := by
+  simpa [closestPoint] using
+    Classical.choose_spec (exists_projection hne hclosed hconvex y)
 
 /-- The chosen nearest point lies in the target. -/
 lemma closestPoint_mem {I : Type*} [Fintype I]
     {C : Set (I → ℝ)}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C)
-    (y : (I → ℝ)) : closestPoint hne hclosed hconvex y ∈ C := by
-  change euclideanEquiv
-    (Blackwell.FiniteApproachability.closestPoint
-      (coreTarget_nonempty hne) (coreTarget_isClosed hclosed) (coreTarget_convex hconvex)
-      (euclideanEquiv.symm y)) ∈ C
-  exact (Blackwell.FiniteApproachability.closestPoint_spec
-    (coreTarget_nonempty hne) (coreTarget_isClosed hclosed) (coreTarget_convex hconvex)
-    (euclideanEquiv.symm y)).1
+    (y : (I → ℝ)) : closestPoint hne hclosed hconvex y ∈ C :=
+  (closestPoint_spec hne hclosed hconvex y).1
 
 /-- Probability vectors on a finite action type. -/
 def simplex {α : Type*} [Fintype α] (p : α → ℝ) : Prop :=
@@ -219,6 +222,16 @@ def mixedExpectedPayoff {A B I : Type*} [Fintype A] [Fintype B] [Fintype I]
     (p : A → ℝ) (q : B → ℝ) (g : A → B → (I → ℝ)) :
     (I → ℝ) :=
   ∑ b, q b • expectedPayoff p g b
+
+private theorem mixedExpectedPayoff_pointMass {A B I : Type*}
+    [Fintype A] [Fintype B] [Fintype I]
+    (p : A → ℝ) (g : A → B → (I → ℝ)) (b : B) :
+    mixedExpectedPayoff p (Blackwell.FiniteApproachability.pointMass b) g =
+      expectedPayoff p g b := by
+  simpa [mixedExpectedPayoff, expectedPayoff,
+    Blackwell.FiniteApproachability.mixedExpectedPayoff,
+    Blackwell.FiniteApproachability.expectedPayoff] using
+    (Blackwell.FiniteApproachability.mixedExpectedPayoff_pointMass p g b)
 
 private theorem map_expectedPayoff {A B I : Type*} [Fintype A] [Fintype I]
     (p : A → ℝ) (g : A → B → (I → ℝ)) (b : B) :
@@ -399,33 +412,70 @@ theorem finite_game_approachability_bound
   let gCore := fun a b => euclideanEquiv.symm (g a b)
   let strategyCore := fun y => strategy (euclideanEquiv y)
   let CCore := coreTarget C
+  let projCore : EuclideanSpace ℝ I → EuclideanSpace ℝ I := fun y =>
+    euclideanEquiv.symm (closestPoint hne hclosed hconvex (euclideanEquiv y))
   have hneCore : CCore.Nonempty := coreTarget_nonempty hne
   have hclosedCore : IsClosed CCore := coreTarget_isClosed hclosed
-  have hconvexCore : Convex ℝ CCore := coreTarget_convex hconvex
-  have hforceCore : ∀ y : EuclideanSpace ℝ I, ∀ b : B,
-      inner ℝ (y - Blackwell.FiniteApproachability.closestPoint
-        hneCore hclosedCore hconvexCore y)
-        (Blackwell.FiniteApproachability.expectedPayoff (strategyCore y) gCore b -
-          Blackwell.FiniteApproachability.closestPoint hneCore hclosedCore hconvexCore y) ≤ 0 := by
-    intro y b
-    have h := hforce (euclideanEquiv y) b
-    rw [closestPoint_toCore hne hclosed hconvex y] at h
-    simpa only [coordinateInner_eq_coreInner, map_sub,
-      euclideanEquiv.symm_apply_apply, map_expectedPayoff] using h
-  have hboundCore : ∀ y : EuclideanSpace ℝ I, ∀ b : B,
-      ‖Blackwell.FiniteApproachability.expectedPayoff (strategyCore y) gCore b -
-        Blackwell.FiniteApproachability.closestPoint hneCore hclosedCore hconvexCore y‖ ≤ Bnd := by
-    intro y b
-    have h := hbound (euclideanEquiv y) b
-    rw [closestPoint_toCore hne hclosed hconvex y] at h
-    simpa only [coordinateNorm_eq_coreNorm, map_sub,
-      euclideanEquiv.symm_apply_apply, map_expectedPayoff] using h
+  have hproj : ∀ y : EuclideanSpace ℝ I, projCore y ∈ CCore := by
+    intro y
+    change euclideanEquiv (euclideanEquiv.symm
+      (closestPoint hne hclosed hconvex (euclideanEquiv y))) ∈ C
+    rw [euclideanEquiv.apply_symm_apply]
+    exact (closestPoint_spec hne hclosed hconvex (euclideanEquiv y)).1
+  have hmin : ∀ y : EuclideanSpace ℝ I, ∀ z ∈ CCore,
+      ‖y - projCore y‖ ≤ ‖y - z‖ := by
+    intro y z hz
+    have hz' : euclideanEquiv z ∈ C := hz
+    have hspec := closestPoint_spec hne hclosed hconvex (euclideanEquiv y)
+    have hcoord :
+        coordinateDistance (euclideanEquiv y)
+          (closestPoint hne hclosed hconvex (euclideanEquiv y)) ≤
+        coordinateDistance (euclideanEquiv y) (euclideanEquiv z) := by
+      calc
+        _ = coordinateInfDist (euclideanEquiv y) C := hspec.2.1
+        _ = Metric.infDist y CCore := coordinateInfDist_eq_coreInfDist _ _
+        _ ≤ dist y z := Metric.infDist_le_dist_of_mem hz
+        _ = coordinateDistance (euclideanEquiv y) (euclideanEquiv z) := by
+          rw [coordinateDistance_eq_coreDist]
+          simp
+    simpa [projCore, coordinateDistance_eq_coreDist, dist_eq_norm] using hcoord
+  let xCore : ℕ → EuclideanSpace ℝ I := fun t =>
+    Blackwell.FiniteApproachability.expectedPayoff
+      (strategyCore (Blackwell.FiniteApproachability.gameAverage
+        gCore strategyCore opponent t)) gCore (opponent t)
+  let avgCore : ℕ → EuclideanSpace ℝ I :=
+    Blackwell.FiniteApproachability.gameAverage gCore strategyCore opponent
+  have hforceCore : ∀ t : ℕ,
+      inner ℝ (avgCore t - projCore (avgCore t))
+        (xCore t - projCore (avgCore t)) ≤ 0 := by
+    intro t
+    have h := hforce (euclideanEquiv (avgCore t)) (opponent t)
+    simpa only [xCore, avgCore, projCore, strategyCore, gCore,
+      coordinateInner_eq_coreInner, map_sub, euclideanEquiv.symm_apply_apply,
+      map_expectedPayoff] using h
+  have hboundCore : ∀ t : ℕ,
+      ‖xCore t - projCore (avgCore t)‖ ≤ Bnd := by
+    intro t
+    have h := hbound (euclideanEquiv (avgCore t)) (opponent t)
+    simpa only [xCore, avgCore, projCore, strategyCore, gCore,
+      coordinateNorm_eq_coreNorm, map_sub, euclideanEquiv.symm_apply_apply,
+      map_expectedPayoff] using h
+  have havgCore : ∀ t : ℕ,
+      ((t : ℝ) + 1) • avgCore (t + 1) = (t : ℝ) • avgCore t + xCore t := by
+    intro t
+    simpa [avgCore, xCore, Blackwell.FiniteApproachability.gameAverage,
+      Blackwell.FiniteApproachability.expectedPayoff] using
+      (Approachability.adaptiveAverage_step
+        (fun s y => Blackwell.FiniteApproachability.expectedPayoff
+          (strategyCore y) gCore (opponent s)) t)
   intro T hT
-  have hcore := Blackwell.FiniteApproachability.finite_game_approachability_bound
-    gCore strategyCore hneCore hclosedCore hconvexCore Bnd
-    hforceCore hboundCore hBnd opponent (T := T) hT
+  have hcore := Approachability.blackwell_approachability_bound
+    xCore avgCore (fun t => projCore (avgCore t)) Bnd
+    (fun t => hproj (avgCore t))
+    (fun t z hz => hmin (avgCore t) z hz)
+    havgCore hforceCore hboundCore hBnd (T := T) hT
   rw [coordinateInfDist_eq_coreInfDist, gameAverage_toCore]
-  exact hcore
+  simpa [avgCore, strategyCore, gCore] using hcore
 
 /--
 From mixed Blackwell feasibility, bounded payoffs, and a bounded nonempty
@@ -446,55 +496,66 @@ theorem finite_game_approachability_of_mixedBlackwell
       ∀ opponent : ℕ → B, ∀ {T : ℕ}, 0 < T →
       coordinateInfDist (gameAverage g strategy opponent T) C ≤
         (G + R) / Real.sqrt T := by
-  let gCore := fun a b => euclideanEquiv.symm (g a b)
-  let CCore := coreTarget C
-  have hneCore : CCore.Nonempty := coreTarget_nonempty hne
-  have hclosedCore : IsClosed CCore := coreTarget_isClosed hclosed
-  have hconvexCore : Convex ℝ CCore := coreTarget_convex hconvex
-  have hpayCore : ∀ a b, ‖gCore a b‖ ≤ G := by
-    intro a b
-    simpa [gCore, coordinateNorm_eq_coreNorm] using hpay a b
-  have hradiusCore : ∀ z ∈ CCore, ‖z‖ ≤ R := by
-    intro z hz
-    have hz' : euclideanEquiv z ∈ C := hz
-    simpa [coordinateNorm_eq_coreNorm] using hradius (euclideanEquiv z) hz'
-  have hblackwellCore :
-      Blackwell.FiniteApproachability.mixedBlackwellCondition
-        gCore hneCore hclosedCore hconvexCore := by
-    intro y q hq
-    obtain ⟨p, hp, hscore⟩ := hblackwell (euclideanEquiv y) q (by
+  have hresponse : ∀ y : (I → ℝ),
+      ∃ p : A → ℝ, p ∈ simplexSet A ∧
+        ∀ b : B,
+          coordinateInner (y - closestPoint hne hclosed hconvex y)
+            (expectedPayoff p g b - closestPoint hne hclosed hconvex y) ≤ 0 ∧
+          coordinateNorm (expectedPayoff p g b -
+            closestPoint hne hclosed hconvex y) ≤ G + R := by
+    intro y
+    let z := closestPoint hne hclosed hconvex y
+    have hfeasible : ∀ q : B → ℝ, q ∈ simplexSet B →
+        ∃ p : A → ℝ, p ∈ simplexSet A ∧
+          normalScore g y z p q ≤ coordinateInner (y - z) z := by
+      simpa [z] using hblackwell y
+    obtain ⟨p, hp, huniform⟩ := exists_uniform_mixed_response g y z hfeasible
+    have hpSimplex : simplex p := hp
+    refine ⟨p, hp, ?_⟩
+    intro b
+    have hq :
+        Blackwell.FiniteApproachability.pointMass b ∈ simplexSet B := by
       simpa [simplexSet, simplex,
         Blackwell.FiniteApproachability.simplexSet,
-        Blackwell.FiniteApproachability.simplex] using hq)
-    refine ⟨p, ?_, ?_⟩
-    · simpa [simplexSet, simplex,
-        Blackwell.FiniteApproachability.simplexSet,
-        Blackwell.FiniteApproachability.simplex] using hp
-    · rw [closestPoint_toCore hne hclosed hconvex y] at hscore
-      simpa only [normalScore_toCore, coordinateInner_eq_coreInner, map_sub,
-        euclideanEquiv.symm_apply_apply] using hscore
-  obtain ⟨strategyCore, hstrategyCore⟩ :=
-    Blackwell.FiniteApproachability.finite_game_approachability_of_mixedBlackwell
-      gCore hneCore hclosedCore hconvexCore G R hG hR hpayCore hradiusCore hblackwellCore
-  let strategy : (I → ℝ) → {p : A → ℝ // simplex p} :=
-    fun y => strategyCore (euclideanEquiv.symm y)
+        Blackwell.FiniteApproachability.simplex] using
+        (Blackwell.FiniteApproachability.pointMass_mem_simplexSet b)
+    have hscore := huniform
+      (Blackwell.FiniteApproachability.pointMass b) hq
+    have hscore' : coordinateInner (y - z) (expectedPayoff p g b) ≤
+        coordinateInner (y - z) z := by
+      simpa [normalScore, mixedExpectedPayoff_pointMass] using hscore
+    have hforce : coordinateInner (y - z)
+        (expectedPayoff p g b - z) ≤ 0 := by
+      rw [coordinateInner_sub_right]
+      linarith
+    have hz : z ∈ C := closestPoint_mem hne hclosed hconvex y
+    have hpayCore : ∀ a : A,
+        ‖euclideanEquiv.symm (g a b)‖ ≤ G := by
+      intro a
+      simpa [coordinateNorm_eq_coreNorm] using hpay a b
+    have hpayCore' := Blackwell.FiniteApproachability.expectedPayoff_norm_le
+      p hpSimplex (fun a b => euclideanEquiv.symm (g a b)) b G hpayCore
+    have hpayCoord : coordinateNorm (expectedPayoff p g b) ≤ G := by
+      rw [coordinateNorm_eq_coreNorm, map_expectedPayoff]
+      exact hpayCore'
+    have hnorm : coordinateNorm (expectedPayoff p g b - z) ≤ G + R := by
+      calc
+        coordinateNorm (expectedPayoff p g b - z) ≤
+            coordinateNorm (expectedPayoff p g b) + coordinateNorm z :=
+          coordinateNorm_sub_le _ _
+        _ ≤ G + R := add_le_add hpayCoord (hradius z hz)
+    simpa [z] using And.intro hforce hnorm
+  let strategy : (I → ℝ) → {p : A → ℝ // simplex p} := fun y =>
+    ⟨Classical.choose (hresponse y), by
+      simpa [simplexSet, simplex] using (Classical.choose_spec (hresponse y)).1⟩
   refine ⟨strategy, ?_⟩
   intro opponent T hT
-  have hcore := hstrategyCore opponent (T := T) hT
-  rw [coordinateInfDist_eq_coreInfDist, gameAverage_toCore]
-  have hstrategy' :
-      (fun y : EuclideanSpace ℝ I =>
-        strategyCore (euclideanEquiv.symm (euclideanEquiv y))) = strategyCore := by
-    funext y
-    exact congrArg strategyCore (euclideanEquiv.symm_apply_apply y)
-  change Metric.infDist
-    (Blackwell.FiniteApproachability.gameAverage
-      (fun a b => euclideanEquiv.symm (g a b))
-      (fun y : EuclideanSpace ℝ I =>
-        strategyCore (euclideanEquiv.symm (euclideanEquiv y))) opponent T)
-    (coreTarget C) ≤ (G + R) / Real.sqrt T
-  rw [hstrategy']
-  exact hcore
+  apply finite_game_approachability_bound g strategy hne hclosed hconvex
+    (G + R) ?_ ?_ (add_nonneg hG hR) opponent hT
+  · intro y b
+    exact ((Classical.choose_spec (hresponse y)).2 b).1
+  · intro y b
+    exact ((Classical.choose_spec (hresponse y)).2 b).2
 
 end
 
