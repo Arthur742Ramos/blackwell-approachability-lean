@@ -1,0 +1,6 @@
+import FiniteBlackwellSolution
+
+#print axioms Blackwell.FiniteApproachability.Palomar.exists_uniform_mixed_response
+#print axioms Blackwell.FiniteApproachability.Palomar.exists_projection
+#print axioms Blackwell.FiniteApproachability.Palomar.finite_game_approachability_bound
+#print axioms Blackwell.FiniteApproachability.Palomar.finite_game_approachability_of_mixedBlackwell

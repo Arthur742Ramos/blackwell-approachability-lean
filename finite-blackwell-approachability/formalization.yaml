@@ -1,0 +1,165 @@
+version: "v0.4"
+project:
+  name: "Finite Blackwell approachability from mixed minimax feasibility in Lean"
+  description: >-
+    A standalone Lean 4 formalization for nonempty finite player, opponent,
+    and payoff-coordinate types. Sion minimax converts mixed-opponent
+    feasibility at every state into one mixed player response that works
+    uniformly against all opponent mixtures. With bounded vector payoffs and
+    a bounded nonempty closed convex target, the resulting causal mixed
+    strategy has expected-average distance at most (G + R) / sqrt(T) after
+    every positive finite horizon T.
+  authors: ["Arthur Freitas Ramos"]
+  responsible_maintainers: ["Arthur Freitas Ramos"]
+  license: "BSD-3-Clause"
+classification:
+  arxiv: ["cs.GT", "cs.LG", "cs.LO"]
+  msc2020: ["91A26", "03B35"]
+research_context:
+  question: >-
+    In a finite vector-payoff game, can pointwise feasibility against each
+    mixed opponent action be converted into one causal mixed strategy with
+    an explicit finite-time approachability rate?
+  selected_result: >-
+    For nonempty finite player, opponent, and coordinate types, take the
+    payoff space to be the real coordinate-function space I → ℝ, equipped
+    with its explicit finite-coordinate Euclidean dot product, norm, and
+    distance, and the target to be nonempty,
+    closed, and convex. A scalar Blackwell half-space condition stated
+    against every mixed opponent action yields one player mixture that works
+    against every opponent mixture. If every stage payoff has norm at most G
+    and every target point has norm at most R, the induced causal mixed
+    strategy keeps the distance of the expected running payoff from the
+    target at most (G + R) / sqrt(T) for all positive horizons and every pure
+    opponent-action sequence. The public scalar product is stated as a
+    finite coordinate sum. The Solution transports the coordinate formulas
+    to Mathlib's EuclideanSpace ℝ I for the projection, minimax, and rate
+    arguments; the selected declarations keep the function-space types
+    explicit.
+  audience: >-
+    Researchers in game theory and online learning studying approachability
+    conditions and finite-time guarantees, and Lean users formalizing finite
+    minimax arguments in Euclidean payoff spaces.
+  boundary: >-
+    This is a finite-action quantitative result in an expected-payoff model.
+    It does not claim a pathwise or high-probability bound for sampled
+    realized play, an adaptive-observation protocol for the opponent, the
+    general topological-vector-space theorem, an executable strategy, or new
+    mathematical priority. The package is a standalone formalization and
+    coordinate-level adaptation of known Blackwell and Sion results. Its
+    local finite-time rate-certificate support overlaps with the parent
+    repository's BlackwellApproachability module; this is disclosed below.
+sources:
+  - title: "An analog of the minimax theorem for vector payoffs"
+    authors: ["David Blackwell"]
+    id: "https://doi.org/10.2140/pjm.1956.6.1"
+    type: "paper"
+    relationship: "formalizes"
+    note: >-
+      Formalizes a finite-action quantitative strategy consequence of the
+      mixed-action half-space feasibility condition in Blackwell's
+      approachability framework. Sion minimax supplies a uniform response;
+      the finite-time rate is proved from an explicit Euclidean recurrence.
+    author_endorsement: "not-contacted"
+  - title: "On general minimax theorems"
+    authors: ["Maurice Sion"]
+    id: "https://doi.org/10.2140/pjm.1958.8.171"
+    type: "paper"
+    relationship: "background"
+    note: >-
+      Mathlib's Sion saddle-point theorem is used to pass from pointwise
+      feasibility on the finite probability simplexes to one uniform mixed
+      response.
+    author_endorsement: "not-contacted"
+  - title: "Approachability, fast and slow"
+    authors: ["Vianney Perchet", "Shie Mannor"]
+    id: "https://proceedings.mlr.press/v30/perchet13.html"
+    type: "paper"
+    relationship: "background"
+    note: >-
+      Relevant finite-time approachability-rate context. The formalization
+      proves its stated expected-average bound from the local recurrence and
+      does not claim priority for the rate.
+    author_endorsement: "not-contacted"
+related_formalizations:
+  - id: "PALOMAR-2026-09-10-000003"
+    relationship: "independent"
+    note: >-
+      A separate Palomar entry by the same maintainer formalizes finite
+      irreducibility obstructions in the parent repository. This package has
+      a distinct Challenge, Solution, and selected result; it neither updates
+      nor duplicates that entry's selected statements. Its standalone
+      rate-certificate support is separately disclosed as overlapping with the
+      parent repository's BlackwellApproachability module.
+status:
+  scope: >-
+    Four selected theorem statements formalize (1) existence and the
+    normal-cone property of Euclidean projection, (2) the finite-simplex Sion
+    response step, (3) the response-oracle 1/sqrt(T) rate, and (4) the
+    end-to-end finite-game theorem with explicit (G + R)/sqrt(T) bound. The
+    three game-level statements explicitly assume [Nonempty A],
+    [Nonempty B], and [Nonempty I], so neither simplex feasibility nor the
+    payoff geometry collapses on empty types. The public payoff space is
+    I → ℝ, with coordinate dot product, norm, distance, and set-infimum
+    distance defined explicitly; the Solution proves equivalence with
+    Mathlib's EuclideanSpace ℝ I for its internal arguments. The target is
+    nonempty, closed, convex, and bounded by R, and the payoff bound G is
+    explicit. The guarantee is for the expected running payoff against each
+    pure opponent sequence. A checked matching-pennies example instantiates
+    the headline theorem. The finite-time recurrence support is included
+    locally to keep the package standalone and is identified as overlap with
+    the parent repository's existing module.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  challenge_holes: 4
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+automation:
+  methods:
+    - method: "agent"
+      models: ["GPT-5 Codex"]
+      framework: "Lean 4 and Mathlib"
+      tool_setup: >-
+        Pinned Lean and Mathlib; Mathlib-only Challenge; selected theorem axiom
+        audit; pinned Comparator and NanoDa validation; hosted readiness CI.
+      prompting_notes: >-
+        Assembled as a standalone package with finite-action coordinate
+        statements, explicit nonempty guards, and an expected-average rate
+        boundary; no mathematical priority claim is made.
+  notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
+fidelity:
+  divergences: >-
+    The formalized sufficient condition is finite-action and uses a
+    finite-dimensional Euclidean payoff space, a bounded nonempty closed
+    convex target, and bounded pure stage payoffs. The strategy chooses a
+    mixed action as a function of the expected running average. Its conclusion
+    bounds the expected average payoff; no concentration theorem is included
+    to convert this into a pathwise or high-probability statement for
+    realized play.
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: >-
+    No independent human or Palomar editorial approval is claimed. The four
+    Challenge holes are statements only; the implementation, Solution, and
+    examples contain no proof placeholders or user axioms. The support rate
+    certificate is duplicated locally for independent package builds and its
+    overlap with the repository's existing approachability module is disclosed.
+alignment:
+  namespace: "Blackwell.FiniteApproachability.Palomar"
+  statements:
+    - source: "Euclidean projection exists with its normal-cone inequality"
+      lean: "Blackwell.FiniteApproachability.Palomar.exists_projection"
+      module: "FiniteBlackwellSolution.lean"
+      status: "proved"
+    - source: "Mixed feasibility implies one uniform response by Sion minimax"
+      lean: "Blackwell.FiniteApproachability.Palomar.exists_uniform_mixed_response"
+      module: "FiniteBlackwellSolution.lean"
+      status: "proved"
+    - source: "A bounded forcing response gives the finite-time approachability rate"
+      lean: "Blackwell.FiniteApproachability.Palomar.finite_game_approachability_bound"
+      module: "FiniteBlackwellSolution.lean"
+      status: "proved"
+    - source: "Mixed Blackwell feasibility yields a causal finite-game strategy"
+      lean: "Blackwell.FiniteApproachability.Palomar.finite_game_approachability_of_mixedBlackwell"
+      module: "FiniteBlackwellSolution.lean"
+      status: "proved"

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it and its source paper."
+title: "Finite Blackwell Approachability from Mixed Minimax Feasibility in Lean"
+type: software
+version: "0.1.0"
+authors:
+  - family-names: Ramos
+    given-names: Arthur Freitas
+repository-code: "https://github.com/Arthur742Ramos/blackwell-approachability-lean"
+license: BSD-3-Clause
+keywords:
+  - Lean
+  - Mathlib
+  - Blackwell approachability
+  - minimax
+  - finite games

@@ -1,0 +1,16 @@
+{
+  "challenge_module": "FiniteBlackwellChallenge",
+  "solution_module": "FiniteBlackwellSolution",
+  "theorem_names": [
+    "Blackwell.FiniteApproachability.Palomar.exists_projection",
+    "Blackwell.FiniteApproachability.Palomar.exists_uniform_mixed_response",
+    "Blackwell.FiniteApproachability.Palomar.finite_game_approachability_bound",
+    "Blackwell.FiniteApproachability.Palomar.finite_game_approachability_of_mixedBlackwell"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}
