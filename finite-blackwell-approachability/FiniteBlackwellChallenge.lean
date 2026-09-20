@@ -86,7 +86,7 @@ def normalScore {A B I : Type*} [Fintype A] [Fintype B] [Fintype I]
   coordinateInner (y - z) (mixedExpectedPayoff p q g)
 
 /-- Every mixed opponent action admits a feasible mixed response. -/
-def mixedBlackwellCondition {A B I : Type*} [Fintype A] [Fintype B]
+abbrev mixedBlackwellCondition {A B I : Type*} [Fintype A] [Fintype B]
     [Fintype I] [Nonempty A] [Nonempty B] [Nonempty I]
     (g : A → B → (I → ℝ)) {C : Set (I → ℝ)}
     (hne : C.Nonempty) (hclosed : IsClosed C) (hconvex : Convex ℝ C) : Prop :=

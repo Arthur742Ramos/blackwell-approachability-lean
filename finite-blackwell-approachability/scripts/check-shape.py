@@ -85,7 +85,7 @@ for path, source in ((challenge_path, challenge), (solution_path, solution)):
         raise SystemExit(
             f"error: {path.name} does not use raw finite-coordinate vectors"
         )
-    start = source.find("def mixedBlackwellCondition")
+    start = source.find("abbrev mixedBlackwellCondition")
     end = source.find(":=", start)
     signature = source[start:end]
     for assumption in ("[Nonempty A]", "[Nonempty B]", "[Nonempty I]"):
