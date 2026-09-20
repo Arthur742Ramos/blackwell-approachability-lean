@@ -25,7 +25,7 @@ assert 'version := v!"0.2.0"' in (root / "lakefile.lean").read_text(encoding="ut
 selected = json.loads((root / "comparator.json").read_text(encoding="utf-8"))["theorem_names"]
 aligned = [item["lean"] for item in data["alignment"]["statements"]]
 assert aligned == selected
-assert len(selected) == 11
+assert len(selected) == 12
 assert data["classification"]["arxiv"]
 assert data["classification"]["msc2020"]
 for key in ("question", "selected_result", "audience", "boundary"):
@@ -49,7 +49,7 @@ assert data["related_formalizations"] == [{
 }]
 assert data["automation"]["methods"]
 assert isinstance(data["review"]["status"], str)
-assert "Eleven selected statements" in data["status"]["scope"]
+assert "Twelve selected statements" in data["status"]["scope"]
 assert "nonempty finite convex-hull/simplex specialization" in data["research_context"]["boundary"]
 assert "existing COLT 2025 theorem" in data["research_context"]["boundary"]
 scope = data["status"]["scope"]

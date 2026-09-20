@@ -149,6 +149,95 @@ theorem jointSimplex_eq_finiteTensorCombination {m n : Type} [Fintype m] [Fintyp
           rw [← Fintype.sum_prod_type']
         _ = 1 := hsum
 
+private lemma pointMass_simplex {α : Type} [Fintype α] (a : α) :
+    simplex (pointMass a) := by
+  classical
+  constructor
+  · intro b
+    by_cases h : b = a <;> simp [pointMass, h]
+  · simp [pointMass]
+
+private noncomputable def conditionalRow {m n : Type} [Fintype n] [Nonempty n]
+    (x : Joint m n) (i : m) : Dist n := by
+  classical
+  exact if (∑ j, x i j) = 0 then pointMass (Classical.choice ‹Nonempty n›)
+    else fun j => x i j / ∑ k, x i k
+
+private lemma conditionalRow_simplex {m n : Type} [Fintype m] [Fintype n] [Nonempty n]
+    {x : Joint m n} (hx : jointSimplex x) (i : m) :
+    simplex (conditionalRow x i) := by
+  classical
+  have htotal_nonneg : 0 ≤ ∑ j, x i j :=
+    Finset.sum_nonneg fun j _ => hx.1 i j
+  by_cases htotal : (∑ j, x i j) = 0
+  · simpa [conditionalRow, htotal] using
+      pointMass_simplex (Classical.choice ‹Nonempty n›)
+  ·
+    have htotal_pos : 0 < ∑ j, x i j :=
+      lt_of_le_of_ne htotal_nonneg (Ne.symm htotal)
+    constructor
+    · intro j
+      simpa [conditionalRow, htotal] using
+        (div_nonneg (hx.1 i j) htotal_pos.le)
+    · simp only [conditionalRow, if_neg htotal]
+      rw [← Finset.sum_div]
+      exact div_self htotal
+
+/-- A joint table expressed as a convex mixture of one rank-one tensor per row. -/
+def FiniteRowRankOneCombination {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  ∃ weights : Dist m, ∃ actions : m → Mixed n,
+    (∀ i, 0 ≤ weights i) ∧
+    (∑ i, weights i) = 1 ∧
+    x = ∑ i, weights i • outer (pointMass i) (actions i).1
+
+/-- Every joint-simplex table is a mixture of at most one rank-one tensor per constraint. -/
+theorem jointSimplex_eq_finiteRowRankOneCombination {m n : Type}
+    [Fintype m] [Fintype n] [Nonempty m] [Nonempty n] :
+    {x : Joint m n | jointSimplex x} = {x | FiniteRowRankOneCombination x} := by
+  classical
+  ext x
+  constructor
+  · intro hx
+    let weights : Dist m := fun i => ∑ j, x i j
+    let actions : m → Mixed n := fun i =>
+      ⟨conditionalRow x i, conditionalRow_simplex hx i⟩
+    refine ⟨weights, actions, ?_, ?_, ?_⟩
+    · intro i
+      exact Finset.sum_nonneg fun j _ => hx.1 i j
+    · simpa [weights] using hx.2
+    · ext i j
+      simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, outer]
+      by_cases htotal : (∑ k, x i k) = 0
+      · have hzero : x i j = 0 := by
+          have hle : x i j ≤ ∑ k, x i k :=
+            Finset.single_le_sum (fun k _ => hx.1 i k) (Finset.mem_univ j)
+          rw [htotal] at hle
+          linarith [hx.1 i j]
+        simp [weights, actions, pointMass, conditionalRow, htotal, hzero]
+      · simp [weights, actions, pointMass, conditionalRow, htotal]
+        field_simp [htotal]
+  · rintro ⟨weights, actions, hweights, hsum, rfl⟩
+    constructor
+    · intro i j
+      simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+      exact Finset.sum_nonneg fun k _ =>
+        mul_nonneg (hweights k)
+          ((outer_jointSimplex (pointMass_simplex k) (actions k).2).1 i j)
+    · simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, outer]
+      have hrow : ∀ k, ∑ j, (actions k).1 j = 1 := fun k => (actions k).2.2
+      have hcollapse (i : m) (j : n) :
+          (∑ k, weights k * (pointMass k i * (actions k).1 j)) =
+            weights i * (actions i).1 j := by
+        simp [pointMass]
+      calc
+        (∑ i, ∑ j, ∑ k, weights k * (pointMass k i * (actions k).1 j)) =
+            ∑ i, ∑ j, weights i * (actions i).1 j := by
+          simp_rw [hcollapse]
+        _ = ∑ i, weights i := by
+          simp_rw [← Finset.mul_sum, hrow, mul_one]
+        _ = 1 := hsum
+
 lemma marginal_outer {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) :
     marginal (outer w p) = p := by

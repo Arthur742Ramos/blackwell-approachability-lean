@@ -9,6 +9,8 @@ project:
     action marginal, proves that comparator escapes the action set, and proves
     exact finite-horizon equality between approachability loss and improper
     phi-regret under explicit causal strategy translations in both directions.
+    It also proves that every joint action is a mixture of at most one
+    rank-one tensor per constraint index.
   authors:
     - "Arthur Freitas Ramos"
     - "Ruy Jose Guerra Barretto de Queiroz"
@@ -27,9 +29,12 @@ research_context:
     For nonempty finite simplex actions and a nonempty finite convex hull of
     bilinear constraints, coordinate vertices are identified with rank-one
     tensors of point masses, and every joint-simplex table is characterized as
-    a finite convex combination of those vertices. The canonical marginal
-    decoder and anchored lift are then used to formalize the source comparator,
-    its escape from the action space, pointwise and finite-horizon exact loss
+    a finite convex combination of those vertices. More strongly, each table
+    is a convex mixture of at most |m| rank-one terms, one per constraint row;
+    positive rows use normalized conditional actions and zero rows contribute
+    zero. The canonical marginal decoder and anchored lift are then used to
+    formalize the source comparator, its escape from the action space,
+    pointwise and finite-horizon exact loss
     identities, and exact preservation under both causal online strategy
     translations. The reduction and improperness predicates explicitly return
     witnesses that both index types are nonempty, in addition to requiring
@@ -79,12 +84,13 @@ related_formalizations:
       configuration and is not a version update of that entry.
 status:
   scope: >-
-    Eleven selected statements formalize the finite-simplex reduction. The
+    Twelve selected statements formalize the finite-simplex reduction. The
     action and constraint index types are explicitly nonempty in both the
     declaration assumptions and the reduction/improperness result predicates;
     their spaces are probability simplexes; joint tensor
-    actions are nonnegative tables of mass one; the action marginal and
-    anchored rank-one lift are shown to preserve the required action spaces.
+    actions are nonnegative tables of mass one and admit row-wise rank-one
+    decompositions with at most one term per constraint; the action marginal
+    and anchored rank-one lift preserve the required action spaces.
     The shift comparator adds a rank-one table with the same marginal, so its
     total mass is two and it is improper. For every coordinate loss, the
     source pairing difference B(x,l)-B(shift(w,x),l) equals the original
@@ -132,7 +138,7 @@ review:
   status: "self-assessed"
   reviewers: []
   notes: >-
-    No independent human or Palomar editorial approval is claimed. The eleven
+    No independent human or Palomar editorial approval is claimed. The twelve
     Challenge holes occur only in the independent statement surface and are
     excluded from status.sorry_count; implementation, Solution, and examples
     have no proof placeholders. The prior automated review's empty-index
@@ -158,6 +164,10 @@ alignment:
       status: "proved"
     - source: "Joint tables are exactly finite convex combinations of elementary tensors"
       lean: "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteTensorCombination"
+      module: "RateReductionSolution.lean"
+      status: "proved"
+    - source: "Joint tables decompose into at most one rank-one tensor per constraint row"
+      lean: "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteRowRankOneCombination"
       module: "RateReductionSolution.lean"
       status: "proved"
     - source: "Marginal is a left inverse of the anchored tensor lift"

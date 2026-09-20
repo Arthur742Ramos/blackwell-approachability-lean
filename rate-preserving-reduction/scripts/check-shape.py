@@ -32,14 +32,15 @@ if imports != ["Mathlib"]:
     raise SystemExit(f"error: unexpected Challenge imports: {imports}")
 
 holes = len(re.findall(r"\bsorry\b", text))
-if holes != 11:
-    raise SystemExit(f"error: expected eleven Challenge holes, found {holes}")
+if holes != 12:
+    raise SystemExit(f"error: expected twelve Challenge holes, found {holes}")
 
 targets = [
     "Blackwell.RateReduction.Palomar.marginal_simplex",
     "Blackwell.RateReduction.Palomar.outer_jointSimplex",
     "Blackwell.RateReduction.Palomar.elementaryTensor_eq_outer_pointMass",
     "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteTensorCombination",
+    "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteRowRankOneCombination",
     "Blackwell.RateReduction.Palomar.marginal_outer",
     "Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score",
     "Blackwell.RateReduction.Palomar.regretSum_eq_approachSum",
@@ -72,6 +73,8 @@ for source_path in (challenge, solution):
         "def pointMass", "def elementaryTensor",
         "theorem elementaryTensor_eq_outer_pointMass", "def FiniteTensorCombination",
         "theorem jointSimplex_eq_finiteTensorCombination",
+        "def FiniteRowRankOneCombination",
+        "theorem jointSimplex_eq_finiteRowRankOneCombination",
         "theorem regretLoss_eq_approachLoss", "theorem shift_is_improper",
         "theorem finiteTensorTightReduction_of_anchor",
         "theorem algorithmicFiniteTensorTightReduction_of_anchor",
@@ -88,6 +91,7 @@ nonempty_declarations = (
     "def regretSum",
     "theorem regretSum_eq_approachSum",
     "theorem jointSimplex_eq_finiteTensorCombination",
+    "theorem jointSimplex_eq_finiteRowRankOneCombination",
     "def approachLoss",
     "def regretLoss",
     "theorem regretLoss_eq_approachLoss",
@@ -179,7 +183,7 @@ for path in (implementation, solution, root / "RateReductionExamples.lean"):
 
 print(
     f"Standalone shape passed: Challenge {challenge.stat().st_size} bytes, "
-    "eleven holes, eleven selected targets, documented Challenge definitions, "
+    "twelve holes, twelve selected targets, documented Challenge definitions, "
     "and nonemptiness guards on public "
     "definitions and reduction theorems, explicit witnesses in the reduction "
     "and improperness predicates, and guards on all causal strategy translations."

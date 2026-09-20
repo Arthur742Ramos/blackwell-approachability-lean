@@ -28,9 +28,14 @@ The selected Lean statements make this tensor-hull model explicit. Each
 coordinate vertex is proved to be the outer product of two point masses, and
 `jointSimplex_eq_finiteTensorCombination` proves that a table is in the joint
 simplex exactly when it is a finite convex combination of those vertices.
-`outer_jointSimplex` proves that every outer product of mixed actions is also
-in the joint simplex. Together, these statements identify the joint simplex
-with the convex hull of the rank-one tensors in this finite model.
+The stronger `jointSimplex_eq_finiteRowRankOneCombination` theorem shows that
+at most `|m|` rank-one terms suffice: each constraint index receives its row
+mass and, when that mass is nonzero, its normalized conditional action. A
+zero-mass row contributes zero; its conditional action is chosen from the
+nonempty action simplex. `outer_jointSimplex` proves that every outer product
+of mixed actions is also in the joint simplex. Together, these statements
+identify the joint simplex with the convex hull of rank-one tensors and give an
+explicit row-wise decomposition with a linear-in-`|m|` term bound.
 
 For a joint action `x`, its action marginal is
 
@@ -69,7 +74,7 @@ claim can be discharged through an empty mixed-action space.
 
 ## Selected statement map
 
-The Comparator checks eleven declarations. The first group establishes the
+The Comparator checks twelve declarations. The first group establishes the
 finite tensor model; the remaining declarations formalize the exact reduction:
 
 | Lean declaration | Mathematical content |
@@ -78,6 +83,7 @@ finite tensor model; the remaining declarations formalize the exact reduction:
 | `outer_jointSimplex` | The outer product of two distributions is a legal joint action. |
 | `elementaryTensor_eq_outer_pointMass` | Every coordinate vertex is a rank-one tensor of point masses. |
 | `jointSimplex_eq_finiteTensorCombination` | Joint distributions are exactly finite convex combinations of coordinate vertices. |
+| `jointSimplex_eq_finiteRowRankOneCombination` | Each joint distribution is a convex mixture of at most `|m|` row-supported rank-one tensors. |
 | `marginal_outer` | Decoding the anchored lift recovers the original action. |
 | `pairing_shift_sub_pairing_eq_score` | The one-step comparator-pairing difference equals the approachability score. |
 | `regretSum_eq_approachSum` | Summing that identity gives equality over every finite horizon. |
@@ -86,9 +92,12 @@ finite tensor model; the remaining declarations formalize the exact reduction:
 | `finiteTensorTightReduction_of_anchor` | Explicit trajectory maps give exact loss preservation for each supplied anchor. |
 | `algorithmicFiniteTensorTightReduction_of_anchor` | Causal history-dependent strategy maps give the same exact preservation. |
 
-For the hull identity, the forward decomposition uses each table entry
-`x(i,j)` as its coefficient; conversely, nonnegative coefficients summing to
-one produce a nonnegative table of mass one. The vertex lemma identifies each
+For the two hull identities, the coordinate decomposition uses each table
+entry `x(i,j)` as its coefficient. The row-wise decomposition instead uses
+`sum_j x(i,j)` as the weight of row `i` and normalizes each positive-mass row
+to a mixed action; nonnegative entries force every zero-mass row to vanish.
+Conversely, nonnegative row weights summing to one and mixed conditional
+actions produce a joint-simplex table. The vertex lemma identifies each
 coordinate table with the outer product of the corresponding point masses.
 For the reduction, marginalization supplies the decoder; bilinearity gives the
 one-step pairing identity; finite summation and the pointwise identity give
@@ -130,7 +139,7 @@ and the translated strategy spaces do not rely on empty-type totalization.
 ## Files
 
 - `RateReduction.lean` — implementation and proofs.
-- `RateReductionChallenge.lean` — Mathlib-only statement surface with eleven
+- `RateReductionChallenge.lean` — Mathlib-only statement surface with twelve
   intentional theorem holes.
 - `RateReductionSolution.lean` — checked adapters to the implementation.
 - `RateReductionExamples.lean` — a concrete two-constraint, two-action,

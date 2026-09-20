@@ -8,7 +8,10 @@ which `U = Delta_m` is the convex hull of `m` coordinate constraints and
 `P = Delta_n`. Its tensor realization is the joint simplex `Delta_(m x n)`.
 That representation is exactly the convex hull of rank-one product tables:
 coordinate vertices are point-mass outer products, and every joint action is
-a finite convex combination of those vertices. It has a canonical action
+a finite convex combination of those vertices. More sharply, every joint
+action is a convex mixture of at most `|m|` rank-one tables, one for each
+constraint row; a positive row is its mass times a normalized conditional
+action, while a zero row contributes zero. It has a canonical action
 marginal. The central objective, improperness, and
 reduction APIs require `[Nonempty m]` and `[Nonempty n]`. These assumptions
 make both simplexes and both online-strategy codomains genuinely inhabited;
@@ -28,10 +31,12 @@ than a fragile expansion of nested finite sums.
 
 ## Proof architecture
 
-1. `outer_jointSimplex`, `elementaryTensor_eq_outer_pointMass`, and
-   `jointSimplex_eq_finiteTensorCombination` establish the finite tensor-hull
-   representation; `marginal_simplex` and `marginal_outer` establish the legal
-   action maps `decode` and `lift`.
+1. `outer_jointSimplex`, `elementaryTensor_eq_outer_pointMass`,
+   `jointSimplex_eq_finiteTensorCombination`, and
+   `jointSimplex_eq_finiteRowRankOneCombination` establish the finite
+   tensor-hull representations, including the `|m|`-term row decomposition;
+   `marginal_simplex` and `marginal_outer` establish the legal action maps
+   `decode` and `lift`.
 2. `shift_not_jointSimplex` proves improperness by total mass: an allowed
    joint action and the added rank-one table each have mass one.
 3. `pairing_shift_sub_pairing_eq_score` proves the per-round identity.
@@ -41,7 +46,7 @@ than a fragile expansion of nested finite sums.
    translations are causal by their types. The algorithmic theorem combines
    their trajectory equalities with the same loss history.
 
-The public Challenge contains exactly eleven intentional holes: the tensor
+The public Challenge contains exactly twelve intentional holes: the tensor
 representation, action-set lemmas, improperness, one-step and horizon
 identities, trajectory equality, and both trajectory- and strategy-level
 tightness results. The Solution

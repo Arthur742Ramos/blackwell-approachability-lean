@@ -94,6 +94,20 @@ theorem jointSimplex_eq_finiteTensorCombination {m n : Type} [Fintype m] [Fintyp
     {x : Joint m n | jointSimplex x} = {x | FiniteTensorCombination x} := by
   sorry
 
+/-- A joint table expressed as a convex mixture of one rank-one tensor per row. -/
+def FiniteRowRankOneCombination {m n : Type} [Fintype m] [Fintype n]
+    (x : Joint m n) : Prop :=
+  ∃ weights : Dist m, ∃ actions : m → Mixed n,
+    (∀ i, 0 ≤ weights i) ∧
+    (∑ i, weights i) = 1 ∧
+    x = ∑ i, weights i • outer (pointMass i) (actions i).1
+
+/-- Every joint-simplex table is a mixture of at most one rank-one tensor per constraint. -/
+theorem jointSimplex_eq_finiteRowRankOneCombination {m n : Type}
+    [Fintype m] [Fintype n] [Nonempty m] [Nonempty n] :
+    {x : Joint m n | jointSimplex x} = {x | FiniteRowRankOneCombination x} := by
+  sorry
+
 /-- Marginalization is a left inverse of the anchored tensor lift. -/
 theorem marginal_outer {m n : Type} [Fintype m] [Fintype n]
     {w : Dist m} {p : Dist n} (hw : simplex w) :

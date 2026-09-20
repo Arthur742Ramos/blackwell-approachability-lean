@@ -6,6 +6,7 @@
     "Blackwell.RateReduction.Palomar.outer_jointSimplex",
     "Blackwell.RateReduction.Palomar.elementaryTensor_eq_outer_pointMass",
     "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteTensorCombination",
+    "Blackwell.RateReduction.Palomar.jointSimplex_eq_finiteRowRankOneCombination",
     "Blackwell.RateReduction.Palomar.marginal_outer",
     "Blackwell.RateReduction.Palomar.pairing_shift_sub_pairing_eq_score",
     "Blackwell.RateReduction.Palomar.regretSum_eq_approachSum",
