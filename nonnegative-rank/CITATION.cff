@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite the software and source literature."
+title: "Finite Nonnegative Rank and Product-Mixture Cardinality in Lean"
+type: software
+version: "0.1.0"
+authors:
+  - family-names: Ramos
+    given-names: Arthur Freitas
+repository-code: "https://github.com/Arthur742Ramos/blackwell-approachability-lean"
+license: BSD-3-Clause
+keywords:
+  - Lean
+  - Mathlib
+  - nonnegative rank
+  - matrix factorization
+  - probability matrices
+  - latent-variable mixtures

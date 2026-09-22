@@ -1,0 +1,122 @@
+version: "v0.4"
+project:
+  name: "Finite nonnegative rank and latent product-mixture cardinality in Lean"
+  description: >-
+    A standalone Lean 4 formalization identifying, at each fixed finite
+    component count, normalized mixtures of product distributions with
+    nonnegative matrix factorizations. It proves a support-based fooling-set
+    lower bound and shows that the uniform diagonal probability table requires
+    exactly one component per diagonal state.
+  authors: ["Arthur Freitas Ramos"]
+  responsible_maintainers: ["Arthur Freitas Ramos"]
+  license: "BSD-3-Clause"
+classification:
+  arxiv: ["math.CO", "cs.CC", "math.PR", "cs.LO"]
+  msc2020: ["15A23", "05C50", "60B11", "03B35"]
+research_context:
+  question: >-
+    For a finite joint probability table, when does an exact nonnegative
+    factorization with k latent components coincide with a mixture of k
+    independent product distributions, and what support patterns force k to
+    be large?
+  selected_result: >-
+    For finite nonempty coordinate types and every k, a probability matrix has
+    a k-term product-mixture representation exactly when it has a nonnegative
+    factorization of inner dimension k. Every fooling set of positive cells
+    lower-bounds that dimension. In particular, the uniform diagonal table on
+    Fin N has a product-mixture representation with N components and none
+    with fewer components, for every positive N.
+  audience: >-
+    Researchers in nonnegative matrix factorization, finite probability,
+    contingency-table mixture models, and formal verification.
+  boundary: >-
+    This is an exact finite-dimensional result. It does not compute
+    nonnegative rank, address approximate factorizations or statistical
+    estimation, or claim new mathematical priority. The formalization makes
+    the zero-factor normalization and finite support argument explicit.
+sources:
+  - title: "Probability matrices, non-negative rank, and parameterization of mixture models"
+    authors: ["Enrico Carlini", "Fabio Rapallo"]
+    id: "https://doi.org/10.1016/j.laa.2010.03.010"
+    type: "paper"
+    relationship: "background"
+    note: >-
+      Relates nonnegative probability matrices to mixture models for
+      contingency tables. The present package formalizes the fixed-component
+      equivalence and support lower bound, not the paper's parameterization
+      results.
+    author_endorsement: "not-contacted"
+  - title: "Combinatorial bounds on nonnegative rank and extended formulations"
+    authors: ["Samuel Fiorini", "Volker Kaibel", "Kanstantsin Pashkovich", "Dirk Oliver Theis"]
+    id: "https://doi.org/10.1016/j.disc.2012.09.015"
+    type: "paper"
+    relationship: "background"
+    note: >-
+      Surveys and develops support-based lower-bound methods, including the
+      fooling-set bound. The present proof formalizes the finite-cell argument
+      directly and does not formalize extension complexity.
+    author_endorsement: "not-contacted"
+status:
+  scope: >-
+    Five selected theorems formalize the fixed-k equivalence between
+    product-mixture representations and nonnegative factorizations, equality
+    of their least feasible counts, the fooling-set lower bound for a factor
+    count, an N-component representation of the uniform diagonal table, and
+    its minimality. Factor types are
+    explicitly finite and nonempty in the equivalence theorem. In the
+    normalization proof, zero-mass factors receive weight zero and harmless
+    fallback probability vectors, avoiding division by zero.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  challenge_holes: 5
+  axioms: ["propext", "Quot.sound", "Classical.choice"]
+automation:
+  methods:
+    - method: "agent"
+      models: ["GPT-5 Codex"]
+      framework: "Lean 4 and Mathlib"
+      tool_setup: >-
+        Pinned Lean and Mathlib; Mathlib-only Challenge; selected-theorem axiom
+        audit; pinned Comparator and NanoDa validation; hosted readiness CI.
+      prompting_notes: >-
+        Formalized fixed-cardinality factorization and mixture statements,
+        including explicit zero-mass cases and a support-based lower bound.
+  notes: "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Lean."
+fidelity:
+  divergences: >-
+    The factorization theorem concerns exact finite real matrices and exact
+    mixtures of independent product probability vectors. The diagonal
+    example establishes a sharp component-count statement. No approximation,
+    algorithmic complexity result, parameter-identifiability theorem, or
+    statistical estimation result is included.
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: >-
+    No independent human or Palomar editorial approval is claimed. The four
+    Challenge holes are statement-only; the implementation contains no proof
+    placeholders or user axioms. The mathematical ingredients are established
+    results, and this entry claims a self-contained Lean formalization only.
+alignment:
+  namespace: "Blackwell.NonnegativeRank.Palomar"
+  statements:
+    - source: "A k-term product mixture is equivalent to a nonnegative factorization of inner dimension k"
+      lean: "Blackwell.NonnegativeRank.Palomar.productMixture_iff_nonnegativeFactorization"
+      module: "NonnegativeRankSolution.lean"
+      status: "proved"
+    - source: "Least product-mixture and nonnegative-factorization component counts coincide"
+      lean: "Blackwell.NonnegativeRank.Palomar.leastProductMixtureCount_iff_leastNonnegativeFactorizationCount"
+      module: "NonnegativeRankSolution.lean"
+      status: "proved"
+    - source: "A fooling set of positive cells lower-bounds nonnegative factor count"
+      lean: "Blackwell.NonnegativeRank.Palomar.foolingSet_card_le_factorCount"
+      module: "NonnegativeRankSolution.lean"
+      status: "proved"
+    - source: "The uniform diagonal table has an N-component product-mixture representation"
+      lean: "Blackwell.NonnegativeRank.Palomar.uniformDiagonal_has_productMixture"
+      module: "NonnegativeRankSolution.lean"
+      status: "proved"
+    - source: "The uniform diagonal table needs at least N product components"
+      lean: "Blackwell.NonnegativeRank.Palomar.uniformDiagonal_mixture_minimal"
+      module: "NonnegativeRankSolution.lean"
+      status: "proved"

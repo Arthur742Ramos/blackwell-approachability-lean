@@ -1,0 +1,17 @@
+{
+  "challenge_module": "NonnegativeRankChallenge",
+  "solution_module": "NonnegativeRankSolution",
+  "theorem_names": [
+    "Blackwell.NonnegativeRank.Palomar.productMixture_iff_nonnegativeFactorization",
+    "Blackwell.NonnegativeRank.Palomar.leastProductMixtureCount_iff_leastNonnegativeFactorizationCount",
+    "Blackwell.NonnegativeRank.Palomar.foolingSet_card_le_factorCount",
+    "Blackwell.NonnegativeRank.Palomar.uniformDiagonal_has_productMixture",
+    "Blackwell.NonnegativeRank.Palomar.uniformDiagonal_mixture_minimal"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": true
+}

@@ -1,0 +1,7 @@
+import NonnegativeRankSolution
+
+#print axioms Blackwell.NonnegativeRank.Palomar.productMixture_iff_nonnegativeFactorization
+#print axioms Blackwell.NonnegativeRank.Palomar.leastProductMixtureCount_iff_leastNonnegativeFactorizationCount
+#print axioms Blackwell.NonnegativeRank.Palomar.foolingSet_card_le_factorCount
+#print axioms Blackwell.NonnegativeRank.Palomar.uniformDiagonal_has_productMixture
+#print axioms Blackwell.NonnegativeRank.Palomar.uniformDiagonal_mixture_minimal
