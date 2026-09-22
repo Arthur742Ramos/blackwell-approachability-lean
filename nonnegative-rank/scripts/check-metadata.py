@@ -18,7 +18,25 @@ assert [f'{author["given-names"]} {author["family-names"]}'
         for author in citation["authors"]] == authors
 assert citation["version"] == "0.1.0"
 assert 'version := v!"0.1.0"' in (root / "lakefile.lean").read_text(encoding="utf-8")
-assert metadata["sources"] and metadata["review"]["status"] == "self-assessed"
+sources = metadata["sources"]
+allowed_relationships = {
+    "formalizes",
+    "adapts",
+    "independently-proves",
+    "background",
+    "other",
+}
+substantive_relationships = {
+    "formalizes",
+    "adapts",
+    "independently-proves",
+}
+assert sources and all(
+    source.get("relationship") in allowed_relationships for source in sources
+)
+assert not any(source.get("type") == "original-proof" for source in sources)
+assert any(source.get("relationship") in substantive_relationships for source in sources)
+assert metadata["review"]["status"] == "self-assessed"
 assert metadata["status"]["sorry_count"] == 0
 assert metadata["status"]["challenge_holes"] == len(config["theorem_names"])
 assert metadata["status"]["axioms"] == config["permitted_axioms"]

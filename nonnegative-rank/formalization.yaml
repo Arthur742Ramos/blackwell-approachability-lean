@@ -39,22 +39,26 @@ sources:
     authors: ["Enrico Carlini", "Fabio Rapallo"]
     id: "https://doi.org/10.1016/j.laa.2010.03.010"
     type: "paper"
-    relationship: "background"
+    relationship: "adapts"
     note: >-
-      Relates nonnegative probability matrices to mixture models for
-      contingency tables. The present package formalizes the fixed-component
-      equivalence and support lower bound, not the paper's parameterization
-      results.
+      The Lean development adapts the paper's connection between probability
+      matrices and contingency-table mixture models to an exact equivalence
+      for every fixed finite component count. The cited paper gives
+      minimum-parameter parametrizations for probability matrices of rank at
+      most two; those parametrization results are not formalized here.
     author_endorsement: "not-contacted"
   - title: "Combinatorial bounds on nonnegative rank and extended formulations"
     authors: ["Samuel Fiorini", "Volker Kaibel", "Kanstantsin Pashkovich", "Dirk Oliver Theis"]
     id: "https://doi.org/10.1016/j.disc.2012.09.015"
     type: "paper"
-    relationship: "background"
+    relationship: "adapts"
     note: >-
-      Surveys and develops support-based lower-bound methods, including the
-      fooling-set bound. The present proof formalizes the finite-cell argument
-      directly and does not formalize extension complexity.
+      The Lean theorem adapts the paper's fooling-set lower-bound method to a
+      direct finite-matrix statement: a fooling set of size ℓ forces at least
+      ℓ factors in every nonnegative factorization. The paper presents the
+      method through rectangle-covering and extension-complexity bounds and
+      credits Dietzfelbinger et al. for the fooling-set bound; extension
+      complexity is not formalized here.
     author_endorsement: "not-contacted"
 status:
   scope: >-

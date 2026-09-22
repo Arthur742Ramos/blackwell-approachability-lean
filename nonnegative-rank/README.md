@@ -17,6 +17,11 @@ representation, and every such representation has at least `N` components.
 The development concerns exact finite probability tables and exact
 factorizations. It does not implement a rank-computation algorithm, address
 approximate factorization, or formalize general latent-variable models. The
+fixed-component equivalence adapts the probability-matrix/mixture connection
+to arbitrary finite component counts; the paper's rank-at-most-two
+parameterizations are outside scope. The fooling-set result adapts the
+support-based lower-bound method to arbitrary finite nonnegative
+factorizations; extension-complexity results are outside scope. The
 mathematical results are established ones; the contribution is a self-contained
 Lean formalization with explicit finite-index and zero-factor boundaries.
 
@@ -31,5 +36,5 @@ bash scripts/verify-palomar.sh
 
 `NonnegativeRankChallenge.lean` is Mathlib-only. `NonnegativeRankSolution.lean`
 contains the proofs, and `NonnegativeRankExamples.lean` checks concrete small
-instances. The pinned Comparator configuration selects the four statements
+instances. The pinned Comparator configuration selects the five statements
 documented in `formalization.yaml`.
